@@ -10,3 +10,4 @@ install.packages("bayesplot", dependencies = TRUE)
 install.packages("tidyverse", dependencies = TRUE)
 install.packages("pksensi", dependencies = TRUE)
 devtools::install_github("nanhung/simuloR")
+
