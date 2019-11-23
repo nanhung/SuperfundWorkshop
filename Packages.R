@@ -1,13 +1,12 @@
-# Please install all of the following packages prior to the workshop:
+# Packages.R --------------------------------------------------------------
 
-################################################
-###               Packages                   ###
-################################################
+# The installation will take a while. Do not do this at the last minute.
+# Please install all of the following packages prior to the workshop. 
 
-install.packages("devtools", dependencies = TRUE)
-install.packages("rstan", dependencies = TRUE)
-install.packages("bayesplot", dependencies = TRUE)
-install.packages("tidyverse", dependencies = TRUE)
-install.packages("pksensi", dependencies = TRUE)
+pkgs <- c("devtools", 
+          "rstan", 
+          "bayesplot", 
+          "tidyverse",
+          "pksensi")
+install.packages(pkgs, dependencies = TRUE)
 devtools::install_github("nanhung/simuloR")
-
