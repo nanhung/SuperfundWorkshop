@@ -5,4 +5,4 @@ library(simuloR)
 
 model <- "models/simple.model"
 input <- "inputs/simple.in"
-mcsim(model, input)
+df <- mcsim(model, input)

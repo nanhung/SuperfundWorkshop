@@ -1,0 +1,12 @@
+# linear.in ---------------------------------------------------------------
+
+Simulation {
+  
+  A  = 1; # given value of intercept 
+  B  = 2; # given value of slope 
+  SD_true = 2; # given SD of noise 
+  
+  PrintStep (y, 0, 10, 1); 
+}
+
+END.
