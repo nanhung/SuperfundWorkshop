@@ -5,18 +5,16 @@ author: "<strong>Nan-Hung Hsieh, PhD</strong>"
 date: ".small[Postdoctoral Research Associate @ TAMU Interdisciplinary Faculty of Toxicology Program]"
 output:
   xaringan::moon_reader:
+    includes:
+      after_body: insert-logo.html
     css: [default, "tamu.css", "tamu-fonts.css"]
     nature:
+      ratio: '16:9'
       beforeInit: "macros.js"
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
-
-
-background-image: url(https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fweltbild.scene7.com%2Fasset%2Fvgw%2Fcomputational-toxicology-072231575.jpg&f=1)
-background-size: 150px
-background-position: 90% 15%
 
 # Content
 
@@ -37,3 +35,7 @@ background-position: 90% 15%
 - Quantify the .large[**uncertainty**] from model input to model output
 
 ???
+
+---
+
+# test

@@ -1,3 +1,10 @@
+.title-slide {
+background-image: url(TAMU_SRP_logo.gif);
+background-size: 200px;
+background-position: 99% 98%;
+
+}
+
 a, a > code {
   color: #448ac9;
   font-weight: bold;
@@ -20,8 +27,8 @@ a:hover {
 .remark-code-line-highlighted { background-color: #fce300 ; }
 
 .remark-slide-content {
-  border-right: 11px solid #500000;
-  border-left: 11px solid #500000;
+  border-right: 12px solid #500000;
+  border-left: 12px solid #500000;
   padding: 1em 2em 1em 2em
 }
 
@@ -45,8 +52,8 @@ h1, h2, h3 {
 }
 
 .inverse {
-  border-left: 11px solid #fff;
-  border-right: 11px solid #fff;
+  border-left: 12px solid #fff;
+  border-right: 12px solid #fff;
   background-color: #500000;
   color: #d6d6d6;
 }
