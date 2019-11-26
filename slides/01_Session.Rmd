@@ -2,7 +2,7 @@
 title: "Session 1: Overview of Pharmacokinetic Models and Computational Toolkits"
 subtitle: "<hr />"
 author: "<strong>Nan-Hung Hsieh, PhD</strong>"
-date: ".small[Postdoctoral Research Associate @ TAMU Interdisciplinary Faculty of Toxicology Program]"
+date: ".small[Postdoctoral Research Associate]"
 output:
   xaringan::moon_reader:
     includes:
