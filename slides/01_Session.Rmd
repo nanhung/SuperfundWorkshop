@@ -1,8 +1,9 @@
 ---
-title: "Session 1: Overview of Pharmacokinetic Models and Computational Toolkits"
+title: "<strong>Session 1:</strong> </br> Overview of Pharmacokinetic Models and Computational Toolkits"
 subtitle: "<hr />"
 author: "<strong>Nan-Hung Hsieh, PhD</strong>"
-date: ".small[Postdoctoral Research Associate]"
+institute: "Postdoc @ Texas A&M Superfund Decision Science Core"
+date: "12/09/2019"
 output:
   xaringan::moon_reader:
     includes:
@@ -14,6 +15,10 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+---
+
+# About Me 
+
 ---
 
 # Content
