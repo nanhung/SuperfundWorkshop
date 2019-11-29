@@ -11,11 +11,14 @@ out <- read.delim("sim.out", skip = 2)
 plot(x = out$Time, y = out$y)
 abline(a = 1, b = 2)
 
+# Monte Carlo
 input <- "inputs/linear.mtc.in"
 mcsim(model, input)
 
+# MCMC
 input <- "inputs/linear.mcmc.in"
 mcsim(model, input)
 
+# Setpoints
 input <- "inputs/linear.setpts.in"
 mcsim(model, input)
