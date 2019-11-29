@@ -1,0 +1,13 @@
+# linear.mtc.in ---------------------------------------------------------------
+
+MonteCarlo ("simmc.out", 
+            10, 
+            10101010);
+
+Distrib (A, Normal, 0, 2); # prior of intercept 
+Distrib (B, Normal, 1, 2); # prior of slope 
+
+Simulation {
+  PrintStep (y, 0, 10, 1); 
+}
+End.
