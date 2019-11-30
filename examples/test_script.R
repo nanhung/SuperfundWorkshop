@@ -1,6 +1,9 @@
+#In terminal: chmod +x install.sh; source ./install.sh
 #.rs.restartR() # Restarting R session...
+#setwd("/cloud/project")
 #remove.packages("simuloR")
 #devtools::install_github("nanhung/simuloR")
+
 library(simuloR)
 
 model <- "models/linear.model"
