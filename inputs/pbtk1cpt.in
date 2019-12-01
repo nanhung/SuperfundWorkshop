@@ -1,0 +1,25 @@
+#-------------------------------------------------------------------------------
+# Simulation file for one-compartment model with first order absorption.
+# 
+# Default parameter value are based on theophylline sourced from R httk package 
+# 
+# Nan-Hung Hsieh - Dec 2019
+#-------------------------------------------------------------------------------
+
+MW = 180.167; 
+
+Fgutabs    = 0.9141961;
+IngDose    = 1.0;   # ingested dose (mg)
+Period     = 24;     # period of the exposure/no exposure cycle (h)
+kgutabs    = 2.18;  # absortion rate (/h)
+
+# Volumes (L)
+Vdist = 0.7801997; 
+
+# Rate constant (/h)
+kelim = 0.2653932;
+
+Simulation {
+  PrintStep (Ccompartment, 0, 5, 0.01); # h
+}
+End.
