@@ -1,0 +1,63 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r cars}
+library(httk)
+library(simuloR)
+```
+
+```{r pressure, echo=FALSE}
+params <- parameterize_1comp(chem.name='theophylline', species='Human')
+unlist(params)
+```
+
+```{r}
+MW <- params$MW
+Fgutabs <- params$Fgutabs * params$hepatic.bioavailability
+kgutabs <- params$kgutabs
+Vdist <- params$Vdist
+kelim <- params$kelim
+```
+
+Use solve1comp to simulate the time-dependent concentration of BPA. The given daily dose is 1 mg/kg.
+```{r}
+t <- seq(0, 5 ,0.1)
+out <- solve_1comp(parameters=params, doses.per.day = 1, daily.dose = 1, times = t)
+out
+```
+
+
+```{r}
+plot(out) # output.units = "uM"
+```
+
+```{r}
+# Estimate css
+dose <- 1 / 1000 * MW # mg -> uM
+httk_css <- calc_analytic_css(chem.name = "theophylline", model = "1compartment")
+```
+
+
+```{r}
+sol_css <-  dose * Fgutabs / kelim / Vdist # Analytical solution of css
+# Plot result
+plot(data$time, data$Ccompartment, type = "l", main = "BPA (pbtk1cpt)",
+     xlab = "Time (day)", ylab = "Concentration (uM)")
+abline(h = sol_css, col = "red") # Maximum  
+abline(h = httk_css) # Mean
+```
+
+
+
+```{r}
+out_mcsim <- mcsim(model = "models/pbtk1cpt.model", input = "inputs/pbtk1cpt.in")
+```
+
