@@ -1,7 +1,7 @@
 ---
 title: "Workflow of pharmacokinetic modeling (model construction + data manipulation + visualization)"
 author: "Nan-Hung Hsieh"
-date: "2019/05/23 (update: `r Sys.Date()`)"
+date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
   html_document:
   fig_caption: yes  
