@@ -1,21 +1,64 @@
-.title-slide {
-background-image: url(tamu_srp_logo.gif);
-background-size: 250px;
-background-position: 50% 95%;
+@import url(https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i);
+@import url(https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css);
 
+body {
+  font-family: 'Fira Sans','Droid Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, 'Microsoft YaHei', 'Songti SC', serif;
+}
+
+.remark-code, .remark-inline-code {
+  font-family: 'Fira Code', 'Lucida Console', Monaco, monospace;
+  font-size: 80%;
+  background: #F5F5F5;
+}
+
+.bolder { font-weight: bold; color: #e4002b; }
+
+.font125 { font-size: 125%; }
+.font150 { font-size: 150%; }
+.font200 { font-size: 200%; }
+.font300 { font-size: 300%; }
+.font75 { font-size: 75%; }
+.font50 { font-size: 50%; }
+.code75 .remark-code { font-size: 75%;}
+.code50 .remark-code { font-size: 50%;}
+
+.footnote {
+  position: absolute;
+  bottom: 3em;
+  padding-right: 4em;
+  font-size: 50%;
+}
+
+.inverse {
+  background-color: #fff;
+}
+
+.inverse h1, .inverse h2{
+  color: #500000;
+  text-shadow: none;
+}
+
+.inverse h3 {
+  color: #000;
+  text-shadow: none;
+}
+
+
+.title-slide {
+  background-color: #FFFFFF;
+  background-image: url(tamu_srp_logo.gif);
+  background-size: 320px;
+  background-position: 50% 98%;
+}
+
+/* turns off slide numbers for title page: https://github.com/gnab/remark/issues/298 */
+.title-slide .remark-slide-number {
+  display: none;
 }
 
 a, a > code {
   color: #448ac9;
   font-weight: bold;
-  border-bottom: 1px dotted #448ac9;
-  text-decoration: none;
-  transition: all .2s ease-in-out
-}
-
-a:hover { 
-  font-size: 1.05em; 
-  border-bottom: 1px solid #448ac9;
 }
 
 .highlight {
@@ -27,18 +70,17 @@ a:hover {
 .remark-code-line-highlighted { background-color: #fce300 ; }
 
 .remark-slide-content {
-  border-right: 12px solid #500000;
-  border-left: 12px solid #500000;
+  font-size: 20px;
+  border-right: 11px solid #500000;
+  border-left: 11px solid #500000;
+  font-weight: 300;
+  line-height: 1.5;
   padding: 1em 2em 1em 2em
 }
 
 .remark-slide-content > h1 {
   font-size: 45px;
-  font-weight: normal;
-  margin-top: 10px;
-  margin-left: -00px;
 }
-
 .remark-slide-content > h2, .pull-left > h2, .pull-right > h2 {
   font-size: 35px;
 }
@@ -51,16 +93,6 @@ h1, h2, h3 {
   color: #500000;
 }
 
-.inverse {
-  border-left: 12px solid #fff;
-  border-right: 12px solid #fff;
-  background-color: #500000;
-  color: #d6d6d6;
-}
-
-.inverse h1, .inverse h2, .inverse h3 {
-  color: #f3f3f3;
-}
 
 table {
   margin: auto;
@@ -79,26 +111,6 @@ table {
 
 .left {
   align-content: left;  
-}
-
-.shrink {
-  margin: auto;
-  width: 90%;
-}
-
-.xshrink {
-  margin: auto;
-  width: 70%;
-}
-
-.enlarge{
-  margin: auto;
-  width: 110%;
-}
-
-.xenlarge{
-  margin: auto;
-  width: 130%;
 }
 
  /* Two-column layout */

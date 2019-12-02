@@ -1,14 +1,14 @@
 ---
 title: "<strong>Session 1:</strong> </br> Overview of Pharmacokinetic Models and Computational Toolkits"
-subtitle: "<hr />"
-author: "<strong>Nan-Hung Hsieh, PhD</strong>"
-institute: "Postdoc @ Texas A&M Superfund Decision Science Core"
+subtitle: "<html><div style='float:left'></div><hr color='#500000' size=1px width=796px></html>"
+author: ".font125[Nan-Hung Hsieh, PhD] </br> Postdoc @ Texas A&M Superfund Decision Science Core"
+institute: ""
 date: "12/09/2019"
 output:
   xaringan::moon_reader:
     includes:
       after_body: insert-logo.html
-    css: [default, "tamu.css", "tamu-fonts.css"]
+    css: [default, "tamu.css"]
     nature:
       ratio: '16:9'
       beforeInit: "macros.js"
@@ -17,30 +17,1248 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+library(ggplot2)
+```
+
+background-image: url(https://github.com/nanhung/pksensi/raw/master/man/figures/logo.png)
+background-size: 150px
+background-position: 95% 95%
+
 # About Me 
+
+### MS in Safety, Health and Environmental Engineering @ National United University
+
+### PhD in Bioenvironmental Systems Engineering @ National Taiwan University
+
+.font125[
+- Research Associate @ Institute of Labor, Occupational Safety And Health, Ministry of Labor
+
+- Postdoctoral Research Associate @ Texas A&M University
+
+- <font color="#778899"> Associate Toxicologist @ California Environmental Protection Agency </font color>
+
+</br>
+**My Research:** .bolder[Computational Toxicology] & .bolder[Risk Assessment]  
+**Interest:** .bolder[Software Development]
+]
 
 ---
 
-# Content
+class:middle, center
+
+.font300[
+Why We Need to Do  
+**Computational Modeling**  
+in Toxicology?
+]
+
+--
+
+.font300[.bolder["Prediction"]]
+
+---
+
+# Pharmacokinetics (PK)
+
+.font125[
+- The fate of chemical in a living organism
+
+- **ADME** process
+
+.center[
+
+**A**bsorption - How will it get in?
+
+**D**istribution - Which tissue organ it will go?
+
+**M**etabolism - How is it broken down and transformation?
+
+**E**limination - How it leave the body?
+]
+
+- Kinetics: rates of change
+
+- <font color="red">PK is focus on .bolder[TIME (t)] and .bolder[CONCENTRATION (C)]</font color>
+
+]
+
+---
+
+# Pharmacokinetics / Pharmacodynamics
+
+.large[
+Pharmacokinetics is the study of the fate of chemical in a living organism through .bolder[ADME] process (**absorption**, **distribution**, **metabolism**, and **elimination**).
+]
+
+.center[![](https://media.springernature.com/original/springer-static/image/art%3A10.1007%2Fs00535-015-1061-4/MediaObjects/535_2015_1061_Fig1_HTML.gif)
+
+.font125[
+**"PK"** focus on .bolder[DOSE] to .bolder[CONCENTRATION] / **"PD"** focus on .bolder[Concentration] to .bolder[Response]
+]
+]
+
+---
+
+background-image: url(http://www.mdpi.com/mca/mca-23-00027/article_deploy/html/images/mca-23-00027-g006.png)
+background-size: 320px
+background-position: 88% 34%
+
+# Pharmacokinetics Model
+
+Pharmacokinetic modelling is performed to .large[.bolder["predict"]] the exposure  concentration in the **concentration-time** graph by constructing the **compartmental model** or non-compartmental model.
+
+<br/>
+
+<br/>
+  
+.center[
+<img src="https://ars.els-cdn.com/content/image/1-s2.0-S1021949816301946-fx1_lrg.jpg" height="330px" />
+]
+
+???
+It quantify the fate of drug, which is ADME
+The top-right diagram is a simple example of PK model 
+
+---
+
+# Pharmacokinetic Model
+
+To .font150[.bolder["predict"]] the **cumulative does** by constructed **compartmental model**.
+
+.pull-left[
+![](http://www.mdpi.com/mca/mca-23-00027/article_deploy/html/images/mca-23-00027-g006.png)
+![](https://image.ibb.co/nJTM7z/fitting.png)
+
+]
+
+.pull-right[
+
+`\(D\)`: Intake dose (mass)
+
+`\(C\)`: Concentration (mass/vol.)
+
+`\(k_a\)`: Absorption rate (1/time)
+
+`\(V_{max}\)`: Maximal metabolism rate
+
+`\(K_m\)`: Concentration of chemical achieve half `\(V_{max}\)` (mass/vol.)
+
+`\(k_{el}\)`: Elimination rate (1/time)
+
+]
+
+---
+
+# One-Compartment PK Model
+
+.pull-left[
+### Intravenous Administration
+.font150[
+Ordinary differential equation
+
+$\frac{dD}{dt}=-k_{el} \cdot D$
+
+Analytical solution
+
+$D_t = D_0 \cdot e^{-k_{el} \cdot t}$
+]
+]
+
+.pull-right[
+.code75[
+```{r fig.height=5.0, dev='svg', eval=T}
+D_0 <- 10
+t <- seq(0.01, 10.01, 1)
+k_el <- 0.5
+D_t <- D_0*exp(-k_el*t) 
+plot(t, D_t, type = "b")
+```
+]
+]
+
+---
+
+# Physiological-Based Pharmacokinetic (PBPK)
+
+Mathematically transcribing .bolder[anatomical, physiological, physical, and chemical] descriptions of the phenomena involved in the complex .bolder[ADME] processes.
+
+.center[![:scale 60%](http://pharmguse.net/pkdm/pbpm.jpg)]
+
+---
+
+background-image: url(https://i.ibb.co/5FfRyqT/IJN-86785-F01.png)
+background-size: 550px
+background-position: 88% 50%
+
+class: hide-logo
+
+.pull-left[
+
+## PBPK Workflow
+
+**Model Construction**
+-  What type of data we have?
+  - .bolder[A]: Input routes
+  - .bolder[D]: Blood and other tissues
+  - .bolder[M]: Metabolism
+  - .bolder[E]: Urine or fecus
+
+**Parameter Estimates**
+- Do we have any prior information?
+  - Physiological parameter
+  - Chemical-specific parameter
+
+**PBPK modeling**
+
+]
+
+.footnote[
+Chen et al. (2015) [Physiologically based pharmacokinetic modeling of zinc oxide nanoparticles and zinc nitrate in mice.](https://doi.org/10.2147/IJN.S86785)
+]
+
+---
+
+class: hide-logo
+
+.pull-left[
+![:scale 75%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-F02.png)
+]
+.pull-right[
+![:scale 95%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T02.png)
+]
+
+---
+
+background-image: url(https://i.ibb.co/bFtvTjp/IJN-86785-F02.png)
+background-size: 400px
+background-position: 95% 90%
+
+class: clear
+
+![:scale 60%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T01.png)
+
+---
+
+background-image: url(https://wol-prod-cdn.literatumonline.com/cms/attachment/87cce77b-8dd4-4928-869f-b230e0cffcc4/psp412134-fig-0003-m.jpg)
+background-size: 600px
+background-position: 90% 90%
+
+# Why Pharmacokinetic Modeling
+
+- **Pharmaceutical research**
+
+- **Drug development**
+
+- **Health risk assessment**
+
+        .  
+        .  
+        .  
+
+---
+
+class: middle, center
+
+--- Application ---
+# If you have *known* "parameters"
+# ------------------------------------>
+# <font color="red"> Parameters / Model / Data</font>
+# <------------------------------------
+# If you have *known* "data" 
+--- Calibration ---
+
+---
+
+</br>
+</br>
+
+## Currently, the Bayesian Markov chain Monte Carlo (MCMC) algorithm is an effective way to do population PBPK model calibration.   
+## It is a powerful tool, Because...
+
+.font150[
+>It gives us the opportunity to understand and quantify the .font120["uncertainty"] and .font120["variability"] from individuals to .font150[population] through **data** and **model**.
+]
+
+---
+
+background-image: url(https://i.ibb.co/JB7s1bK/Screenshot-from-2019-09-24-11-49-47.png)
+background-size: 700px
+background-position: 50% 80% 
+
+# Modeling in Risk Assessment  
+
+---
+
+background-image: url(https://i.ibb.co/SmNTtv2/WHO.png)
+background-size: 260px
+background-position: 80% 90% 
+
+# Uncertainty vs. Variability
+
+.font150[
+
+> **Uncertainty** relates to "lack of knowledge"" that, in theory, could be reduced by better data, whereas **variability** relates to an existing aspect of the real world that is outside our control.
+
+> [*World Health Organization (2017)*](https://www.who.int/ipcs/methods/harmonization/areas/hazard_assessment/en/)
+
+]
+
+???
+
+There is a clear definition to differentiate the uncertainty and variability in WHO document.
+
+---
+
+background-image: url()
+background-size: 200px
+background-position: 80% 80% 
+
+# Variability in Risk Assessment
+
+- Reduce chances using a strain that is a "poor" model of humans 
+- Obtaining information about "potential range" to inform risk assessment 
+
+.center[
+![:scale 60%](https://i.ibb.co/ykYp8BY/variability.png)
+]
+
+.font75[Chiu WA and Rusyn I, 2018. https://doi.org/10.1007/s00335-017-9731-6]
+
+---
+
+### Variability & Uncertainty
+
+.center[
+![:scale 70%](https://i.ibb.co/Kq4nStY/Screen-Shot-2019-05-08-at-7-25-22-AM.png)
+]
+
+.footnote[
+https://cran.r-project.org/web/packages/mc2d/index.html
+]
+
+---
+
+# Population pharmacokinetics
+
+.code75[
+```{r fig.height=4.6, dev='svg', eval=T}
+ggplot(Theoph, aes(x = Time, y =conc, color = Subject)) + 
+  geom_point() + geom_line() + labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
+]
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X10002623-gr5.jpg)
+background-size: 500px
+background-position: 70% 80% 
+
+# Bayesian Population Model
+
+**Individuals level**
+
+$E$: Exposure  
+
+$t$: Time  
+
+$\theta$: Specific parameters  
+
+$y$: condition the data
 
 </br>
 
-## Pharmacokinetic modeling 
+**Population level**
 
-- Estimate external exposure to internal dose
+$\mu$: Population means
 
-## Probabilistic modeling
+$\Sigma^2$: Population variances
 
-- Characterize .large[**uncertainty**] and .large[**variability**]
+$\sigma^2$: Residual errors
+
+.footnote[https://doi.org/10.1016/j.tox.2010.06.007]
+
+---
+
+# Probabilistic Modeling
+
+.center[
+![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
+]
+
+.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
+
+---
+
+background-image: url(https://i.ibb.co/61ryV3d/Screenshot-from-2019-11-27-13-01-24.png)
+background-size: 350px
+background-position: 20% 90% 
+
+# Related publication 
+
+Bois et al. (1996) - [Population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007%2Fs002040050284)  
+Chiu and Bois (2006) - [Revisiting the population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007/s00204-006-0061-9)    
+
+.pull-right[
+![:scale 70%](https://i.ibb.co/c2ghZ7m/Screenshot-from-2019-11-27-13-01-46.png)
+]
+
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr1.jpg)
+background-size: 360px
+background-position: 20% 80% 
+
+# Related publication 
+
+.font75[
+Hack et al. (2006) - [Bayesian population analysis of a harmonized physiologically based pharmacokinetic model of trichloroethylene and its metabolites](https://www.sciencedirect.com/science/article/pii/S027323000600095X)
+]
+
+.pull-right[
+![:scale 60%](https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr3.jpg)
+]
+
+---
+
+class: hide-logo
+
+.pull-left[
+
+## Related publication
+
+Chiu et al. (2009) - [Characterizing uncertainty and population variability in the toxicokinetics of trichloroethylene and metabolites in mice, rats, and humans using an updated database, physiologically based pharmacokinetic (PBPK) model, and Bayesian approach](https://www.sciencedirect.com/science/article/pii/S0041008X09003238)  
+
+</br>
+![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr3_lrg.jpg)  
+.font75[Hierarchical population statistical model for mice, rats, and humans. ]
+]
+
+.pull-right[
+
+![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr2.jpg)  
+.font75[Overall structure of updated PBPK model for TCE and metabolites. ]
+]
+
+---
+
+background-image: url(https://i.ibb.co/VHT9qZ3/chiu2019.jpg)
+background-size: 500px
+background-position: 50% 90% 
+
+# Related publication 
+
+- Characterizing PBPK parameters from individuals to population
+
+- Evaluating population **variability** and parameter **uncertainty**
+
+- Cross-species comparisons of metabolism in **risk assessment**
+
+.footnote[
+Chiu et al. 2009.  
+https://doi.org/10.1016/j.taap.2009.07.032  
+]
+
+???
+
+A brief summarizes the Bayesian approach in population PBPK modeling. We can use it to estimate the posterior parameter. Then used the parameter uncertainty to estimate the posterior population prediction and group-specific prediction. 
+
+Based on this information we can compare the metabolism across experimental animals and human and further use this information in risk assessment.
+
+---
+
+background-image: url(https://i.ibb.co/tYDnPDb/chiu2014-2.png)
+background-size: 500px
+background-position: 75% 80% 
+
+# Related publication 
+
+**Inter-strain & inter-individual variability**
+
+Chiu et al. (2014) - [Physiologically-Based Pharmacokinetic (PBPK) Modeling of Inter-strain Variability in Trichloroethylene Metabolism in the Mouse](https://ehp.niehs.nih.gov/doi/full/10.1289/ehp.1307623?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%3dpubmed)
+
+<img src="https://i.ibb.co/DVWYytX/chiu2014.png" height="380px" />
+
+???
+
+It is an extensive study.
+
+Previous animal studies mainly used single strain, B6C3F1 as a representative animal. But the issue to used B6C3F1 in extrapolation is the metabolism is very difference with the human. It had the highest rate of respiratory tract oxidative metabolism as compared to rats and humans. Also, it doesn't have representative variability in risk assessment.
+
+So in this study, instead of B6 strain, it includes 16 inbreds to discuss inter-strain variability and use it to compare with the human inter-individual variability. 
+
+Through the multi-strains model calibration and prediction, we can have consistent estimates of variability in human and mice
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr2_lrg.jpg)
+background-size: 300px
+background-position: 70% 95%
+
+# Recent study
+
+Funding: **U.S. EPA (STAR RD83561202)** and **National Institutes of Health (F32 ES026005)**
+
+Luo, Y.S., Hsieh, N.H., Soldatow, V.Y., Chiu, W.A. and Rusyn, I., 2018. [Comparative Analysis of Metabolism of Trichloroethylene and Tetrachloroethylene among Mouse Tissues and Strains](https://doi.org/10.1016/j.tox.2018.07.012). Toxicology, 409, pp.33-43.
+
+<hr>
+
+**Motivation**: Quantitative comparison of tissue- and strain-specific metabolism of TCE and PCE has not been performed
 
 </br>
 
-## Sensitivity analysis
-
-- Quantify the .large[**uncertainty**] from model input to model output
+<img src= "https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr1.jpg" height="220px" />
 
 ???
 
 ---
 
-# test
+class: hide-logo
+
+Predicted disposition of **TCE (A)**, **PCE (B)**, and their respective metabolites in male B6C3F1/J, C57BL/6J, and NZW/LacJ mice.
+
+.center[
+![](https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr5.jpg)
+]
+
+.font70[
+Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain.
+]
+
+???
+
+This is the result of the disposition of TCE and PCE and their respective metabolites in mice strains. 
+Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain. 
+Most of each parent compound (TCE and PCE) remained unmetabolized until excretion
+As you can see the disposition fractions are different across the mice strains. 
+For to the glutathione conjugation metabolism, the overall flux to conjugation was less than 0.3% of the administered dose for both chemicals. 
+
+---
+
+# Recent study
+
+Funding: **National Institutes of Health (P42 ES027704 and P42 ES ES005948)**
+
+Luo, Y.S., Cichocki, J.A., Hsieh, N.H., Lewis, L., Wright, F.A., Threadgill, D.W., Chiu, W.A. and Rusyn, I., 2019. [Using Collaborative Cross Mouse Population to Fill Data Gaps in Risk Assessment: A Case Study of Population-Based Analysis of Toxicokinetics and Kidney Toxicodynamics of Tetrachloroethylene](https://doi.org/10.1289/EHP5105). Environmental Health Perspectives, 127(6), p.067011.
+
+<hr>
+
+**Background:**
+
+- Interindividual variability in susceptibility remains poorly characterized for environmental chemicals such as tetrachloroethylene (PERC). 
+- Development of population-based experimental models provide a potential approach to fill this critical need in human health risk assessment.
+
+**Objectives:** 
+
+- To better characterize the contribution of glutathione (GSH) conjugation to kidney toxicity of PERC and the degree of associated interindividual toxicokinetic (TK) and toxicodynamic (TD) variability by using the Collaborative Cross (CC) mouse population.
+
+???
+
+This is our following research. This study aim to apply the developed multicompartment PK model in human health risk assessment. In this study, we used in animal experiment result from CC mouse population to characterize metabolism–toxicity interactions and quantify the interindividual variability. Our main objective is ...
+
+---
+
+class:clear, hide-logo
+
+.center[
+![:scale 80%](https://i.ibb.co/KF8PLWy/Screenshot-from-2019-09-24-11-57-00.png)
+]
+
+.footnote[https://factor.niehs.nih.gov/2019/9/papers/dert/index.htm]
+
+???
+
+This paper was been selected as Papers of the Month. The brief summary of this study is 
+- Mice exposed to PERC had lower kidney weight and more markers of kidney injury
+- Inbred mice used in previous studies generally exhibited metabolism of PERC at the lower end of the overall distribution
+- Default values that are generally used by the U.S. Environmental Protection Agency in human health risk assessments to adjust for population variation, the default values may protect 95% of the population but not the most sensitive individuals
+
+---
+
+class: hide-logo
+
+.pull-left[
+Interstrain Variability in Metabolism of PERC through Glutathione Conjugation Pathway
+
+![:scale 70%](https://ehp.niehs.nih.gov/cms/attachment/9d640350-b940-4fc6-b40c-2cc96767ae3e/ehp5105_f4.jpg)
+
+]
+
+.pull-right[
+Predicted disposition of PERC and its metabolites in CC mouse strains
+
+![:scale 90%](https://ehp.niehs.nih.gov/cms/attachment/e8287e06-d8ab-423f-a58e-5332bd18523c/ehp5105_f6.gif)
+]
+
+---
+
+class:clear
+
+**Chemical-Specific Adjustment Factors for Population Variability and Risk Assessment**
+
+![](https://i.ibb.co/f24zFvp/UF-table.png) 
+<hr>
+.center[![:scale 40%](https://i.ibb.co/WF2dr8S/UF.png)]
+
+???
+
+Based on the inter-strain estimation, we further used predicted disposition of PERC, TCA, and GSH conjugates across CC strains to calculate the chemical-specific adjustment factors for TK variability
+
+
+---
+
+# Related publication
+
+**U.S. Food and Drug Administration** 
+
+Enhancing the reliability, efficiency, and usability of Bayesian population PBPK modeling - Create, implement, and evaluate a robust Global Sensitivity Analysis algorithm to reduce PBPK model parameter dimensionality
+
+<hr>
+
+- Hsieh N-H, Reisfeld B, Bois FY and Chiu WA. 2018. [Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full). Frontiers in Pharmacology 9:588.
+
+- Bois et al. (Submitted) - Well tempered MCMC simulations for population pharmacokinetic models
+
+- Hsieh et al. (Submitted) - pksensi: An R Package to Apply Global Sensitivity Analysis in Physiologically Based Kinetic Modeling
+
+---
+
+# Inter & intra- variability modeling
+
+.center[
+.pull-left[
+**Inter-individual variability model**
+<img src= "https://i.ibb.co/QHMSrbq/inter.png" height="450px" /> 
+]
+.pull-right[
+**Inter- & intra-individual variability model**
+<img src= "https://i.ibb.co/2tzxQCN/inter-intra.png" height="450px" />
+]
+]
+
+
+---
+
+# Computational toolkits
+
+.pull-left[
+
+## GNU MCSim
+
+**Simulation package, which allows you to:**
+
+- design and run simulation models (using algebraic or differential equations)
+
+- perform Monte Carlo stochastic simulations
+
+- do Bayesian inference through Markov Chain Monte Carlo simulations
+
+- has faster computing speed than other simulation software/packages (e.g., Asclx, Berkeley Madonna, RStan)
+
+]
+
+.pull-left[
+
+## R
+
+**Programming language that allows you to:**
+
+- conduct statistical analysis (summarization, estimation)
+
+- visualize simulation results
+
+- use various packages to analyze results (e.g., CODA, BOA, rstan)
+
+- perform sensitivity analysis (e.g., sensitivity, pksensi)
+
+- access community support (e.g., Stack Overflow, R User groups)
+
+]
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/93/GPLv3_Logo.svg)
+background-size: 200px
+background-position: 50% 80% 
+
+# Advantages of MCSim and R
+
+.center[.font125[*"Free and Open Source Software"* under GNU General Public License]]
+
+> - The freedom to run the program as you wish, for any purpose (freedom 0).  
+> - The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.  
+> - The freedom to redistribute copies so you can help others (freedom 2).  
+> - The freedom to distribute copies of your modified versions to others (freedom 3). By doing this you can give the whole community a chance to benefit from your changes. Access to the source code is a precondition for this.  
+
+---
+
+background-image: url(http://lcolladotor.github.io/figs/2016-03-07-BiocParallel/parallel.gif)
+background-size: 750px
+background-position: 90% 40% 
+
+# Advantages in MCSim and R
+
+.font125[*"Parallel computing"*]  
+<img src="http://lcolladotor.github.io/figs/2016-03-07-BiocParallel/cloud.jpg" height="300px" />
+
+### - Run multiple MCMC chains with multiple CPUs  
+
+### - High performance (cloud) computing
+
+.footnote[[*source*](http://lcolladotor.github.io/2016/03/07/BiocParallel/#)] 
+
+---
+
+# GUI vs. CLI
+
+![:scale 98%](https://i.ibb.co/9qPVfhy/Screenshot-from-2019-11-28-13-46-14.png)
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/5a/Mcsimlogo.png)
+background-size: 100px
+background-position: 95% 90% 
+
+# GNU MCSim
+
+.font75[
+
+- The project started by Don Maszle and [Frederic Y. Bois](https://en.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Y._Bois) in UC Berkeley, 1991. It is written in standard C language as a model preprocessor. 
+- First public release in 1993 (straight simulations with Monte Carlo modeling).
+
+> GNU MCSim is a general purpose modeling and simulation program which can performs "standard" or "Markov chain" Monte Carlo simulations. It allows you to specify a set of **linear or nonlinear algebraic equations** or **ordinary differential equations**. They are solved numerically using parameter values you choose or parameter values sampled from statistical distributions. Simulation outputs can be compared to experimental data for Bayesian parameter estimation (model calibration). 
+]
+
+.pull-left[
+.font50[
+- 6.1.0 (19 February 2019)
+- 6.0.1 (05 May 2018)
+- 6.0.0 (24 February 2018)
+- 5.6.6 (21 January 2017)
+- 5.6.5 (27 February 2016)
+- 5.6.4 (30 January 2016)
+- 5.6.3 (1 January 2016)
+- 5.6.2 (24 December 2015)
+- 5.6.1 (21 December 2015)
+- 5.6.0 (16 December 2015)
+- 5.5.0 (17 March 2013)
+- 5.4.0 (18 January 2011)
+- 5.3.1 (3 March 2009)
+- 5.3.0 (12 January 2009)
+- 5.2 beta (29 January 2008)
+- 5.1 beta (18 September 2006)
+- 5.0.0 (4 January 2005)
+- 4.2.0 (15 October 2001)
+- 4.1.0 (1 August 1997)
+- 4.0.0 (24 March 1997)
+
+https://www.gnu.org/software/mcsim/mcsim.html
+
+]
+]
+
+.pull-right[
+
+.font140[Founder: *Frédéric Y. Bois*]  
+
+Staff Toxicologist (Specialist),  
+Reproductive and Cancer Hazard Assessment Section,  
+CalEPA, Berkeley, USA, 1991-96
+]
+???
+
+This project mainly focus on using GNU MCSim
+
+This founder of this project is Dr. Frédéric Y. Bois. He had been worked in CalEPA as Staff Toxicologist for 5 years.
+
+
+---
+
+# Types of Simulation
+
+**Simple simulation**  
+- Straight simulations (set parameter values and initial conditions).
+
+**Used to:** *Model testing when building the model (e.g., mass balance)*
+
+<hr>
+
+**Monte Carlo simulations**  
+- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
+
+**Used to:** *Check possible simulation (under given parameter distributions) results before model calibration*
+
+<hr>
+
+**SetPoints simulation**   
+- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
+
+**Used to:** *Posterior analysis, Local/global sensitivity analysis*
+
+---
+
+background-image: url(https://i.ibb.co/Gx6xKrq/mcmc-diagram.png)
+background-size: 600px
+background-position: 50% 90% 
+
+# Types of Simulation
+
+### Markov-chain Monte Carlo (MCMC) simulation
+- Performs a series of simulations along a Markov chain in the model parameter space. 
+- They can be used to obtain the Bayesian <font color="red">**posterior**</font> distribution of the model parameters, given a statistical model, <font color="blue">**prior**</font> parameter distributions and data for which a **likelihood function** can be computed. 
+- *GNU MCSim* can handle hierarchical statistical models as well.
+
+.footnote[
+[Source](http://sbml.org/images/1/17/StatMeeting_F_Bois.pdf)
+]
+
+---
+
+# Types of Simulation
+**"Optimal Design" procedure**
+Optimizes the number and location of observation times for experimental conditions, in order to minimize the variance of a parameter or an output you specify, given a structural model, a statistical model, and prior distributions for their parameters
+
+<hr>
+
+**Systems Biology Markup Language (SBML)**
+GNU MCSim can read SBML models, which provides a standard for representing biochemical pathway models. It can code for models of metabolism, cell-signaling, transcription, etc. SBML is maintained since the mid-2000 by an international community of software developers and users. 
+
+---
+
+background-image: url(https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/tidyverse.png)
+background-size: 500px
+background-position: 90% 90% 
+
+# R
+
+- Implement a wide variety of statistical and graphical techniques
+
+- Comprehensive research workflow and toolkits
+
+- Integration with low-level language (e.g., C, C++, Fortran)
+
+- Highly extensible through the use of user-submitted packages
+
+- Webapp development .font75[(e.g., http://webpopix.org/shiny/ShinyExamples.html)]
+
+.footnote[[Image source](https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/PopulationChangeSpeciesOccurrence/)]
+
+---
+
+</br>
+
+![](https://i.ibb.co/6vWf06v/Screenshot-from-2019-11-28-15-31-26.png)
+
+---
+
+background-image: url(https://i.ibb.co/0c8rQ4p/httk.png)
+background-size: 540px
+background-position: 50% 98% 
+
+# MCSim-related R packages 
+
+**httk: R Package for High-Throughput Toxicokinetics**
+
+.font75[
+Robert G. Pearce, R. Woodrow Setzer, Cory L. Strope, Nisha S. Sipes, John F. Wambaugh
+]
+
+> *MCSim* (Bois and Maszle 1997) was used for converting the model equations into C code, which is used with **deSolve** (Soetaert et al. 2016) in solving each system of equations.
+
+.right[
+.font75[
+*Journal of Statistical Software*; http://dx.doi.org/10.18637/jss.v079.i04
+]
+]
+
+*GNU MCSim* model code
+<i class="fa fa-arrow-right"></i>
+C code
+<i class="fa fa-arrow-right"></i>
+**deSolve** package
+<i class="fa fa-arrow-right"></i>
+Prediction
+
+---
+
+# A General PBTK Model
+
+- Exposures are absorbed from gut lumen.
+
+- Blood flows move the chemical throughout the body. The total blood flow to all tissues equals the cardiac output.
+
+- Some tissues (e.g. arterial blood) are simple compartments, while others (e.g. kidney) are compound compartments consisting of separate blood and tissue sections with constant partitioning (i.e., tissue specific partition coefficients).
+
+- Some specific tissues (lung, kidney, gut, and liver) are modeled explicitly, others (e.g. fat, brain, bones) are lumped into the “Rest of Body” compartment.
+
+- The only ways chemicals “leaves” the body are through metabolism (change into a metabolite) in the
+liver or excretion by glomerular filtration into the proximal tubules of the kidney (which filter into the lumen of the kidney). 
+
+.footnote[https://www.epa.gov/sites/production/files/2018-04/documents/intro-to-httk-042717.pdf]
+
+---
+
+# MCSim-related R packages 
+
+**pksensi:  R Package for Global Sensitivity Analysis in Pharmacokinetic Modeling**
+
+.font80[ Nan-Hung Hsieh, Brad Reisfeld, Weihsueh A. Chiu]
+
+> **pksensi** implements the global sensitivity analysis workflow to investigate the parameter uncertainty and sensitivity in pharmacokinetic (PK) models, especially the physiologically based pharmacokinetic (PBPK) model with multivariate outputs.
+
+.right[[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-last-release/pksensi)](https://cran.r-project.org/package=pksensi)]
+
+**Two types of model solver**
+
+`solve_fun()`  
+*GNU MCSim* model code
+<i class="fa fa-arrow-right"></i>
+C code
+<i class="fa fa-arrow-right"></i>
+**deSolve** package
+<i class="fa fa-arrow-right"></i>
+Prediction
+
+`solve_mcsim()`  
+*GNU MCSim* model code
+<i class="fa fa-arrow-right"></i>
+Prediction
+ 
+**Note:** `solve_mcsim()`  is faster than `solve_fun()`
+
+---
+
+background-image: url(http://devhumor.com/content/uploads/images/November2017/step-by-step-debugging.png) 
+background-size: 450px 
+background-position: 95% 90% 
+
+# Disadvantages in MCSim and R
+
+### Difficult learning curve (command line interface-based)
+
+### Requires coding/programming skill
+
+### Requires installation of extra program or package
+
+### Requires **"debugging"**
+
+---
+
+background-image: url(https://www.rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-Flat.png)
+background-size: 300px
+background-position: 95% 95% 
+
+# RStudio
+
+### Free and open-source integrated development environment
+
+### Powerful and user friendly programming interface
+
+### Designed to make it easy to write scripts
+
+### Easy to view and interact with the objects 
+
+### R project with version control (e.g., git) 
+
+### Support cloud computing https://rstudio.cloud/
+
+---
+
+background-image: url(https://files.explosm.net/comics/comicsavegamenew.png)
+background-size: 400px
+background-position: 60% 90% 
+
+# Git
+
+### - Manage your code (models, inputs, R script)
+
+### - Transfer your file (through GitHub or GitLab)
+
+### - Collaboration work
+
+<img src="https://imgs.xkcd.com/comics/git_2x.png" height="300px" />
+
+.font60[.footnote[
+https://xkcd.com/1597/
+]]
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/58/Octocat_GitHub_Mascot.png)
+background-size: 200px
+background-position: 95% 90%
+
+# GitHub
+
+![:scale 80%](https://www.linode.com/docs/development/version-control/how-to-install-git-and-clone-a-github-repository/git-github-workflow-1000w.png)
+
+---
+
+class: hide-logo
+
+.center[![:scale 80%](https://i.ibb.co/LQ4Y6Bb/Screenshot-from-2019-11-28-15-00-44.png)]
+
+---
+
+# High Performance Research Computing
+
+.center[![:scale 70%](https://i.ibb.co/c6ht46y/Screenshot-from-2019-11-28-15-10-21.png)]
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/150px-Tux.svg.png)
+background-size: 200px
+background-position: 90% 80%
+
+# Linux
+
+![:scale 70%](https://i.ibb.co/y592vn2/Screenshot-from-2019-11-28-15-17-34.png)
+
+---
+
+# GNU Overview
+
+The *GNU MCSim* consists in two pieces, a **model generator** and a **simulation engine**:
+
+<hr>
+
+The model generator, **"mod"**
+
+- Created to facilitate structural model definition and maintenance, while keeping execution time short. You can code your model using a simplified syntax and use mod to translate it to `C` (`model.c`).
+
+
+The simulation engine, **"sim"**
+
+- A set of routines which are linked to your model during compilation to produce executable program (`mcsim.model`). After that, you can run simulations of your model under a variety of conditions, specify an associated statistical model, and perform simulations.
+
+---
+
+# GNU MCSim Workflow
+
+![](https://i.ibb.co/RNxBfN5/GNU-MCSIm-Workflow.png)
+
+---
+
+# Syntax of the model description file
+
+.code75[
+
+```r
+# Model description file (this is a comment)
+
+<Global variable specifications>
+
+States = { 
+  <state variables for the model, such as quantity> 
+}
+Outputs = { 
+  <output variables, such as concentration> 
+}
+Inputs = { 
+  <input variables, such as exposure dose>
+}
+Initialize {
+  <Equations for initializing or scaling model parameters>
+}
+Dynamics {
+  <Equations for computing derivatives of the state variables>
+}
+CalcOutputs {
+  <Equations for computing output variables>
+}
+End. # mandatory ending keyword
+```
+]
+
+---
+
+# General syntax 
+
+Variable assignments 
+
+```r
+<variable-name> = <constant-value-or-expression> ;
+```
+
+Colon conditional assignments 
+
+```r
+<variable-name> = (<test> ? <value-if-true> : <value-if-false>);
+```
+
+For example
+
+```r
+Adjusted_param = (Input_var > 0.0 ? Param * 1.1 : Param);
+```
+
+.footnote[
+Some other assignments can be found in  [GNU MCSim's user manual 5.3.1](https://www.gnu.org/software/mcsim/mcsim.html#Syntax-of-mod-files)
+]
+
+---
+
+# Comments on style
+
+### For your model file to be **readable** and **understandable**.
+
+- All variable names begin with a capital letter followed by meaningful lower case subscripts.
+- Where two subscripts are necessary, they can be separated by an underscore, such as in `PC_fat`.
+- Where there is only one subscript an underscore can still be used to increase readability as in `Q_fat`.
+- Where two words are used in combination to name one item, they can be separated visually by capitalizing each word, as in `BodyWt`.
+
+</br>
+
+.font80[
+> “Good coding style is like using correct punctuation.   
+> You can manage without it, but it sure makes things easier to read.”  
+> — Hadley Wickham, Chief Scientist @RStudio
+]
+
+.footnote[
+Some other contents can be found in  [GNU MCSim's user manual 5.3.11](https://www.gnu.org/software/mcsim/mcsim.html#Syntax-of-mod-files) and [R programming style guide](http://adv-r.had.co.nz/Style.html)
+]
+
+---
+
+# Syntax of (simulation) input-file
+
+## For the basic simulation 
+
+```r
+# Input-file (text after # are comments)
+<Global assignments and specifications>
+Simulation {
+  <Specifications for first simulation>
+}
+Simulation {
+  <Specifications for second simulation>
+}
+# Unlimited number of simulation specifications
+End. # Mandatory End keyword. Everything after this line is ignored
+```
+
+---
+
+# Syntax of (simulation) input-file
+
+## For MCMC simulation
+
+```r
+# Input-file
+<Global assignments and specifications>
+Level {
+  # Up to 10 levels of hierarchy
+  Simulation {
+    <Specifications and data for first simulation>
+  }
+  Simulation {
+    <Specifications and data for second simulation>
+  }
+  # Unlimited number of simulation specifications
+} # end Level
+End. # Mandatory keyword.
+```
+
+[`MCMC()` specification](https://www.gnu.org/software/mcsim/mcsim.html#MCMC_0028_0029-specification)
+
+---
+
+# Distribution functions
+
+- **Normal** takes two reals numbers as parameters: the mean and the standard deviation, the latter being strictly positive.
+
+- **LogNormal**, takes two reals numbers as parameters: the geometric mean (exponential of the mean in log-space) and the geometric standard deviation (exponential, strictly superior to 1, of the standard deviation in log-space).
+
+- **Uniform**, with two shape parameters: the minimum and the maximum of the sampling range (real numbers).
+
+- **LogUniform** with two shape parameters: the minimum and the maximum of the sampling range (real numbers) in natural space.
+
+- **TruncNormal** (truncated normal distribution), takes four real parameters: the mean, the standard deviation (strictly positive), the minimum and the maximum.
+mean, and its standard deviation.
+
+- **InvGamma** (inverse gamma distribution), needs two strictly positive real parameters: the shape and the scale.
+
+.footnote[
+More functions in [GNU MCSim User’s Manual](https://www.gnu.org/software/mcsim/mcsim.html#Distrib_0028_0029-specification)
+]
+
+---
+
+# Input functions
+
+These functions can use to different exposure types
+
+.code75[
+```r
+- PerDose(): # specifies a periodic input of constant
+
+    PerDose(<magnitude>, <period>, <initial-time>, <exposure-time>);
+
+  
+- PerExp(): # specifies a periodic exponential input.
+
+    PerExp(<magnitude>, <period>, <initial-time>, <decay-constant>);  
+
+  
+- PerTransit(): models a delayed input mechanism  
+
+    PerTransit(<magnitude>, <period>, <initial-time-in-period>, 
+              <decay-constant>, <number-of-input-compartments>);  
+    
+              
+- NDoses(): specifies a number of stepwise inputs of variable magnitude and their starting times
+    
+    NDoses(<n>, <list-of-magnitudes>, <list-of-initial-times>);
+
+
+- Spikes(): specifies a number of instantaneous inputs of variable magnitude and their exact times of occurrence.
+    
+    Spikes(<n>, <list-of-magnitudes>, <list-of-times>);
+
+```
+]
+
+---
+
+# Additional R packages for analysis
+
+[data.table](https://cran.r-project.org/web/packages/data.table/index.html) - Fast reading of large output file, especially from MCMC with long iterations and high dimensional parameter space.
+
+[tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html) - Powerful data science toolbox that can use to manipulate (`dplyr`) and plot (`ggplot`) the simulation result.
+
+[sensitivity](https://cran.r-project.org/web/packages/sensitivity/index.html) - A collection of functions for factor screening, global sensitivity analysis and reliability sensitivity analysis.
+
+[pksensi](https://cran.r-project.org/web/packages/pksensi/index.html) - Applying the global sensitivity analysis (eFAST) workflow to investigate the parameter uncertainty and sensitivity in pharmacokinetic (PK) models.
+
+[bayesplot](https://cran.r-project.org/web/packages/bayesplot/index.html) - Plotting functions for posterior analysis.
+
+[rstan](https://cran.r-project.org/web/packages/rstan/index.html) - Diagnose the simulation result from MCMC.
+
+```r
+# Quick installation
+pkgs <- c("bayesplot", "data.table", "pksensi", "rstan", "sensitivity", "tidyverse")
+install.packages(pkgs)
+```
+---
+
+background-image: url(https://i.ibb.co/ZLRrNJy/syntaxhighlight.png)
+background-size: 620px
+background-position: 50% 90% 
+
+# Tips of MCSim under R(Studio)
+
+Generally, the GNU MCSim used `.model` and `.in` as the extension to name the model- and input-file. However, RStudio doesn't support the syntax highlight for these extensions. You can add `.R` as the extension for these files to help you edit your model or input in RStudio with syntax highlighting. Also, it can help you format your code in the code bracket.
+
+---
+
+# Hands on Exercise
+
+---
+
+# Reference
+
+
+
