@@ -12,10 +12,10 @@ pkgs <- c("devtools",
           "httk",
           "bayesplot", 
           "tidyverse",
-          "pksensi",
           "rstan")
 install.packages(pkgs, dependencies = TRUE)
 devtools::install_github("nanhung/simuloR")
+devtools::install_github("nanhung/pksensi")
 
 # Testing --------------------------------------------------------------
 
