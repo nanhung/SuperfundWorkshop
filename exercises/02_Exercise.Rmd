@@ -1,0 +1,67 @@
+---
+title: "Workflow of pharmacokinetic modeling (model construction + data manipulation + visualization)"
+author: "Nan-Hung Hsieh"
+date: "2019/05/23 (update: `r Sys.Date()`)"
+output: 
+  html_document:
+  fig_caption: yes  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('..')
+wd <- getwd()
+knitr::opts_knit$set(root.dir =  wd)
+```
+
+```{R message=FALSE, warning=FALSE}
+library(simuloR)
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+```{r, eval=F}
+View(Theoph)
+```
+
+
+```{r}
+Theoph.MW <- 180.164 #g/mol
+Theoph$conc.uM<-Theoph$conc * 1000 / Theoph.MW #uM
+```
+
+
+```{r}
+plot(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+```
+
+```{r}
+ggplot(Theoph, aes(x = Time, y =conc.uM, color = Subject)) + 
+  geom_point() + geom_line() + labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
+
+```{r}
+unique(Theoph$Dose)
+```
+
+```{r}
+params <- parameterize_1comp(chem.name='Theophylline', species='Human')
+out_httk <- solve_1comp(parameters=params, daily.dose = 5)
+```
+
+```{r}
+out_df<- as.data.frame(out_httk)
+plot(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+lines(out_df$time*24, out_df$Ccompartment)
+```
+
+Uncertainty analysis
+
+```{r}
+
+```
+
+
+
+
+
