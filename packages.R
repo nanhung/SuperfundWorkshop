@@ -8,7 +8,8 @@
 # The installation will take a while. Do not do this at the last minute.
 # Please install all of the following packages prior to the workshop. 
 
-pkgs <- c("devtools", 
+pkgs <- c("devtools",
+          "httk",
           "bayesplot", 
           "tidyverse",
           "pksensi",
