@@ -1,23 +1,226 @@
 ---
-title: "Untitled"
-output: html_document
+title: "Workflow of pharmacokinetic modeling (model construction + data manipulation + visualization)"
+author: "Nan-Hung Hsieh"
+date: "2019/05/23 (update: `r Sys.Date()`)"
+output: 
+  html_document:
+  fig_caption: yes  
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+setwd('..')
+wd <- getwd()
+knitr::opts_knit$set(root.dir =  wd)
 ```
 
-## R Markdown
+# 0 Prerequisites
 
-```{r cars}
-library(httk)
+Import the R packages
+
+```{R message=FALSE, warning=FALSE}
 library(simuloR)
+library(httk)
 ```
 
-```{r pressure, echo=FALSE}
-params <- parameterize_1comp(chem.name='theophylline', species='Human')
+# 1 Example 1: 1-compartment model 
+
+## 1.1 Analyze *GNU MCSim* output with *R*
+
+*GNU MCSim* doesn't include a comprehensive tool to analyze and visualize the simulation result. The best way to do further data analysis and visualization is to use *R*. This instruction will provide some basic R functions that can use to learn and understand how to analyze *GNU MCSim* output with *R*. 
+
+First, run 
+
+```{r}
+mcsim(model = "models/pbtk1cpt.model", input = "inputs/pbtk1cpt.in")
+```
+
+
+### 1.1.1 Loading output
+
+The simulation output is written under tab-delimited text file with default name `sim.out`. It is located in the directory. You can check your file through files tab on the bottom-right panel in RStudio. Or use `file.exists()` to check the file as,
+
+```{r}
+file.exists("sim.out")
+```
+
+If you can find your output file in your working directory, then you can us R function `read.delim()` to read it. Since the first line of the output file is used to describe the number of simulation, it can't be used in the formal data structure. Therefore, we need to assign `skip = 1` to ignore this line. Then run the following code and check your result:
+
+```{r}
+read.delim(file = "sim.out", skip = 1)
+```
+
+Through this function, we can only read the content in the output file, but we can’t use the data unless we assign it to a variable. Therefore, we need to assign a variable for the output to help us analyze it. The assigned variables will be temporarily stored in memory. 
+
+### 1.1.2 Assign variables
+
+Use the assignment operator `<-` to create new variables.
+
+```{r}
+out <- read.delim(file = "sim.out", skip = 1)
+```
+
+Once a variable is created, we can use the variable name to refer to the simulation data it was assigned. To view the variable in RStudio, you can interact with it in the top-right panel. Or, use `View()` to check it:
+
+```{r, eval=F}
+View(out)
+```
+
+### 1.1.3 Manipulating output
+
+Now, our data is loaded into R. We can start doing further analysis with them. First, let’s check what type it is:
+
+```{r}
+class(out)
+```
+
+The output tells us that it’s a "data frame". This type of data structure constructed by the specific number of column (variable) and row (observation). We can see the dimensions of the data frame with the function `dim()`: 
+```{r}
+dim(out)
+```
+
+Or use `nrow()` and `ncol()` to check the information:
+
+```{r}
+nrow(out)
+ncol(out)
+```
+
+Also, the `names()` can be used to get and set the names of variables
+
+```{r}
+names(out)
+```
+
+Some basic functions can be used to summarize the result, such as `mean()`, `min()`, `max()`. Here is an example to find the maximum concentration in blood:  
+
+```{r}
+max(out$Ccompartment)
+```
+
+Here, the `$` is used to assign the specific variable that was stored in the object. Also, you can quickly check all maximum or minimum concentration through `apply`:
+
+```{r}
+apply(out, MARGIN = 2, FUN = max)
+```
+
+You can also use `which()` to find the value as:
+
+```{r}
+which(out$Ccompartment == max(out$Ccompartment))
+```
+
+But, the `which()` only give us the location, not time point. Therefore, we need to use this location to find the corresponding time point by:
+
+```{r}
+which_row <- which(out$Ccompartment == max(out$Ccompartment))
+out$Time[which_row]
+```
+
+The following code can let you set the variable name:
+
+```{r}
+names(out) <- c("Time", "A_input", "A_rest", "A_elim", "Ccompartment")
+```
+
+Check again,
+
+```{r}
+names(out)
+```
+
+If you only want to change the specific variable, you can use:
+
+```{r}
+names(out)[5] <- "C_rest"
+names(out)
+```
+
+The unit conversion is the cruical part in data manipulation as well. Here we want to transfer the unit from mg/l to mol/l,
+
+```{r}
+out$A_total <- out$A_input + out$A_rest + out$A_elim
+out
+```
+
+Finally, if you prefer to use Excel, you can use `write.csv()` to transfer your object to Comma-separated values (csv) file, then you can use Excel to open it and do additional analysis.
+
+```{r, eval=F}
+write.csv(out, file = "sim.csv", row.names = F)
+```
+
+### 1.1.4 Plotting
+
+Visualizing the output data is an important work to communicate the simulation result. After the data manipulation, we can use `plot()` to create the PK diagram as:
+
+
+```{r}
+plot(x = out$Time, y = out$C_rest)
+```
+
+Usually, the basic assignment cannot provide high quality and comprehensive figure that can further use in our report or published paper. Therefore, we need to use additional assignments such as `xlab`, `ylab`, `main` to add the description or modification.
+
+```{r}
+plot(x = out$Time, y= out$C_rest, 
+     type = "l", col = "red", xlab = "Time post intake (h)", ylab = "Blood concentration (uM)", 
+     main = "BPA PK modeling")
+legend("topright", legend = "Prediction", col="red", lty=1)
+```
+
+Here is an example to plot the multi simulation results in the same plot.
+
+```{r}
+plot(x = out$Time, y= out$A_input, type = "l", col = "red", 
+     xlab = "Time post intake (hr)", ylab = "Dose (mg)",
+     main = "BPA 1-cpt PK modeling", ylim = c(0,1))
+lines(x = out$Time, y= out$A_rest, col = "blue")
+lines(x = out$Time, y= out$A_elim, col = "green")
+lines(x = out$Time, y= out$A_total, lty = "dashed")
+legend("topright", legend = c("A_input", "A_rest", "A_elim"), col=c("red","blue", "green"),
+       lty=1)
+```
+
+In addition, the relationship of concentration in blood and air can further be visualized through this way,
+
+```{r}
+plot(x = out$A_rest, y= out$A_elim, 
+     type = "n", xlab = "A_rest" , ylab = "A_elim", 
+     main = "Phase plane (Unit of time: hr)")
+text(out$A_rest, y= out$A_elim, label = round(out$Time, 1), col="blue")
+lines(x = out$A_rest, y= out$A_elim, lty = "dotted")
+```
+
+Finally, we can use `pdf()` to export the plotting result to portable document format (pdf) as:
+
+```{r, eval=F}
+pdf("perc_pk.pdf")
+plot(x = out$Time, y= out$A_input, type = "l", col = "red", 
+     xlab = "Time post intake (hr)", ylab = "Dose (mg)",
+     main = "BPA 1-cpt PK modeling", ylim = c(0,1))
+lines(x = out$Time, y= out$A_rest, col = "blue")
+lines(x = out$Time, y= out$A_elim, col = "green")
+lines(x = out$Time, y= out$A_total, lty = "dashed")
+legend("topright", legend = c("A_input", "A_rest", "A_elim"), col=c("red","blue", "green"),
+       lty=1)
+dev.off()
+```
+
+
+## 1.2 Application with httk package 
+
+In this section, we'll use 1-compartment model in **httk** package as the example to conduct the analysis. 
+
+### 1.2.1
+
+The `parameterize_1comp()` provide the baseline value of parameters that needed in the 1-compartment model. The selected chemical in this case study is Bisphenol A.
+
+```{r}
+#get_cheminfo(info = "compound")
+params <- parameterize_1comp(chem.name='Bisphenol A', species='Human')
 unlist(params)
 ```
+
+Select the parameters of molecular weight (`MW`), absorption fraction (`Fgutabs`), distribution volume (`Vdist`), absorption rate (`kgutabs`), and elimination rate (`kelim`) that will be used in uncertainty and sensitivity analysis.
 
 ```{r}
 MW <- params$MW
@@ -27,37 +230,76 @@ Vdist <- params$Vdist
 kelim <- params$kelim
 ```
 
-Use solve1comp to simulate the time-dependent concentration of BPA. The given daily dose is 1 mg/kg.
-```{r}
-t <- seq(0, 5 ,0.1)
-out <- solve_1comp(parameters=params, doses.per.day = 1, daily.dose = 1, times = t)
-out
+### 1.2.2 Forward simulation 
+
+Use `solve1comp` to simulate the time-dependent concentration of BPA. The given daily dose is 1 mg/kg.
+
+```{r warning=FALSE, eval=T}
+t <- seq(0, 2 ,0.01)
+out_httk <- solve_1comp(parameters=params, doses.per.day = 1, daily.dose = 1, times = t)
 ```
 
 
 ```{r}
-plot(out) # output.units = "uM"
+plot(out_httk) # output.units = "uM"
+```
+
+
+Plot result
+
+```{r}
+data <- as.data.frame(out_httk)
+plot(data$time * 24, data$Ccompartment, type = "l", main = "BPA",
+     xlab = "Time (hr)", ylab = "Concentration (uM)")
+lines(out$Time, out$C_rest, col = "red")
+```
+
+
+Plot the TK profile and add the mean css from `calc_analytic_css()` in httk and the maximum css through analytical solution. The equation of Css is
+
+$$Css=\frac{D \cdot Fgutabs}{kelim \cdot Vdist}$$
+
+```{r}
+t <- seq(0, 10 ,0.01)
+out_httk <- solve_1comp(parameters=params, doses.per.day = 1, daily.dose = 1, times = t)
+data <- as.data.frame(out_httk)
 ```
 
 ```{r}
 # Estimate css
 dose <- 1 / 1000 * MW # mg -> uM
-httk_css <- calc_analytic_css(chem.name = "theophylline", model = "1compartment")
-```
+httk_css <- calc_analytic_css(chem.name = "Bisphenol A", model = "1compartment")
 
-
-```{r}
-sol_css <-  dose * Fgutabs / kelim / Vdist # Analytical solution of css
+sol_css <- dose * Fgutabs / kelim / Vdist # Analytical solution of css
 # Plot result
+
 plot(data$time, data$Ccompartment, type = "l", main = "BPA (pbtk1cpt)",
      xlab = "Time (day)", ylab = "Concentration (uM)")
 abline(h = sol_css, col = "red") # Maximum  
 abline(h = httk_css) # Mean
 ```
 
+# 2 Example 2: Three-compartment PBPK model 1,3-butadiene
+
+
+## Exercise 2.1:
+Run Butadiene-PBPK model under 2 ppm exposure for 20 minutes and plot the time-course of exhaled air concentration from 0 to 60 minutes.
+
+```{r}
+out <- mcsim(model = "models/butadiene.model", input = "inputs/butadiene.in")
+```
+
+## Exercise 2.2.
+
+Estimate the steady-state of arterial and venous blood concentrations associated with EB exposures (0.1 ppm to 1000 ppm).
 
 
 ```{r}
-out_mcsim <- mcsim(model = "models/pbtk1cpt.model", input = "inputs/pbtk1cpt.in")
+sessionInfo()
 ```
 
+# Reference
+
+Pearce, R.G., Setzer, R.W., Strope, C.L., Wambaugh, J.F. and Sipes, N.S., 2017. [httk: R package for high-throughput toxicokinetics](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6134854/). Journal of statistical software, 79(4), p.1.
+
+Smith, T.J., Bois, F.Y., Lin, Y.S., Brochot, C., Micallef, S., Kim, D. and Kelsey, K.T., 2008. [Quantifying heterogeneity in exposure–risk relationships using exhaled breath biomarkers for 1, 3-butadiene exposures.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4394655/) Journal of breath research, 2(3), p.037018.

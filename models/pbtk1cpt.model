@@ -11,7 +11,10 @@
 # Nan-Hung Hsieh - Dec 2019
 
 # States ------------------------------------------------------------------
-States  = { A_rest };  # Quantity in central compartment (mg)
+States  = { 
+  A_rest, 
+  A_elim
+};  # Quantity in central compartment (mg)
 
 
 # Outputs -----------------------------------------------------------------
@@ -45,7 +48,10 @@ Initialize{ Absdose = IngDose * Fgutabs; }
 
 
 # Dynamics ----------------------------------------------------------------
-Dynamics { dt (A_rest) = kgutabs * Oral_input - kelim * A_rest; }
+Dynamics { 
+  dt (A_rest) = kgutabs * Oral_input - kelim * A_rest;
+  dt (A_elim) = kelim * A_rest;
+}
 
 
 # CalcOutputs -------------------------------------------------------------

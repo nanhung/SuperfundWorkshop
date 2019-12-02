@@ -5,21 +5,23 @@
 # 
 # Nan-Hung Hsieh - Dec 2019
 #-------------------------------------------------------------------------------
+Integrate (Lsodes, 1e-8, 1e-8, 1);
 
-MW = 180.167; 
+MW = 228.291; # 
 
-Fgutabs    = 0.9141961;
+Fgutabs    = 0.8911081;
 IngDose    = 1.0;   # ingested dose (mg)
 Period     = 24;     # period of the exposure/no exposure cycle (h)
 kgutabs    = 2.18;  # absortion rate (/h)
 
 # Volumes (L)
-Vdist = 0.7801997; 
+Vdist = 5.012049; 
 
 # Rate constant (/h)
-kelim = 0.2653932;
+kelim = 0.02183918;
 
 Simulation {
-  PrintStep (Ccompartment, 0, 5, 0.01); # h
+  Print (Oral_input, A_rest, A_elim, Ccompartment, 0.1, 0.5, 1, 1.5, 2, 4, 6, 8, 12, 16, 20, 24); 
+  #PrintStep (Oral_input, A_rest, A_elim, Ccompartment, 0.01, 23.01, 1); 
 }
 End.
