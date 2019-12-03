@@ -167,27 +167,54 @@ abline(0,1)
 ```
 
 
+Use R
 ```{r}
 IngDose <- 4.02
-Fgutabs <- tail(ffpk.mcmc.out$Fgutabs.1., 1)
-kgutabs <- tail(ffpk.mcmc.out$kgutabs.1., 1)
-kelim <- tail(ffpk.mcmc.out$kelim.1., 1)	
-Vdist <- tail(ffpk.mcmc.out$Vdist.1., 1)
+Fgutabs <- ffpk.mcmc.out$Fgutabs.1.
+kgutabs <- ffpk.mcmc.out$kgutabs.1.
+kelim <- ffpk.mcmc.out$kelim.1.	
+Vdist <- ffpk.mcmc.out$Vdist.1.
 MW <- 180.164
 
-t <- c(.01,  0.25,  0.57, 1.12,  2.02,  3.82,  5.10,  7.03,  9.05, 12.12, 24.37)
-A <- (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim));
-Conc <- A * exp(-kelim * t) - A * exp(-kgutabs * t);
-Ccompartment <- Conc / MW * 1000
-plot(t, Ccompartment)
+t <- Theoph$Time[1:11]
+obs<- Theoph$conc.uM[1:11]
+A <- (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim))
+
+Conc.matrix <- matrix(nrow = length(Fgutabs), ncol = length(t))
+for(i in 1:11){
+  Conc.matrix[,i] <- A * exp(-kelim * t[i]) - A * exp(-kgutabs * t[i])
+}
+Ccompartment <- Conc.matrix / MW * 1000
+plot(t, obs, pch = "")
+for(i in 501:1000){
+  lines(t, Ccompartment[i,], col="grey")
+}
+points(t, obs)
 ```
 
 
+```{r}
+plot(obs, obs, pch = "")
+for(i in 501:1000){
+  points(obs, Ccompartment[i,], pch = "+")
+}
+abline(0,1)
+```
+
+```{r}
+plot(obs, obs, ylim = c(0.1, 10), pch = "", log="y")
+for(i in 501:1000){
+  points(obs, obs/Ccompartment[i,], pch = "+")
+}
+abline(0,0)
+abline(log(2,10), 0, lty=2)
+abline(log(0.5,10), 0, lty=2)
+```
+
+Use setpoints
 ```{r}
 ffpk.setpts.out <- mcsim("models/ffpk.model", input = "inputs/ffpk.setpts.in")
 ```
-
-
 
 ```{r}
 t <- Theoph$Time[1:11]
@@ -202,4 +229,34 @@ for(i in 501:1000){
 points(t, obs)
 ```
 
+Use setpoints - Global evaluation
 
+
+
+Compare the CSS
+
+```{r}
+library(httk)
+calc_analytic_css(chem.name = "theophylline", model = "1compartment")
+```
+
+
+```{r}
+parameters <- parameterize_1comp(chem.name = "theophylline")
+parameters$Fgutabs <- median(ffpk.mcmc.out$Fgutabs.1.) / parameters$hepatic.bioavailability
+parameters$kgutabs <- median(ffpk.mcmc.out$kgutabs.1.)
+parameters$kelim <- median(ffpk.mcmc.out$kelim.1.)
+parameters$Vdist <- median(ffpk.mcmc.out$Vdist.1.)
+unlist(parameters)
+calc_analytic_css(parameters = parameters, model = "1compartment")
+```
+
+
+
+```{r}
+sessionInfo()
+```
+
+# Reference
+
+Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ

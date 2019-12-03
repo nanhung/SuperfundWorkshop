@@ -23,7 +23,7 @@ library(simuloR)
 library(httk)
 ```
 
-# 1 Example 1: 1-compartment model 
+# 1 One-compartment model 
 
 ## 1.1 Analyze *GNU MCSim* output with *R*
 
@@ -255,10 +255,6 @@ lines(out$Time, out$C_rest, col = "red")
 ```
 
 
-Plot the TK profile and add the mean css from `calc_analytic_css()` in httk and the maximum css through analytical solution. The equation of Css is
-
-$$Css=\frac{D \cdot Fgutabs}{kelim \cdot Vdist}$$
-
 ```{r}
 t <- seq(0, 10 ,0.01)
 out_httk <- solve_1comp(parameters=params, doses.per.day = 1, daily.dose = 1, times = t)
@@ -270,35 +266,39 @@ data <- as.data.frame(out_httk)
 dose <- 1 / 1000 * MW # mg -> uM
 httk_css <- calc_analytic_css(chem.name = "Bisphenol A", model = "1compartment")
 
-sol_css <- dose * Fgutabs / kelim / Vdist # Analytical solution of css
 # Plot result
-
 plot(data$time, data$Ccompartment, type = "l", main = "BPA (pbtk1cpt)",
      xlab = "Time (day)", ylab = "Concentration (uM)")
-abline(h = sol_css, col = "red") # Maximum  
-abline(h = httk_css) # Mean
+abline(h = httk_css)
 ```
 
-# 2 Example 2: Three-compartment PBPK model 1,3-butadiene
+# 2 Three-compartment PBPK model (1,3-butadiene)
 
+## Exercise 2.1
 
-## Exercise 2.1:
-Run Butadiene-PBPK model under 2 ppm exposure for 20 minutes and plot the time-course of exhaled air concentration from 0 to 60 minutes.
+Construct the butadiene-PBPK model code for MCSim based ob the R model code
+
+## Exercise 2.2
+
+Run Butadiene-PBPK model under 10 ppm exposure for 100 minutes and plot the time-course of exhaled air concentration from 0 to 1400 minutes.
 
 ```{r}
 out <- mcsim(model = "models/butadiene.model", input = "inputs/butadiene.in")
 ```
 
-## Exercise 2.2.
+## Exercise 2.3
 
-Estimate the steady-state of arterial and venous blood concentrations associated with EB exposures (0.1 ppm to 1000 ppm).
-
+Estimate the steady-state of arterial and venous blood concentrations associated with butadiene exposures (from 0.1 ppm to 1000 ppm).
 
 ```{r}
 sessionInfo()
 ```
 
 # Reference
+
+Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ
+
+Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY
 
 Pearce, R.G., Setzer, R.W., Strope, C.L., Wambaugh, J.F. and Sipes, N.S., 2017. [httk: R package for high-throughput toxicokinetics](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6134854/). Journal of statistical software, 79(4), p.1.
 
