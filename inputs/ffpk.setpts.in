@@ -6,7 +6,6 @@ MW = 180.164; # Molecular weight (g/mole)
 
 Simulation { 
   IngDose  = 4.02;     # ingested dose (mg)
-  #Print (Ccompartment, 0.01  0.25  0.57  1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37 );
-  Print (Ccompartment, 1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37 );
+  Print (Ccompartment, 0.01  0.25  0.57  1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37 );
 } 
 END.

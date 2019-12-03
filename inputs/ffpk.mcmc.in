@@ -3,13 +3,13 @@
 
 MCMC ("MCMC.default.out","", # name of output file
       "",         # name of data file
-      2000,0,     # iterations, print predictions flag
-      1,2000,     # printing frequency, iters to print
+      1000,0,     # iterations, print predictions flag
+      1,1000,     # printing frequency, iters to print
       10101010);  # random seed (default)
-
-MW  = 180.164; # Molecular weight (g/mole)
-
+  
 Level {
+  
+  MW = 180.164; # Molecular weight (g/mole)  
   
   Distrib (Fgutabs, Uniform, 0.8, 1);
   Distrib (kgutabs, Uniform, 1, 10);
@@ -22,10 +22,6 @@ Level {
     IngDose  = 4.02;     # ingested dose (mg)
     Print (Ccompartment, 0.01  0.25  0.57  1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37   ); 
     Data (Ccompartment, 4.1073688 15.7634156 36.4667747 58.2802336 53.6178149 47.6232766 46.4021669 41.4622233, 38.2429342 32.9699607 18.2056349 );
-    
-    #Print (Ccompartment, 1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37   ); 
-    #Data (Ccompartment, 58.2802336 53.6178149 47.6232766 46.4021669 41.4622233, 38.2429342 32.9699607 18.2056349 );
-    
   }
 }
 End.
