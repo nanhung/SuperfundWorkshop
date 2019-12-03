@@ -16,16 +16,14 @@ States  = {
   A_elim
 };  # Quantity in central compartment (mg)
 
+# Inputs ------------------------------------------------------------------
+Inputs = { Oral_input }; # Drug input (mg)
+
 
 # Outputs -----------------------------------------------------------------
 Outputs = { 
-Ccompartment,
-lnCcompartment
+Ccompartment
 };  # Concentration in central compartment (uM)
-
-
-# Inputs ------------------------------------------------------------------
-Inputs = { Oral_input }; # Drug input (mg)
 
 
 # Parameters --------------------------------------------------------------
@@ -71,8 +69,7 @@ Dynamics {
 
 # CalcOutputs -------------------------------------------------------------
 CalcOutputs { 
-Ccompartment  = A_rest  / Vdist / MW * 1000; 
-lnCcompartment  = log(Ccompartment); 
+  Ccompartment  = A_rest  / Vdist / MW * 1000; 
 }
 
 End.
