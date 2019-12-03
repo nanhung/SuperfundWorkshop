@@ -642,6 +642,8 @@ background-position: 50% 80%
 
 # Modeling in Risk Assessment  
 
+.footnote[https://www.epa.gov/risk/about-risk-assessment#whatisrisk]
+
 ---
 
 background-image: url(https://i.ibb.co/SmNTtv2/WHO.png)
@@ -868,7 +870,9 @@ Luo, Y.S., Hsieh, N.H., Soldatow, V.Y., Chiu, W.A. and Rusyn, I., 2018. [Compara
 
 ---
 
-class: hide-logo
+</br>
+
+</br>
 
 Predicted disposition of **TCE (A)**, **PCE (B)**, and their respective metabolites in male B6C3F1/J, C57BL/6J, and NZW/LacJ mice.
 
@@ -1188,7 +1192,7 @@ background-position: 90% 90%
 
 - Implement a wide variety of statistical and graphical techniques
 
-- Comprehensive research workflow and toolkits
+- Comprehensive research workflow and toolkits (e.g., RMarkdown)
 
 - Integration with low-level language (e.g., C, C++, Fortran)
 
@@ -1197,6 +1201,16 @@ background-position: 90% 90%
 - Webapp development .font75[(e.g., http://webpopix.org/shiny/ShinyExamples.html)]
 
 .footnote[[Image source](https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/PopulationChangeSpeciesOccurrence/)]
+
+---
+
+# Reproducible research
+
+.center[
+![:scale 84%](https://i.ibb.co/nBPdYgW/Screenshot-from-2019-12-03-17-24-16.png)
+]
+
+.footnote[Reproducibility and Replicability in Science (2019) http://nap.edu/25303]
 
 ---
 
@@ -1351,7 +1365,9 @@ background-position: 95% 90%
 
 class: hide-logo
 
-.center[![:scale 80%](https://i.ibb.co/LQ4Y6Bb/Screenshot-from-2019-11-28-15-00-44.png)]
+.center[![:scale 78%](https://i.ibb.co/LQ4Y6Bb/Screenshot-from-2019-11-28-15-00-44.png)]
+
+.footnote[https://github.com/USEPA]
 
 ---
 

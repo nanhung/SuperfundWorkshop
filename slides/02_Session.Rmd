@@ -900,9 +900,15 @@ The statement, gives general directives for MCMC simulations with following synt
 
 ---
 
-# Check convergence
+background-image: url(https://raw.githubusercontent.com/stan-dev/logos/master/logo_tm.png)
+background-size: 100px
+background-position: 60% 90% 
 
-### Manipulate (MCSim under R)
+# Posterior check
+
+.pull-left[
+
+### Manipulate (**simuloR**)
 
 `mcmc_array()`
 
@@ -919,6 +925,14 @@ The statement, gives general directives for MCMC simulations with following synt
 ### Report (**rstan**)
 
 `monitor()`  
+
+]
+
+.pull-right[
+
+![:scale 20%](https://www.gnu.org/software/mcsim/mcsimlogo.png)
+
+]
 
 ---
 
