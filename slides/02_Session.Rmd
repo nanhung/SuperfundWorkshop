@@ -199,7 +199,7 @@ hist(x)
 
 - Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
 
-**Used to:** Posterior analysis, Local/global sensitivity analysis
+**Used to:** Posterior predictive check, Local/global sensitivity analysis
 
 ---
 
@@ -327,24 +327,6 @@ First order elimination rate, ...
 
 ---
 
-# Example
-
-```r
-## ./mcsim.one.model.R.exe one.mtc.in.R ####
-## Monte Carlo simulation input file for one compartment model
-MonteCarlo ("simmc.out", 10, 95814);
-Distrib (Ka,  Uniform, 0.2,    0.8);
-Distrib (Ke,  Uniform, 0.03,   0.1);
-Simulation { # 1
-  OralDose = 100; 
-  BW = 60;
-  PrintStep (C_central, 0, 8, 1);
-}
-End.
-```
-
----
-
 # SetPoints()
 
 This command specifies an output filename, the name of a text file containing (1) the chosen parameter values, (2) the number of simulations to perform and (3) a list of model parameters to read in. It has the following syntax:
@@ -361,23 +343,6 @@ SetPoints("<OutputFilename>", "<SetPointsFilename>", <nRuns>,
 - `<nRuns>` should be less or equal to the number of lines (minus one) in the set points file. If a zero is given, all lines of the file are read. 
 
 - `<parameter identifier>` a comma-separated list of the parameters or vectors to be read in the SetPointsFilename. 
-
----
-
-# Example
-
-```r
-## ./mcsim.one.model.R.exe one.setpt.in.R ####
-## Setpoint simulation input file for one compartment model
-## Use "sim.out" that generated from "one.mtc.in.R"
-SetPoints ("setpts.out", "simmc.out", 0, Ka, Ke);
-Simulation { # 1
-  OralDose = 100; 
-  BW = 60;
-  PrintStep (C_central, 0, 8, 1);
-}
-End.
-```
 
 ---
 
@@ -585,6 +550,101 @@ Name: **<span style="color: red">Enhancing the reliability, efficiency, and usab
 
 ---
 
+# Uncertainty analysis - Flip-flop kinetics
+
+.pull-left[
+```{r eval=T}
+library(pksensi)
+
+# define parameter distributions
+params <- c("F","KA","KE","V")
+q <- c("qunif", "qunif", "qunif", "qnorm")
+q.arg <- list(list(min = 0.8, max = 1),
+              list(min = 0.5, max = 0.8),
+              list(min = 0.1, max = 0.3),
+              list(mean = 10, sd = 1))
+
+# create parameter matrix and conduct simulation
+x <- rfast99(params = params, n = 200, 
+             q = q, q.arg = q.arg, rep = 20)
+time <- seq(from = 0.01, to = 12.01, by = 0.5)
+y <- solve_fun(x, model = FFPK, time = time, 
+               vars = "output")
+```
+]
+
+.pull-right[
+```{r fig.height=6, dev='svg', eval=T}
+pksim(y)
+```
+]
+
+---
+
+# Uncertainty analysis - Flip-flop kinetics
+
+.center[
+```{r, echo=F, fig.width=9}
+par(mfrow=c(4,4),mar=c(0.8,0.8,0.8,0),oma=c(4,4,2,1), pch =".")
+for (j in c("F","KA","KE","V")) {
+  if ( j == "V") {
+    plot(y$a[,1,j], ylab = "V")
+  } else plot(y$a[,1,j], xaxt="n", ylab = "")
+  for (i in 2:3) {
+    if ( j == "V") {
+      plot(y$a[,i,j], ylab = "", yaxt="n")  
+    } else plot(y$a[,i,j], xaxt="n", yaxt="n", ylab = "")
+  } 
+  hist <- hist(y$a[,,j], plot=FALSE, 
+               breaks=seq(from=min(y$a[,,j]), to=max(y$a[,,j]), length.out=20))
+  barplot(hist$density, axes=FALSE, space=0, horiz = T, main = j) 
+}
+mtext("Model evaluation", SOUTH<-1, line=2, outer=TRUE)
+```
+]
+
+---
+
+# Sensitivity analysis - Flip-flop kinetics
+
+.center[
+```{r, echo=F, fig.width=9}
+par(mfcol=c(4,4),mar=c(0.8,0.8,0,0),oma=c(4,4,2,1), pch = ".")
+plot(x$a[,1,"F"], y$y[,1,"0.01",1], xaxt="n", main = "\nF")
+plot(x$a[,1,"F"], y$y[,1,"2.01",1], xaxt="n")
+plot(x$a[,1,"F"], y$y[,1,"6.01",1], xaxt="n")
+plot(x$a[,1,"F"], y$y[,1,"12.01",1])
+for (j in c("KA","KE","V")){
+  for (k in c("0.01", "2.01", "6.01", "12.01")){
+    if (k == "0.01") {
+      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n", xaxt="n", main = paste0("\n", j))
+    } else if (k == "12.01") {
+      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n")
+    } else plot(x$a[,1,j], y$y[,1,k,1], xaxt = "n", yaxt = "n")
+  }
+}
+mtext("Parameter", SOUTH<-1, line=2, outer=TRUE)
+mtext("Ccompartment", WEST<-2, line=2, outer=TRUE)
+```
+]
+
+---
+
+# Sensitivity analysis - Flip-flop kinetics
+
+```r
+plot(y)
+```
+
+.center[
+```{r fig.height=4.5, fig.width=9, dev='svg', eval=T, echo=F}
+plot(y)
+```
+]
+
+
+---
+
 # General workflow
 
 ### 1 Model constructing or translating
@@ -604,6 +664,21 @@ Name: **<span style="color: red">Enhancing the reliability, efficiency, and usab
 - **Markov chain Monte Carlo** 
   - Diagnostics (Goodness-of-fit, convergence)
 
+---
+
+# Frequentist vs. Bayesian
+
+.pull-left[
+![](https://i.ibb.co/YPRVnd1/Screenshot-from-2019-12-03-13-50-13.png)
+]
+
+.pull-right[
+![](https://i.ibb.co/tPtbLmD/Screenshot-from-2019-12-03-13-49-53.png)
+]
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
+]
 ---
 
 # Bayes' rule
@@ -660,6 +735,16 @@ abline(h = 1/3)
 legend("topright", legend = c("Switch to Other Door","Don't Switch"), pch = 1 , col = c(4,2))
 ```
 
+]
+
+---
+
+# Frequentist vs. Bayesian
+
+![](https://i.ibb.co/920t4Nt/Screenshot-from-2019-12-03-13-51-43.png)
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
 ]
 
 ---
