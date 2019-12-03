@@ -17,6 +17,8 @@ knitr::opts_knit$set(root.dir =  wd)
 ```{R message=FALSE, warning=FALSE}
 library(simuloR)
 library(ggplot2)
+library(pksensi)
+library(httk)
 theme_set(theme_bw())
 ```
 
@@ -55,12 +57,97 @@ plot(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
 lines(out_df$time*24, out_df$Ccompartment)
 ```
 
-Uncertainty analysis
+# Uncertainty analysis
 
 ```{r}
-
+pbtk1cpt.mtc.out <- mcsim("models/pbtk1cpt.model", "inputs/pbtk1cpt.mtc.in")
 ```
 
+
+```{r}
+head(pbtk1cpt.mtc.out)
+```
+
+```{r}
+par(mfrow = c(1,4))
+hist(pbtk1cpt.mtc.out$Fgutabs, main = "Fgutabs", xlab = "", ylab = "")
+hist(pbtk1cpt.mtc.out$kgutabs, main = "kgutabs", xlab = "", ylab = "")
+hist(pbtk1cpt.mtc.out$kelim, main = "kelim", xlab = "", ylab = "")
+hist(pbtk1cpt.mtc.out$Vdist, main = "Vdist", xlab = "", ylab = "")
+```
+
+```{r}
+# Find location of the first and last time points by which()
+index <- which(names(pbtk1cpt.mtc.out)=="Ccompartment_1.1" | names(pbtk1cpt.mtc.out)=="Ccompartment_1.11")
+# Use apply() to find the quantile of each time point
+X <- apply(pbtk1cpt.mtc.out[,index[1]:index[2]], 2, quantile, c(0.5, 0.01,0.99))
+dat <- t(X)
+# Set column names
+colnames(dat) <- c("median", "LCL", "UCL")
+df <- as.data.frame(dat)
+# Set corresponding time
+df$time <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
+df
+```
+
+```{r}
+t <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
+str.pt <- which(names(pbtk1cpt.mtc.out)=="Ccompartment_1.1") 
+end.pt <- which(names(pbtk1cpt.mtc.out)=="Ccompartment_1.11") 
+par(mfrow = c(1,1))
+plot(Theoph$Time, Theoph$conc.uM, pch = "")
+for(i in 1:1000){
+  lines(t, pbtk1cpt.mtc.out[i,str.pt:end.pt], col="grey")
+}
+points(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+```
+
+
+# pksensi
+
+1. Set parameter distributions (assign parms, dist, q.qarg)
+```{r}
+parameters <- c("Fgutabs",  "kgutabs", "kelim", "Vdist")  
+dist <- c("Uniform", "LogNormal", "LogNormal", "LogNormal") # MCSim definition
+q.arg <- list(list(0.8, 1.0),
+            list(2.18, 3),
+            list(0.02183918, 2),
+            list(5.012049, 3))
+```
+
+2. Set experiment time-points, output variables, and conditions
+
+```{r}
+outputs <- c("Ccompartment")
+times <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
+conditions <- c("MW = 180.164", "Period = 48", "IngDose = 5.0")
+```
+
+3. Modeling
+
+```{r}
+makemcsim("models/pbtk1cpt.model")
+```
+
+```{r}
+set.seed(2222)
+y<-solve_mcsim(mName = "models/pbtk1cpt.model", params = parameters, vars = outputs, monte_carlo = 1000,
+               dist = dist, q.arg = q.arg, time = times, condition = conditions)
+```
+
+```{r}
+pksim(y)
+points(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+```
+
+
+
+# Calibration
+
+```{r}
+set.seed(1)
+mcsim(model = "models/pbtk1cpt.model", input = "inputs/pbtk1cpt.mcmc.in")
+```
 
 
 

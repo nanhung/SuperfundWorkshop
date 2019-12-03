@@ -18,7 +18,10 @@ States  = {
 
 
 # Outputs -----------------------------------------------------------------
-Outputs = { Ccompartment };  # Concentration in central compartment (uM)
+Outputs = { 
+Ccompartment,
+lnCcompartment
+};  # Concentration in central compartment (uM)
 
 
 # Inputs ------------------------------------------------------------------
@@ -42,6 +45,18 @@ Vdist  = 1;
 # Elimination rate constants (/h)
 kelim = 1;
 
+# Statistical parameters
+# ----------------------
+M_Fgutabs;
+M_kgutabs;
+M_kelim;
+M_Vdist;
+Ve_Ccompartment;
+
+Vr_Fgutabs;
+Vr_kgutabs;
+Vr_kelim;
+Vr_Vdist;
 
 # Initialize --------------------------------------------------------------
 Initialize{ Absdose = IngDose * Fgutabs; }
@@ -55,6 +70,9 @@ Dynamics {
 
 
 # CalcOutputs -------------------------------------------------------------
-CalcOutputs { Ccompartment  = A_rest  / Vdist / MW * 1000; }
+CalcOutputs { 
+Ccompartment  = A_rest  / Vdist / MW * 1000; 
+lnCcompartment  = log(Ccompartment); 
+}
 
 End.
