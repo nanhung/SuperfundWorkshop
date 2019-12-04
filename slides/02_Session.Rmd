@@ -559,6 +559,12 @@ Name: **<span style="color: red">Enhancing the reliability, efficiency, and usab
 
 ---
 
+# Parameter fixing in PBPK
+
+.center[![](https://i.ibb.co/nkJ8nTQ/Workflow.png)]
+
+---
+
 # Uncertainty analysis - Flip-flop kinetics
 
 .pull-left[
@@ -1172,28 +1178,48 @@ abline(1,0)
 ---
 
 # Hands on Exercise
-.pull-left[
-### One-compartment PK model </br> (generic)
 
-- Theophylline PK datasets
+### One-compartment PK model (generic)
 
-- Uncertainty analysis
+- **Theophylline PK datasets**
+  - Exploratory data analysis (examine Cmax, Tmax for each subject)
 
-- Model calibration
+- **Uncertainty analysis & Calibration**
 
-- Evaluation
+- **Evaluation**
+  - Compare the Css before and after the calibration
 
+- **Application**
+  - Construct the relationship between daily dose (mg/kg-d) and Css (uM)
+  - Predict the Css based on the exposure value from USEPA chemical dashboard*
+
+.footnote[
+[*] https://comptox.epa.gov/dashboard/dsstoxdb/results?search=DTXSID5021336#exposure-predictions
 ]
 
-.pull-left[
-### Three-compartment PBPK model </br> (1,3-butadiene)
+---
 
-- 1,3-butadiene PK datasets
+background-image: url(https://i.ibb.co/yn7tD14/Screenshot-from-2019-12-04-15-32-34.png)
+background-size: 350px
+background-position: 99% 80% 
 
-- Uncertainty analysis
+# Hands on Exercise
 
-- Model calibration
+### Three-compartment PBPK model (1,3-butadiene)
 
-- Evaluation
+- **1,3-butadiene PK datasets**
 
-]
+- **Uncertainty analysis**
+  - Reproduce the published result (R)*
+  - Construct the relationship between body mass and quantity in fat (prior; MCSim**)
+
+- **Model calibration**
+
+- **Evaluation**
+  - Reconstruct the relationship (posterir; MCSim)
+
+.footnote[
+[*] Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY  
+
+[**] Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ
+]  

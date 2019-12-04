@@ -1729,16 +1729,18 @@ Generally, the GNU MCSim used `.model` and `.in` as the extension to name the mo
 
 - Reproduce the modeling output in this slide 
 
-- Model construction for MCSim (oral intake)
+- Model construction for MCSim - oral intake
+  - Ordinary differential equation
+  - Noncompartmental analysis
+  
+- Input setting & simulation
 
-- Input setting
+- Data manipulation (R)
 
-- Simulation
+- Visualization (R)
 
-- Data manipulation with R
-
-- Visualization
-
+- Application with httk package
+  
 ]
 
 .pull-left[
@@ -1746,8 +1748,9 @@ Generally, the GNU MCSim used `.model` and `.in` as the extension to name the mo
 
 - Reproduce the modeling output in this slide 
 
-- Model construction for MCSim (inhalation exposure)
+- Model construction for MCSim - inhalation exposure
 
 - Advance practice 
-
+  - Construct the relationship between oral intake and steady-state concentration
+  
 ]
