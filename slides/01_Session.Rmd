@@ -185,7 +185,7 @@ plot(t, D_t, type = "b")
 
 ---
 
-# Flip-flop kinetics
+# Flip-flop kinetics (1-compartment model)
 
 .pull-left[
 ```{r}
@@ -212,6 +212,76 @@ plot(t, Conc, type = "b")
 ]
 
 
+---
+
+# Flip-flop kinetics (1-compartment model)
+
+.pull-left[
+
+### Single dose
+
+**Plasma concentration **
+
+$\mathrm{C}=\frac{\mathrm{F} \cdot \mathrm{D} \cdot \mathrm{k}_{\mathrm{a}}}{\mathrm{V}\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)} \cdot\left(\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \mathrm{t}}-\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \cdot \mathrm{t}}\right)$
+
+**Time of maximum concentration**
+
+$\mathrm{t}_{\max }=\frac{\ln \left(\frac{\mathrm{k}_{\mathrm{a}}}{\mathrm{k}_{\mathrm{e}}}\right)}{\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)}$
+
+]
+
+.pull-right[
+
+### Multiple dose
+
+**Plasma concentration**
+
+$\mathrm{C}=\frac{\mathrm{F} \cdot \mathrm{D} \cdot \mathrm{k}_{\mathrm{a}}}{\mathrm{V}\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)} \cdot\left(\frac{\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \mathrm{t}}}{\left(1-\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \tau}\right)}-\frac{\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \cdot \mathrm{t}}}{\left(1-\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \tau}\right)}\right)$
+
+**Time of maximum concentration**
+
+$\mathrm{t}_{\max }=\frac{\ln \left(\frac{\mathrm{k}_{\mathrm{a}} \cdot\left(1-\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \cdot \tau}\right)}{\mathrm{k}_{\mathrm{e}} \cdot\left(1-\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \cdot \tau}\right)}\right)}{\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)}$
+
+**Steady-state concentration**
+
+$C_{ss}=\frac{\mathrm{F} \cdot \mathrm{D}}{\mathrm{CL} \cdot \tau}$
+
+$CL = \frac{Dose \cdot F}{AUC} = \frac{k_e}{V}$ 
+
+]
+
+---
+
+# Flip-flop kinetics (1-compartment model)
+
+.pull-left[
+
+```{r}
+t_max <- log(k_a/k_e)/(k_a-k_e)
+A <- (D * Fgutabs * k_a)/(V * (k_a - k_e))
+C_max <- A * exp(-k_e*t_max) - A * exp(-k_a*t_max)
+```
+
+### Single dose
+
+**Plasma concentration **
+
+$\mathrm{C}=\frac{\mathrm{F} \cdot \mathrm{D} \cdot \mathrm{k}_{\mathrm{a}}}{\mathrm{V}\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)} \cdot\left(\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \mathrm{t}}-\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \cdot \mathrm{t}}\right)$
+
+**Time of maximum concentration**
+
+$\mathrm{t}_{\max }=\frac{\ln \left(\frac{\mathrm{k}_{\mathrm{a}}}{\mathrm{k}_{\mathrm{e}}}\right)}{\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)}$
+
+]
+
+.pull-right[
+```{r fig.height=5, dev='svg'}
+plot(t, Conc, type = "l")
+abline(h = C_max, lty="dashed")
+abline(v = t_max, lty="dashed")
+```
+
+]
 
 ---
 
