@@ -135,7 +135,7 @@ sd(x)
 ]
 
 .pull-right[
-```{r fig.height=3.6}
+```{r fig.height=3.6, dev='svg'}
 hist(x)
 ```
 ]
@@ -160,14 +160,14 @@ runif(n=5, min=0, max=1)
 # Monte Carlo Simulation in R
 .pull-left[
 .pull-left[
-```{r fig.height=4.5}
+```{r fig.height=4.5, dev='svg'}
 x <- runif(10)
 plot(x)
 hist(x)
 ```
 ]
 .pull-right[
-```{r fig.height=4.5}
+```{r fig.height=4.5, dev='svg'}
 x <- runif(100)
 plot(x)
 hist(x)
@@ -177,14 +177,14 @@ hist(x)
 
 .pull-right[
 .pull-left[
-```{r fig.height=4.5}
+```{r fig.height=4.5, dev='svg'}
 x <- runif(1000)
 plot(x)
 hist(x)
 ```
 ]
 .pull-right[
-```{r fig.height=4.5}
+```{r fig.height=4.5, dev='svg'}
 x <- runif(10000)
 plot(x)
 hist(x)
@@ -261,13 +261,13 @@ x <- runif(10000, 0.01, 100)
 ```
 
 .pull-left[
-```{r fig.height=6}
+```{r fig.height=6, dev='svg'}
 plot(x)
 ```
 ]
 
 .pull-right[
-```{r fig.height=6}
+```{r fig.height=6, dev='svg'}
 plot(x, log="y")
 ```
 ]
@@ -281,13 +281,13 @@ x <- 10^x
 ```
 
 .pull-left[
-```{r fig.height=6}
+```{r fig.height=6, dev='svg'}
 plot(x)
 ```
 ]
 
 .pull-right[
-```{r fig.height=6}
+```{r fig.height=6, dev='svg'}
 plot(x, log="y")
 ```
 ]
@@ -593,7 +593,7 @@ pksim(y)
 # Uncertainty analysis - Flip-flop kinetics
 
 .center[
-```{r, echo=F, fig.width=9}
+```{r, echo=F, fig.height=5, dev='svg'}
 par(mfrow=c(4,4),mar=c(0.8,0.8,0.8,0),oma=c(4,4,2,1), pch =".")
 for (j in c("F","KA","KE","V")) {
   if ( j == "V") {
@@ -617,7 +617,7 @@ mtext("Model evaluation", SOUTH<-1, line=2, outer=TRUE)
 # Sensitivity analysis - Flip-flop kinetics
 
 .center[
-```{r, echo=F, fig.width=9}
+```{r, echo=F, fig.height=5, dev='svg'}
 par(mfcol=c(4,4),mar=c(0.8,0.8,0,0),oma=c(4,4,2,1), pch = ".")
 plot(x$a[,1,"F"], y$y[,1,"0.01",1], xaxt="n", main = "\nF")
 plot(x$a[,1,"F"], y$y[,1,"2.01",1], xaxt="n")
@@ -785,6 +785,15 @@ Markov chain Monte Carlo is a general method based on drawing values of theta fr
 
 ---
 
+class:hide-logo
+.center[
+![:scale 90%](https://i.ibb.co/9hbLTb8/Screenshot-from-2019-12-04-06-21-26.png)
+]
+
+.footnote[https://chi-feng.github.io/mcmc-demo/app.html?algorithm=RandomWalkMH&target=standard]
+
+---
+
 class: middle
 
 .font200[
@@ -945,10 +954,10 @@ background-position: 60% 90%
 
 ---
 
-# Example
+## Example - Linear model
 
 .pull-left[
-
+.code75[
 ```r
 ## linear.model.R ####
 Outputs = {y}
@@ -961,14 +970,14 @@ CalcOutputs { y = A + B * t); }
 
 End.
 ```
-
+]
 ]
 
 .pull-right[
-
+.code75[
 ```r
 ## linear_mcmc.in.R ####
-MCMC ("MCMC.default.out","", # name of output and restart file
+MCMC ("MCMC.default.out","", # name of output 
      "",           # name of data file
      2000,0,       # iterations, print predictions flag,
      1,2000,       # printing frequency, iters to print
@@ -976,25 +985,26 @@ MCMC ("MCMC.default.out","", # name of output and restart file
 
 Level {
   
-  Distrib(A, Normal, 0, 2); # prior of intercept coefficient
-  Distrib(B, Normal, 1, 2); # prior of slope coefficient
+  Distrib(A, Normal, 0, 2); # prior of intercept 
+  Distrib(B, Normal, 1, 2); # prior of slope 
   
-  Likelihood(y, Normal, Prediction(y), 0.05); #  # exact SD
+  Likelihood(y, Normal, Prediction(y), 0.05);
   
   Simulation {
     PrintStep (y, 0, 10, 1); 
-    Data  (y, 0.0, 0.15, 2.32, 4.33, 4.61, 6.68, 7.89, 7.13, 7.27, 9.4, 10.0);
+    Data  (y, 0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+                7.89, 7.13, 7.27, 9.4, 10.0);
   }
 }
 
 End.
 ```
-
+]
 ]
 
 ---
 
-## Example
+## Example - MCMC simulation
 
 .pull-left[
 .code75[
@@ -1017,12 +1027,11 @@ legend("topright", legend = c("Intercept", "Slope"),
        col = c(1,2), lty = 1)
 ```
 ]
-
 ]
 
 ---
 
-## Example
+## Example - Posterior check
 
 .pull-left[
 .code75[
@@ -1036,7 +1045,7 @@ plot(out$A.1., out$B.1., type = "b",
 
 .pull-right[
 .code75[
-```{r fig.height=5}
+```{r fig.height=5, dev='svg'}
 str <- ceiling(nrow(out)/2) + 1
 end <- nrow(out)
 j <- c(str:end)
@@ -1048,53 +1057,116 @@ plot(out$A.1.[j], out$B.1.[j], type = "b",
 
 ---
 
-## Example
+## Example - Posterior check
 
 .pull-left[
-.code75[
-```{r fig.height=5}
-out$A.1.[j] %>% density() %>% plot()
+.code50[
+```{r fig.height=5, dev='svg'}
+out$A.1.[j] %>% density() %>% plot(main = "Intercept")
+plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
+prior.dens <- do.call("dnorm", c(list(x=plot.rng), c(0,2)))
+lines(plot.rng, prior.dens, lty="dashed")
 ```
 ]
 ]
 
 .pull-right[
-.code75[
-```{r fig.height=5}
-out$B.1.[j] %>% density() %>% plot()
+.code50[
+```{r fig.height=5, dev='svg'}
+out$B.1.[j] %>% density() %>% plot(main = "Slope")
+plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
+prior.dens <- do.call("dnorm", c(list(x=plot.rng), c(1,2)))
+lines(plot.rng, prior.dens, lty="dashed")
 ```
 ]
 ]
 
 ---
-## Example
+
+## Example - Evaluation of prediction
 
 .pull-left[
 .code75[
-```{r}
+```r
+# Observed
 x <- seq(0,10,1)
 y <- c(0.0, 0.15, 2.32, 4.33, 4.61, 6.68, 
        7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Expected
 dim.x <- ncol(out)
 for(i in 1:11){
   out[,ncol(out)+1] <- out$A.1. + out$B.1.*x[i]
 }
-```
-]
-]
 
-.pull-right[
-.code75[
-```{r fig.height=5}
+# Plot
 plot(x, y, pch ="")
 for(i in 1901:2000){
   lines(x, out[i,c((dim.x+1):ncol(out))],col="grey")
 }
 points(x, y)
 ```
+]
+]
 
+.pull-right[
+```{r echo=FALSE, fig.height=6, dev='svg'}
+# Observed
+x <- seq(0,10,1)
+y <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+       7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Expected
+dim.x <- ncol(out)
+for(i in 1:11){
+  out[,ncol(out)+1] <- out$A.1. + out$B.1.*x[i]
+}
+
+# plot
+plot(x, y, pch ="")
+for(i in 1901:2000){
+  lines(x, out[i,c((dim.x+1):ncol(out))],col="grey")
+}
+points(x, y)
+```
+]
+
+---
+
+## Example - Evaluation of prediction
+
+.pull-left[
+.code75[
+```r
+# Use prediction from the last iteration
+i <- 2000
+Expected <- out[i, c((dim.x+1):ncol(out))] %>% 
+  as.numeric()
+Observed <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+              7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Plot
+plot(Expected, Observed/Expected, pch='x')
+abline(1,0)
+```
 ]
 ]
+
+.pull-right[
+```{r echo=FALSE, fig.height=6, dev='svg'}
+# Use prediction from the last iteration
+i <- 2000
+Expected <- out[i, c((dim.x+1):ncol(out))] %>% 
+  as.numeric()
+Observed <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+              7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Plot
+plot(Expected, Observed/Expected, pch='x')
+abline(1,0)
+```
+]
+
 
 ---
 
