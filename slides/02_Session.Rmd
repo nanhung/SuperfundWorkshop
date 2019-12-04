@@ -1013,7 +1013,8 @@ model <- "models/linear.model"
 input <- "inputs/linear.mcmc.in"
 set.seed(1111) 
 out <- mcsim(model, input) 
-out
+head(out)
+tail(out, 4)
 ```
 ]
 ]
