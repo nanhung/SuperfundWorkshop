@@ -1720,10 +1720,13 @@ Generally, the GNU MCSim used `.model` and `.in` as the extension to name the mo
 ---
 
 # Hands on Exercise
+
 .pull-left[
 ### One-compartment PK model </br> (generic)
 
-- Model construction (oral intake)
+- Reproduce the modeling output in this slide 
+
+- Model construction for MCSim (oral intake)
 
 - Input setting
 
@@ -1738,6 +1741,10 @@ Generally, the GNU MCSim used `.model` and `.in` as the extension to name the mo
 .pull-left[
 ### Three-compartment PBPK model </br> (1,3-butadiene)
 
-- Advance practice (inhalation exposure)
+- Reproduce the modeling output in this slide 
+
+- Model construction for MCSim (inhalation exposure)
+
+- Advance practice 
 
 ]
