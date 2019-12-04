@@ -222,11 +222,11 @@ plot(t, Conc, type = "b")
 
 **Plasma concentration **
 
-$\mathrm{C}=\frac{\mathrm{F} \cdot \mathrm{D} \cdot \mathrm{k}_{\mathrm{a}}}{\mathrm{V}\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)} \cdot\left(\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \mathrm{t}}-\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \cdot \mathrm{t}}\right)$
+$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$
 
 **Time of maximum concentration**
 
-$\mathrm{t}_{\max }=\frac{\ln \left(\frac{\mathrm{k}_{\mathrm{a}}}{\mathrm{k}_{\mathrm{e}}}\right)}{\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)}$
+$t_{max} = \frac{ln(k_a/k_e)}{(k_a-k_e)}$
 
 ]
 
@@ -236,7 +236,8 @@ $\mathrm{t}_{\max }=\frac{\ln \left(\frac{\mathrm{k}_{\mathrm{a}}}{\mathrm{k}_{\
 
 **Plasma concentration**
 
-$\mathrm{C}=\frac{\mathrm{F} \cdot \mathrm{D} \cdot \mathrm{k}_{\mathrm{a}}}{\mathrm{V}\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)} \cdot\left(\frac{\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \mathrm{t}}}{\left(1-\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \tau}\right)}-\frac{\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \cdot \mathrm{t}}}{\left(1-\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \tau}\right)}\right)$
+$C(t)=\frac{F \cdot D \cdot k_a}{V(k_a-k_e)} \cdot\left(\frac{(1-\mathrm{e}^{-nk_e \tau})}{(1-\mathrm{e}^{-k_e \tau})}\mathrm{e}^{-k_et}-\frac{(1-\mathrm{e}^{-nk_a \tau})}{(1-\mathrm{e}^{-k_{a} \tau})}\mathrm{e}^{-k_at}\right)$
+
 
 **Time of maximum concentration**
 
@@ -244,9 +245,9 @@ $\mathrm{t}_{\max }=\frac{\ln \left(\frac{\mathrm{k}_{\mathrm{a}} \cdot\left(1-\
 
 **Steady-state concentration**
 
-$C_{ss}=\frac{\mathrm{F} \cdot \mathrm{D}}{\mathrm{CL} \cdot \tau}$
+$\overline{C_{ss}}=\frac{F \cdot D}{\mathrm{CL} \cdot \tau}$
 
-$CL = \frac{Dose \cdot F}{AUC} = \frac{k_e}{V}$ 
+$CL = \frac{D \cdot F}{AUC} = \frac{k_e}{V}$ 
 
 ]
 
@@ -266,12 +267,11 @@ C_max <- A * exp(-k_e*t_max) - A * exp(-k_a*t_max)
 
 **Plasma concentration **
 
-$\mathrm{C}=\frac{\mathrm{F} \cdot \mathrm{D} \cdot \mathrm{k}_{\mathrm{a}}}{\mathrm{V}\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)} \cdot\left(\mathrm{e}^{-\mathrm{k}_{\mathrm{e}} \mathrm{t}}-\mathrm{e}^{-\mathrm{k}_{\mathrm{a}} \cdot \mathrm{t}}\right)$
+$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$
 
 **Time of maximum concentration**
 
-$\mathrm{t}_{\max }=\frac{\ln \left(\frac{\mathrm{k}_{\mathrm{a}}}{\mathrm{k}_{\mathrm{e}}}\right)}{\left(\mathrm{k}_{\mathrm{a}}-\mathrm{k}_{\mathrm{e}}\right)}$
-
+$t_{max} = \frac{ln(k_a/k_e)}{(k_a-k_e)}$
 ]
 
 .pull-right[
@@ -282,6 +282,32 @@ abline(v = t_max, lty="dashed")
 ```
 
 ]
+
+---
+
+# High Throughput Risk Prioritization
+
+According to Toxic Substances Control Act (TSCA), to address thousands of chemicals, we need to use **new approach methodologies (NAMs)** to prioritize the existing and new chemicals for testing.
+
+.pull-left[
+
+## Main components 
+
+### 1. High throughput hazard characterization
+
+### 2. High throughput exposure forecasts
+
+### 3. High throughput **toxicokinetics**
+
+]
+
+.pull-right[
+
+![:scale 75%](https://i.ibb.co/ZW5Nq1S/Screenshot-from-2019-12-04-11-30-13.png)
+
+]
+
+.footnote[source: [USEPA](https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=NCCT&dirEntryId=340966)]
 
 ---
 
