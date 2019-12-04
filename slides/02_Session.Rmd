@@ -17,9 +17,18 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('..')
+wd <- getwd()
+knitr::opts_knit$set(root.dir =  wd)
+```
+
 ```{r, include=FALSE}
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 library(sensitivity)
+library(simuloR)
+library(dplyr)
 ```
 
 # Monte Carlo Simulation
@@ -932,6 +941,159 @@ background-position: 60% 90%
 
 ![:scale 20%](https://www.gnu.org/software/mcsim/mcsimlogo.png)
 
+]
+
+---
+
+# Example
+
+.pull-left[
+
+```r
+## linear.model.R ####
+Outputs = {y}
+
+# Model Parameters
+A = 0; # 
+B = 1;
+
+CalcOutputs { y = A + B * t); }
+
+End.
+```
+
+]
+
+.pull-right[
+
+```r
+## linear_mcmc.in.R ####
+MCMC ("MCMC.default.out","", # name of output and restart file
+     "",           # name of data file
+     2000,0,       # iterations, print predictions flag,
+     1,2000,       # printing frequency, iters to print
+     10101010);    # random seed (default )
+
+Level {
+  
+  Distrib(A, Normal, 0, 2); # prior of intercept coefficient
+  Distrib(B, Normal, 1, 2); # prior of slope coefficient
+  
+  Likelihood(y, Normal, Prediction(y), 0.05); #  # exact SD
+  
+  Simulation {
+    PrintStep (y, 0, 10, 1); 
+    Data  (y, 0.0, 0.15, 2.32, 4.33, 4.61, 6.68, 7.89, 7.13, 7.27, 9.4, 10.0);
+  }
+}
+
+End.
+```
+
+]
+
+---
+
+## Example
+
+.pull-left[
+.code75[
+```{r message=F}
+model <- "models/linear.model"
+input <- "inputs/linear.mcmc.in"
+set.seed(1111) 
+out <- mcsim(model, input) 
+out
+```
+]
+]
+
+.pull-right[
+.code75[
+```{r, fig.height=5, dev='svg'}
+plot(out$A.1., type = "l", xlab = "Iteration", ylab = "")
+lines(out$B.1., col = 2)
+legend("topright", legend = c("Intercept", "Slope"), 
+       col = c(1,2), lty = 1)
+```
+]
+
+]
+
+---
+
+## Example
+
+.pull-left[
+.code75[
+```{r, fig.height=5, dev='svg'}
+plot(out$A.1., out$B.1., type = "b",
+     xlab = "Intercept", ylab = "Slope")
+
+```
+]
+]
+
+.pull-right[
+.code75[
+```{r fig.height=5}
+str <- ceiling(nrow(out)/2) + 1
+end <- nrow(out)
+j <- c(str:end)
+plot(out$A.1.[j], out$B.1.[j], type = "b",
+     xlab = "Intercept", ylab = "Slope")
+```
+]
+]
+
+---
+
+## Example
+
+.pull-left[
+.code75[
+```{r fig.height=5}
+out$A.1.[j] %>% density() %>% plot()
+```
+]
+]
+
+.pull-right[
+.code75[
+```{r fig.height=5}
+out$B.1.[j] %>% density() %>% plot()
+```
+]
+]
+
+---
+## Example
+
+.pull-left[
+.code75[
+```{r}
+x <- seq(0,10,1)
+y <- c(0.0, 0.15, 2.32, 4.33, 4.61, 6.68, 
+       7.89, 7.13, 7.27, 9.4, 10.0)
+dim.x <- ncol(out)
+for(i in 1:11){
+  out[,ncol(out)+1] <- out$A.1. + out$B.1.*x[i]
+}
+```
+]
+]
+
+.pull-right[
+.code75[
+```{r fig.height=5}
+plot(x, y, pch ="")
+for(i in 1901:2000){
+  lines(x, out[i,c((dim.x+1):ncol(out))],col="grey")
+}
+points(x, y)
+```
+
+]
 ]
 
 ---
