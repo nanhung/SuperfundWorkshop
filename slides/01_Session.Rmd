@@ -173,7 +173,7 @@ $D_t = D_0 \cdot e^{-k_{e} \cdot t}$
 
 .pull-right[
 .code75[
-```{r fig.height=5.0, dev='svg', eval=T}
+```{r fig.height=4, dev='svg'}
 D_0 <- 10
 t <- seq(0.01, 10.01, 1)
 k_e <- 0.5
@@ -334,7 +334,7 @@ class: hide-logo
   - .bolder[A]: Input routes
   - .bolder[D]: Blood and other tissues
   - .bolder[M]: Metabolism
-  - .bolder[E]: Urine or fecus
+  - .bolder[E]: Urine or feces
 
 **Parameter Estimates**
 - Do we have any prior information?
@@ -415,7 +415,7 @@ $A$: quantity; $Q$: flow rate; $r_{ds}$: deadspace ratio; $C$: concentration; $R
 C_inh <- approxfun(x = c(0, 100), y=c(10,0), method = "constant", f = 0, rule = 2) 
 ```
 
-```{r fig.height=4.5, dev='svg', eval=T}
+```{r fig.height=4, dev='svg'}
 plot(C_inh(1:300), type="l", xlab = "Time (min)", ylab = "Butadiene inhaled concentration (ppm)")
 ```
 
@@ -859,7 +859,7 @@ Chiu and Bois (2006) - [Revisiting the population toxicokinetics of tetrachloroe
 ---
 
 background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr1.jpg)
-background-size: 360px
+background-size: 330px
 background-position: 20% 80% 
 
 # Related publication 
@@ -868,8 +868,10 @@ background-position: 20% 80%
 Hack et al. (2006) - [Bayesian population analysis of a harmonized physiologically based pharmacokinetic model of trichloroethylene and its metabolites](https://www.sciencedirect.com/science/article/pii/S027323000600095X)
 ]
 
+.pull-left[]
+
 .pull-right[
-![:scale 60%](https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr3.jpg)
+![:scale 55%](https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr3.jpg)
 ]
 
 ---
@@ -1469,7 +1471,7 @@ class: hide-logo
 
 # High Performance Research Computing
 
-.center[![:scale 70%](https://i.ibb.co/c6ht46y/Screenshot-from-2019-11-28-15-10-21.png)]
+.center[![:scale 60%](https://i.ibb.co/c6ht46y/Screenshot-from-2019-11-28-15-10-21.png)]
 
 ---
 
@@ -1479,7 +1481,7 @@ background-position: 90% 80%
 
 # Linux
 
-![:scale 70%](https://i.ibb.co/y592vn2/Screenshot-from-2019-11-28-15-17-34.png)
+![:scale 60%](https://i.ibb.co/y592vn2/Screenshot-from-2019-11-28-15-17-34.png)
 
 ---
 
@@ -1501,8 +1503,9 @@ The simulation engine, **"sim"**
 ---
 
 # GNU MCSim Workflow
-
-![](https://i.ibb.co/RNxBfN5/GNU-MCSIm-Workflow.png)
+.center[
+![:scale 90%](https://i.ibb.co/RNxBfN5/GNU-MCSIm-Workflow.png)
+]
 
 ---
 

@@ -38,7 +38,7 @@ library(dplyr)
 - Inferential statistics
   - **Population**: Universal information
   - **Sample**: a proper subset of population
-- .bolder[Repeatly Random Sampling]
+- .bolder[Repeatedly Random Sampling]
 ]
 
 .pull-left[
@@ -135,7 +135,7 @@ sd(x)
 ]
 
 .pull-right[
-```{r fig.height=3.6, dev='svg'}
+```{r fig.height=3.2, dev='svg'}
 hist(x)
 ```
 ]
@@ -244,7 +244,7 @@ Distrib(<parameter identifier>, <distribution-name>, [<shape parameters>]);
 
 For examples:
 
-The distribution of absorption rate constant (`Ka`) is ranged bewteen 0.2 to 0.8. It can be written as, 
+The distribution of absorption rate constant (`Ka`) is ranged between 0.2 to 0.8. It can be written as, 
 
 ```r
 Distrib (Ka, Uniform, 0.2, 0.8);
@@ -458,7 +458,7 @@ On the other side, some researcher also developed the approach that moves all pa
 
 ---
 
-# Sensitivity indeices
+# Sensitivity indices
 
 .font120[First order] $(S_i)$
 
@@ -510,7 +510,7 @@ $$S_{1}+ S_2 + S_{3} + S_{12}+S_{13} + S_{23} + S_{123} = 1$$
 
 1. Identify all model factor $(x_i)$ which should be consider in analysis
 
-2. Characterise the uncertainty for each selected input factor
+2. Characterize the uncertainty for each selected input factor
 
 3. Generate a sample of a given size from the previously defined probability distribution
 
@@ -583,7 +583,7 @@ y <- solve_fun(x, model = FFPK, time = time,
 ]
 
 .pull-right[
-```{r fig.height=6, dev='svg', eval=T}
+```{r fig.height=5, dev='svg', eval=T}
 pksim(y)
 ```
 ]
