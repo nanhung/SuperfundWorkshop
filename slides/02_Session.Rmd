@@ -31,6 +31,62 @@ library(simuloR)
 library(dplyr)
 ```
 
+# Deterministic vs Probabilistic
+
+## Traditional - Deterministic
+
+.font200[
+**Choose the "specific" value (or the most conservative scenario) in the risk assessment**
+
+.right[.bolder[Is it good enough?]]
+]
+
+---
+
+# Deterministic vs Probabilistic
+
+.pull-left[
+## Traditional - Deterministic
+
+.font200[
+Choose the "specific" value (or the most conservative scenario) in the risk assessment
+]
+]
+
+.pull-right[
+
+## Modern - Probabilistic
+
+.font200[
+Combine "all" information and characterize the **uncertainty**
+]
+]
+
+---
+
+# Uncertainty in Risk Analysis
+
+.font150[
+The objective of a **probabilistic risk analysis** is the quantification of risk from made man-made and natural activities ([Vesely and Rasmuson, 1984](https://onlinelibrary.wiley.com/doi/10.1111/j.1539-6924.1984.tb00950.x)).  
+]
+
+**Two major types of uncertainty need to be differentiated:**
+
+### (1) Uncertainty due to physical variability
+
+### (2) Uncertainty due to lack of knowledge in
+
+.font125[
+- Modeling uncertainty
+
+- Parameter uncertainty
+
+- Completeness uncertainty
+]
+
+---
+
+
 # Monte Carlo Simulation
 
 .font125[
@@ -54,25 +110,6 @@ John von Neumann
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/ENIAC_Penn1.jpg/1280px-ENIAC_Penn1.jpg" height="220px" />  
 ENIAC (Electronic Numerical Integrator and Computer)
 ]
-
-
----
-
-# Uncertainty in Risk Analysis
-
-The objective of a **probabilistic risk analysis** is the quantification of risk from made man-made and natural activities ([Vesely and Rasmuson, 1984](https://onlinelibrary.wiley.com/doi/10.1111/j.1539-6924.1984.tb00950.x)).  
-
-Two major types of uncertainty need to be differentiated:
-
-### (1) Uncertainty due to physical variability
-
-### (2) Uncertainty due to lack of knowledge in
-
-- Modeling uncertainty
-
-- Parameter uncertainty
-
-- Completeness uncertainty
 
 ---
 
@@ -117,123 +154,6 @@ $$y = f(x_i) $$
 
 .footnote[Mayer J, Khairy K, Howard J. Drawing an elephant with four complex parameters. Am. J. Phys. 78, 648 (2010) https://doi.org/10.1119/1.3254017]
 
----
-
-
-# Monte Carlo Simulation in R
-
-```{r}
-x <- rnorm(n = 28, mean = 10, sd =  2)
-x
-```
-
-.pull-left[
-```{r}
-mean(x)
-sd(x)
-```
-]
-
-.pull-right[
-```{r fig.height=3.2, dev='svg'}
-hist(x)
-```
-]
-
----
-
-# Generating random number
-
-```{r}
-runif(n=5, min=0, max=1)
-runif(n=5, min=0, max=1)
-set.seed(1)
-runif(n=5, min=0, max=1)
-set.seed(1)
-runif(n=5, min=0, max=1)
-```
-
-.bolder[Be sure to set the seed before conducting a simulation!]
-
----
-
-# Monte Carlo Simulation in R
-.pull-left[
-.pull-left[
-```{r fig.height=4.5, dev='svg'}
-x <- runif(10)
-plot(x)
-hist(x)
-```
-]
-.pull-right[
-```{r fig.height=4.5, dev='svg'}
-x <- runif(100)
-plot(x)
-hist(x)
-```
-]
-]
-
-.pull-right[
-.pull-left[
-```{r fig.height=4.5, dev='svg'}
-x <- runif(1000)
-plot(x)
-hist(x)
-```
-]
-.pull-right[
-```{r fig.height=4.5, dev='svg'}
-x <- runif(10000)
-plot(x)
-hist(x)
-```
-]
-]
-
----
-
-# Simulation in GNU MCSim
-
-## Monte Carlo simulations
-
-- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
-
-**Used to:** Check possible simulation (under given parameter distributions) results before model calibration
-
-</br>
-
-## SetPoints simulation
-
-- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
-
-**Used to:** Posterior predictive check, Local/global sensitivity analysis
-
----
-
-
-class: middle, center
-
---- Application ---
-# If you have *known* "parameters"
-# ------------------------------------>
-# <font color="red"> Parameters / Model / Data</font>
-# <------------------------------------
-# If you have *known* "data" 
---- Calibration ---
-
----
-
-</br>
-</br>
-
-## Currently, the Bayesian Markov chain Monte Carlo (MCMC) algorithm is an effective way to do population PBPK model calibration.   
-## It is a powerful tool, Because...
-
-.font150[
->It gives us the opportunity to understand and quantify the .font120["uncertainty"] and .font120["variability"] from individuals to .font150[population] through **data** and **model**.
-]
 
 ---
 
@@ -296,14 +216,544 @@ https://cran.r-project.org/web/packages/mc2d/index.html
 
 ---
 
-# Population pharmacokinetics
 
-.code75[
-```{r fig.height=4.6, dev='svg', eval=T}
-ggplot(Theoph, aes(x = Time, y =conc, color = Subject)) + 
-  geom_point() + geom_line() + labs(x = "Time (hr)", y = "Concentration (mg/L)")
+# Uncertainty in PBPK model parameter
+
+</br>
+
+.pull-left[
+**Physiological parameters**
+
+Cardiac output
+
+Blood flow rate
+
+Tissue volume
+
+]
+
+.pull-right[
+
+**Absorption**
+
+Absorption fraction, absorption rate, ...
+
+**Distribution**
+
+Partition coefficient, distribution fraction, ... 
+
+**Metabolism**
+
+Michaelis–Menten kinetics, ...
+
+**Elimination**
+
+First order elimination rate, ...
+
+]
+
+---
+
+class: middle
+
+.font200[
+In PK modeling...
+
+We can conduct **Monte Carlo simulation** to quantify the possible outcomes (concentration).
+
+But, in some cases,  
+
+we might want know which parameter have high (or no) **"impact"** on model output
+
+]
+
+---
+
+background-image: url(https://i.ibb.co/dcm90HB/Screen-Shot-2019-04-30-at-8-48-27-PM.png)
+background-size: 760px
+background-position: 50% 90% 
+
+# Uncertainty & sensitivity analysis
+
+---
+
+# Sensitivity Analysis
+
+.font150[
+> "The study of how uncertainty in the output of a model (numerical or otherwise) can be apportioned to different sources of uncertainty in the model input." 
+
+]
+
+![:scale 90%](https://i.ibb.co/0smnKjL/SA.png)
+
+.footnote[
+Img: Krishnan, K. and Andersen, M.E. eds., 2010. Quantitative modeling in toxicology. John Wiley & Sons.
+]
+
+---
+
+# Why we need SA?
+
+### Parameter Prioritization
+
+- Identify the most important factors
+
+- Adjust the uncertainty in the model response in experiment design
+
+### Parameter Fixing
+
+- Identify the least important factors
+
+- Simplify the model if it has too many factors
+
+### Parameter Mapping
+
+- Identify critical regions of the inputs that are responsible for extreme values of the model response
+
+---
+
+background-image: url(https://i.ibb.co/30S1XtS/Screen-Shot-2019-04-30-at-9-10-08-PM.png)
+background-size: contain
+background-position: 70% 10% 
+
+# SA in experiment design
+
+.footnote[
+https://doi.org/10.1002/psp4.6
+]
+
+???
+
+It consequently provides useful insight into which model input contributes most to the variability of the model output
+
+---
+
+# Classification of SA Methods
+
+.footnote[http://evelynegroen.github.io]
+
+.pull-left[
+
+**Local** (One-at-a-time)
+
+<img src="http://evelynegroen.github.io/assets/images/fig11local.jpg" height="240px" />
+
+**"Local"** SA focus on sensitivity at a particular set of input parameters, usually using gradients or partial derivatives
+
+]
+
+
+???
+Usually, some people have experience in modeling they have the knowledge in local sensitivity analysis. 
+
+This method is very simple. You move one parameter and fix other parameters then check the change of model outputs. 
+
+On the other side, some researcher also developed the approach that moves all parameters at a time and checks the change of model output. We call it Global sensitivity analysis or variance-based sensitivity analysis.
+
+--
+
+.pull-right[
+
+**Global** (All-at-a-time)
+
+<img src="http://evelynegroen.github.io/assets/images/fig2global.jpg" height="240px" />
+
+**"Global"** SA calculates the contribution from the variety of all model parameters, including .bolder[Single parameter effects] and .bolder[Multiple parameter interactions]
+
+]
+
+???
+
+Usually, some people have experience in modeling they have the knowledge in local sensitivity analysis.
+
+This method is very simple. You move one parameter and fix other parameters then check the change of model outputs.
+
+On the other side, some researcher also developed the approach that moves all parameters at a time and checks the change of model output. We call it Global sensitivity analysis or variance-based sensitivity analysis.
+
+---
+
+# Sensitivity indices
+
+.font120[First order] $(S_i)$
+
+- The output variance contributed by the specific parameter $x_i$,  
+also known as .bolder[main effect]
+
+.font120[Interaction] $(S_{ij})$
+
+- The output variance contributed by any non-identical pair of input parameters
+
+.font120[Total order] $(S_{T})$
+
+- The output variance contributed by the specific parameter and interaction,  
+also known as .bolder[total effect]
+
+
+<hr/>
+
+.left[
+**“Local”** SA usually only addresses first order effects
+
+**“Global”** SA can address total effect that include main effect and interaction
+]
+
+---
+
+# Variance-Based Method
+
+- Variance-based method for sensitivity analysis were first employed by chemists ([Cukier et al. 1973](http://scitation.aip.org/content/aip/journal/jcp/59/8/10.1063/1.1680571)). The method, known as **FAST** (Fourier Amplitude Sensitivity Test). 
+
+- Robust in **factor fixing**, but had relatively high computational cost than local SA.
+
+### Main effect
+
+$$S_{i}=\frac{V\left[E\left(Y | X_{i}\right)\right]}{V(Y)}$$
+
+</br>
+
+### Total effect
+Example of parameter 1 for model with three parameters
+
+$$S_{T 1}=S_{1}+S_{12}+S_{13}+S_{123}$$
+
+$$S_{1}+ S_2 + S_{3} + S_{12}+S_{13} + S_{23} + S_{123} = 1$$
+
+---
+
+# Project
+
+Funding: Food and Drug Administration (1U01FD005838)
+
+Project Start: Sep-2016
+
+Name: **<span style="color: red">Enhancing the reliability, efficiency, and usability of Bayesian population PBPK modeling</span>**
+
+- Specific Aim 1: Develop, implement, and evaluate methodologies for parallelizing time-intensive calculations and enhancing a simulated tempering-based MCMC algorithm for Bayesian parameter estimation  
+(.font120[**Revise algorithm in model calibration**])
+
+.highlight[
+- Specific Aim 2: Create, implement, and evaluate a robust **Global Sensitivity Analysis** algorithm to reduce PBPK model parameter dimensionality  
+(.font120[**Parameter fixing**])
+]  
+
+- Specific Aim 3: Design, build, and test a user-friendly, open source computational platform for implementing an integrated approach for population PBPK modeling  
+(.font120[**User friendly interface**])
+
+---
+
+# Parameter fixing in PBPK
+
+.font75[
+- Hsieh N-H, Reisfeld B, Bois FY and Chiu WA. 2018. [Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full). Frontiers in Pharmacology 9:588.
+- Hsieh et al. (Submitted) - pksensi: An R Package to Apply Global Sensitivity Analysis in Physiologically Based Kinetic Modeling
+]
+.center[
+![:scale 70%](https://i.ibb.co/tqpDLrk/sensitivity-workflow.png)
+]
+
+---
+
+# Parameter fixing in PBPK
+
+.center[![](https://i.ibb.co/nkJ8nTQ/Workflow.png)]
+
+---
+
+# Uncertainty analysis - Flip-flop kinetics
+
+.pull-left[
+```{r eval=T}
+library(pksensi)
+
+# define parameter distributions
+params <- c("F","KA","KE","V")
+q <- c("qunif", "qunif", "qunif", "qnorm")
+q.arg <- list(list(min = 0.8, max = 1),
+              list(min = 0.5, max = 0.8),
+              list(min = 0.1, max = 0.3),
+              list(mean = 10, sd = 1))
+
+# create parameter matrix and conduct simulation
+x <- rfast99(params = params, n = 200, 
+             q = q, q.arg = q.arg, rep = 20)
+time <- seq(from = 0.01, to = 12.01, by = 0.5)
+y <- solve_fun(x, model = FFPK, time = time, 
+               vars = "output")
 ```
 ]
+
+.pull-right[
+```{r fig.height=5, dev='svg', eval=T}
+pksim(y)
+```
+]
+
+---
+
+# Uncertainty analysis - PK model
+
+.center[
+```{r, echo=F, fig.height=5, dev='svg'}
+par(mfrow=c(4,4),mar=c(0.8,0.8,0.8,0),oma=c(4,4,2,1), pch =".")
+for (j in c("F","KA","KE","V")) {
+  if ( j == "V") {
+    plot(y$a[,1,j], ylab = "V")
+  } else plot(y$a[,1,j], xaxt="n", ylab = "")
+  for (i in 2:3) {
+    if ( j == "V") {
+      plot(y$a[,i,j], ylab = "", yaxt="n")  
+    } else plot(y$a[,i,j], xaxt="n", yaxt="n", ylab = "")
+  } 
+  hist <- hist(y$a[,,j], plot=FALSE, 
+               breaks=seq(from=min(y$a[,,j]), to=max(y$a[,,j]), length.out=20))
+  barplot(hist$density, axes=FALSE, space=0, horiz = T, main = j) 
+}
+mtext("Model evaluation", SOUTH<-1, line=2, outer=TRUE)
+```
+]
+
+---
+
+# Sensitivity analysis - PK model
+
+.center[
+```{r, echo=F, fig.height=5, dev='svg'}
+par(mfcol=c(4,4),mar=c(0.8,0.8,0,0),oma=c(4,4,2,1), pch = ".")
+plot(x$a[,1,"F"], y$y[,1,"0.01",1], xaxt="n", main = "\nF")
+plot(x$a[,1,"F"], y$y[,1,"2.01",1], xaxt="n")
+plot(x$a[,1,"F"], y$y[,1,"6.01",1], xaxt="n")
+plot(x$a[,1,"F"], y$y[,1,"12.01",1])
+for (j in c("KA","KE","V")){
+  for (k in c("0.01", "2.01", "6.01", "12.01")){
+    if (k == "0.01") {
+      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n", xaxt="n", main = paste0("\n", j))
+    } else if (k == "12.01") {
+      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n")
+    } else plot(x$a[,1,j], y$y[,1,k,1], xaxt = "n", yaxt = "n")
+  }
+}
+mtext("Parameter", SOUTH<-1, line=2, outer=TRUE)
+mtext("Ccompartment", WEST<-2, line=2, outer=TRUE)
+```
+]
+
+---
+
+# Sensitivity analysis - PK model
+
+```r
+plot(y)
+```
+
+.center[
+```{r fig.height=4.5, fig.width=9, dev='svg', eval=T, echo=F}
+plot(y)
+```
+]
+
+
+---
+
+class: middle, center
+
+--- Application ---
+# If you have *known* "parameters"
+# ------------------------------------>
+# <font color="red"> Parameters / Model / Data</font>
+# <------------------------------------
+# If you have *known* "data" 
+--- Calibration ---
+
+---
+
+</br>
+</br>
+
+## Currently, the Bayesian Markov chain Monte Carlo (MCMC) algorithm is an effective way to do population PBPK model calibration.   
+## It is a powerful tool, Because...
+
+.font150[
+>It gives us the opportunity to understand and quantify the .font120["uncertainty"] and .font120["variability"] from individuals to .font150[population] through **data** and **model**.
+]
+
+---
+
+
+# Frequentist vs. Bayesian
+
+.pull-left[
+![](https://i.ibb.co/YPRVnd1/Screenshot-from-2019-12-03-13-50-13.png)
+]
+
+.pull-right[
+![](https://i.ibb.co/tPtbLmD/Screenshot-from-2019-12-03-13-49-53.png)
+]
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
+]
+---
+
+# Bayes' rule
+
+.font200[
+$$ p(\theta|y) = \frac{p(\theta) p(y|\theta) }{p(y)}$$
+]
+
+$y$: **Observed data**
+
+$\theta$: **Observed or unobserved parameter**
+
+</br>
+
+$p(\theta)$: *Prior distribution* of model parameter
+
+$p(y|\theta)$: *Likelihood* of the experiment data given by a parameter vector
+
+$p(\theta|y)$: *Posterior distribution*
+
+$p(y)$: *Likelihood* of data
+
+---
+
+# Monty Hall Problem
+
+> Suppose you’re on a game show, and you’re given the choice of three doors. Behind one door is a car, behind the others, goats. You pick a door, say number 1, and the host, who knows what’s behind the doors, opens another door, say number 3, which has a goat. He says to you, ”Do you want to pick door number 2?” Is it to your advantage to switch your choice of doors?
+
+> Marilyn vos Savant. 1990. Ask Marilyn. *Parade Magazine*: 16.
+
+.pull-left[
+]
+.pull-right[
+
+```{R echo=F, fig.height=5.2, fig.width=9}
+N <- 500
+set.seed(7)
+prize <- sample(1:3, N, replace = TRUE)
+stay <- sample(1:3, N, replace = TRUE)
+reveal <- rep(0, N)
+change <- rep(0, N)
+for(i in 1:N) {
+  x <- c(1:3)[-c(prize[i], stay[i])]
+  reveal[i] <- x[sample.int(length(x), size = 1)]
+  change[i] <- c(1:3)[-c(reveal[i], stay[i])]
+}
+changewin <- ifelse(change == prize, 1, 0)
+staywin <- ifelse(stay == prize, 1, 0)
+change_perc <- mean(changewin)
+stay_perc <- mean(staywin)
+plot(cumsum(changewin) / c(1:N), main = "'Convergence' to True Winning Proportions",
+     xlab = "Trial", ylab = "Win Percent", ylim = c(0, 1), col = "blue")
+abline(h = 2/3)
+points(cumsum(staywin) / c(1:N), type = "p", col = "red")
+abline(h = 1/3)
+legend("topright", legend = c("Switch to Other Door","Don't Switch"), pch = 1 , col = c(4,2))
+```
+
+]
+
+---
+
+# Frequentist vs. Bayesian
+
+![](https://i.ibb.co/920t4Nt/Screenshot-from-2019-12-03-13-51-43.png)
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
+]
+
+---
+
+# Markov Chain Monte Carlo
+
+.font120[
+- **Metropolis-Hastings sampling algorithm**
+]
+
+The algorithm was named for Nicholas Metropolis (physicist) and Wilfred Keith Hastings (statistician). The algorithm proceeds as follows.
+
+**Initialize**
+
+1. Pick an initial parameter sets $\theta_{t=0} = \{\theta_1, \theta_2, ... \theta_n\}$
+
+**Iterate**
+
+1. *Generate*: randomly generate a candidate parameter state $\theta^\prime$ for the next sample by picking from the conditional distribution  $J(\theta^\prime|\theta_t)$
+2. *Compute*:  compute the acceptance probability 
+$A\left(\theta^{\prime}, \theta_{t}\right)=\min \left(1, \frac{P\left(\theta^{\prime}\right)}{P\left(\theta_{t}\right)} \frac{J\left(\theta_{t} | \theta^{\prime}\right)}{J\left(\theta^{\prime} | \theta_{t}\right)}\right)$
+2. *Accept or Reject*:
+  1. generate a uniform random number $u \in[0,1]$
+  2. if $u \leq A\left(x^{\prime}, x_{t}\right)$ accept the new state and set $\theta_{t+1}=\theta^{\prime}$, otherwise reject the new state, and copy the old state forward $\theta_{t+1}=\theta_{t}$
+
+???
+
+Markov chain Monte Carlo is a general method based on drawing values of theta from approximate distributions and then correcting those draws to better approximate target posterior p(theta|y).
+
+---
+
+class:hide-logo
+.center[
+![:scale 90%](https://i.ibb.co/9hbLTb8/Screenshot-from-2019-12-04-06-21-26.png)
+]
+
+.footnote[https://chi-feng.github.io/mcmc-demo/app.html?algorithm=RandomWalkMH&target=standard]
+
+---
+
+class: middle
+
+.font200[
+## The product of output is not ~~best-fit~~, but "prior" and "posterior".
+]
+
+---
+
+# log-likelihood
+
+The log-likelihood function was used to assess the **goodness-of-fit** of the model to the data ([Woodruff and Bois, 1993](https://www.sciencedirect.com/science/article/pii/0378427493901035?via%3Dihub), [Hsieh et al., 2018](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full#B43))
+
+$$L L=\sum_{i=1}^{N}-\frac{1}{2} \cdot \frac{\left(y_{i}-\widehat{y}_{i}\right)^{2}}{S_{j[i]}^{2}}-\frac{1}{2} \ln \left(2 \pi s_{j[i]}^{2}\right)$$
+
+$N$: the total number of the data points 
+
+$y_i$: experimental observed
+
+$\hat{y}_i$: model predicted value
+
+$j[i]$: data type of data point $i$
+
+$S_{j[i]}^{2}$: the variance for data type $j$
+
+---
+
+# General workflow
+
+### 1 Model constructing or translating
+
+### 2 Verify modeling result
+
+- **Compare with published result**
+- **Mass balance** 
+
+### 3 Uncertainty and sensitivity analysis
+
+- **Morris elementary effects screening** 
+- **Fourier amplitude sensitivity test**
+
+### 4 Model calibration and validation
+
+- **Markov chain Monte Carlo** 
+  - Diagnostics (Goodness-of-fit, convergence)
+
+---
+
+# Probabilistic Modeling
+
+.center[
+![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
+]
+
+.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
 
 ---
 
@@ -337,15 +787,6 @@ $\sigma^2$: Residual errors
 
 ---
 
-# Probabilistic Modeling
-
-.center[
-![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
-]
-
-.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
-
----
 
 background-image: url(https://i.ibb.co/61ryV3d/Screenshot-from-2019-11-27-13-01-24.png)
 background-size: 350px
@@ -600,620 +1041,6 @@ Enhancing the reliability, efficiency, and usability of Bayesian population PBPK
 
 ---
 
-# MonteCarlo()
-
-The MonteCarlo specification gives general information required for the runs: (1) the output file name, (2) the number of runs to perform, and (3) a starting seed for the random number generator. Its syntax is:
-
-```r
-MonteCarlo("<OutputFilename>", <nRuns>, <RandomSeed>);
-```
-
-- `"<OutputFilename>"` The character string <OutputFilename>, enclosed in double quotes, should be a valid filename for your operating system. 
-
-- `<nRuns>` The number of runs <nRuns> should be an integer, and is only limited by either your storage space for the output file or the largest (long) integer available on your machine. 
-
-- `<RandomSeed>` The seed <RandomSeed> of the pseudo-random number generator can be any positive integer (including zero). 
-
-Here is an example of use:
-
-```r
-MonteCarlo("simmc.out", 50000, 9386);
-```
-
----
-
-# Distrib()
-
-The specification of distributions for simple Monte Carlo simulations,
-
-```r
-Distrib(<parameter identifier>, <distribution-name>, [<shape parameters>]);
-```
-
-For examples:
-
-The distribution of absorption rate constant (`Ka`) is ranged between 0.2 to 0.8. It can be written as, 
-
-```r
-Distrib (Ka, Uniform, 0.2, 0.8);
-```
----
-
-# Log-transformed
-
-.pull-left[
-
-```{r}
-# Assumed the uniform distribution U(0.01, 100)
-x <- runif(10000, 0.01, 100)
-```
-
-.pull-left[
-```{r fig.height=6, dev='svg'}
-plot(x)
-```
-]
-
-.pull-right[
-```{r fig.height=6, dev='svg'}
-plot(x, log="y")
-```
-]
-]
-
-.pull-right[
-
-```{r}
-x <- runif(10000, -2, 2)
-x <- 10^x
-```
-
-.pull-left[
-```{r fig.height=6, dev='svg'}
-plot(x)
-```
-]
-
-.pull-right[
-```{r fig.height=6, dev='svg'}
-plot(x, log="y")
-```
-]
-]
-
-
-.bolder[Use log-transformed techniques to prevent the sampling problem!]
-
----
-
-
-# Uncertainty in PBPK model parameter
-
-</br>
-
-.pull-left[
-**Physiological parameters**
-
-Cardiac output
-
-Blood flow rate
-
-Tissue volume
-
-]
-
-.pull-right[
-
-**Absorption**
-
-Absorption fraction, absorption rate, ...
-
-**Distribution**
-
-Partition coefficient, distribution fraction, ... 
-
-**Metabolism**
-
-Michaelis–Menten kinetics, ...
-
-**Elimination**
-
-First order elimination rate, ...
-
-]
-
----
-
-# SetPoints()
-
-This command specifies an output filename, the name of a text file containing (1) the chosen parameter values, (2) the number of simulations to perform and (3) a list of model parameters to read in. It has the following syntax:
-
-```r
-SetPoints("<OutputFilename>", "<SetPointsFilename>", <nRuns>, 
-            <parameter identifier>, <parameter identifier>, ...);
-```
-
-- `"<OutputFilename>"` The character string <OutputFilename>, enclosed in double quotes.
-
-- `"<SetPointsFilename>"` The character string <SetPointsFilename>, enclosed in double quotes.
-
-- `<nRuns>` should be less or equal to the number of lines (minus one) in the set points file. If a zero is given, all lines of the file are read. 
-
-- `<parameter identifier>` a comma-separated list of the parameters or vectors to be read in the SetPointsFilename. 
-
----
-
-background-image: url(https://i.ibb.co/dcm90HB/Screen-Shot-2019-04-30-at-8-48-27-PM.png)
-background-size: 760px
-background-position: 50% 90% 
-
-# Uncertainty & sensitivity analysis
-
----
-
-# Sensitivity Analysis
-
-.font150[
-> "The study of how uncertainty in the output of a model (numerical or otherwise) can be apportioned to different sources of uncertainty in the model input." 
-
-]
-
-![:scale 90%](https://i.ibb.co/0smnKjL/SA.png)
-
-.footnote[
-Img: Krishnan, K. and Andersen, M.E. eds., 2010. Quantitative modeling in toxicology. John Wiley & Sons.
-]
-
----
-
-# Why we need SA?
-
-### Parameter Prioritization
-
-- Identify the most important factors
-
-- Adjust the uncertainty in the model response in experiment design
-
-### Parameter Fixing
-
-- Identify the least important factors
-
-- Simplify the model if it has too many factors
-
-### Parameter Mapping
-
-- Identify critical regions of the inputs that are responsible for extreme values of the model response
-
----
-
-background-image: url(https://i.ibb.co/30S1XtS/Screen-Shot-2019-04-30-at-9-10-08-PM.png)
-background-size: contain
-background-position: 70% 10% 
-
-# SA in experiment design
-
-.footnote[
-https://doi.org/10.1002/psp4.6
-]
-
-???
-
-It consequently provides useful insight into which model input contributes most to the variability of the model output
-
----
-
-# Classification of SA Methods
-
-.footnote[http://evelynegroen.github.io]
-
-.pull-left[
-
-**Local** (One-at-a-time)
-
-<img src="http://evelynegroen.github.io/assets/images/fig11local.jpg" height="240px" />
-
-**"Local"** SA focus on sensitivity at a particular set of input parameters, usually using gradients or partial derivatives
-
-]
-
-
-???
-Usually, some people have experience in modeling they have the knowledge in local sensitivity analysis. 
-
-This method is very simple. You move one parameter and fix other parameters then check the change of model outputs. 
-
-On the other side, some researcher also developed the approach that moves all parameters at a time and checks the change of model output. We call it Global sensitivity analysis or variance-based sensitivity analysis.
-
---
-
-.pull-right[
-
-**Global** (All-at-a-time)
-
-<img src="http://evelynegroen.github.io/assets/images/fig2global.jpg" height="240px" />
-
-**"Global"** SA calculates the contribution from the variety of all model parameters, including .bolder[Single parameter effects] and .bolder[Multiple parameter interactions]
-
-]
-
-???
-
-Usually, some people have experience in modeling they have the knowledge in local sensitivity analysis.
-
-This method is very simple. You move one parameter and fix other parameters then check the change of model outputs.
-
-On the other side, some researcher also developed the approach that moves all parameters at a time and checks the change of model output. We call it Global sensitivity analysis or variance-based sensitivity analysis.
-
----
-
-# Sensitivity indices
-
-.font120[First order] $(S_i)$
-
-- The output variance contributed by the specific parameter $x_i$,  
-also known as .bolder[main effect]
-
-.font120[Interaction] $(S_{ij})$
-
-- The output variance contributed by any non-identical pair of input parameters
-
-.font120[Total order] $(S_{T})$
-
-- The output variance contributed by the specific parameter and interaction,  
-also known as .bolder[total effect]
-
-
-<hr/>
-
-.left[
-**“Local”** SA usually only addresses first order effects
-
-**“Global”** SA can address total effect that include main effect and interaction
-]
-
----
-
-# Variance-Based Method
-
-- Variance-based method for sensitivity analysis were first employed by chemists ([Cukier et al. 1973](http://scitation.aip.org/content/aip/journal/jcp/59/8/10.1063/1.1680571)). The method, known as **FAST** (Fourier Amplitude Sensitivity Test). 
-
-- Robust in **factor fixing**, but had relatively high computational cost than local SA.
-
-### Main effect
-
-$$S_{i}=\frac{V\left[E\left(Y | X_{i}\right)\right]}{V(Y)}$$
-
-</br>
-
-### Total effect
-Example of parameter 1 for model with three parameters
-
-$$S_{T 1}=S_{1}+S_{12}+S_{13}+S_{123}$$
-
-$$S_{1}+ S_2 + S_{3} + S_{12}+S_{13} + S_{23} + S_{123} = 1$$
-
----
-
-# Steps to performing sensitivity analysis
-
-1. Identify all model factor $(x_i)$ which should be consider in analysis
-
-2. Characterize the uncertainty for each selected input factor
-
-3. Generate a sample of a given size from the previously defined probability distribution
-
-4. Define the variable of interest $(y_{i,t})$
-
-5. Execute the model for each combination of factor
-
-6. **Visualize and interpret the outputs**
-
-7. Estimate the sensitivity measures ("*check convergence*")
-
-8. Decision making
-
----
-
-# Project
-
-Funding: Food and Drug Administration (1U01FD005838)
-
-Project Start: Sep-2016
-
-Name: **<span style="color: red">Enhancing the reliability, efficiency, and usability of Bayesian population PBPK modeling</span>**
-
-- Specific Aim 1: Develop, implement, and evaluate methodologies for parallelizing time-intensive calculations and enhancing a simulated tempering-based MCMC algorithm for Bayesian parameter estimation  
-(.font120[**Revise algorithm in model calibration**])
-
-.highlight[
-- Specific Aim 2: Create, implement, and evaluate a robust **Global Sensitivity Analysis** algorithm to reduce PBPK model parameter dimensionality  
-(.font120[**Parameter fixing**])
-]  
-
-- Specific Aim 3: Design, build, and test a user-friendly, open source computational platform for implementing an integrated approach for population PBPK modeling  
-(.font120[**User friendly interface**])
-
----
-
-# Parameter fixing in PBPK
-
-.font75[
-- Hsieh N-H, Reisfeld B, Bois FY and Chiu WA. 2018. [Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full). Frontiers in Pharmacology 9:588.
-- Hsieh et al. (Submitted) - pksensi: An R Package to Apply Global Sensitivity Analysis in Physiologically Based Kinetic Modeling
-]
-.center[
-![:scale 70%](https://i.ibb.co/tqpDLrk/sensitivity-workflow.png)
-]
-
----
-
-# Parameter fixing in PBPK
-
-.center[![](https://i.ibb.co/nkJ8nTQ/Workflow.png)]
-
----
-
-# Uncertainty analysis - Flip-flop kinetics
-
-.pull-left[
-```{r eval=T}
-library(pksensi)
-
-# define parameter distributions
-params <- c("F","KA","KE","V")
-q <- c("qunif", "qunif", "qunif", "qnorm")
-q.arg <- list(list(min = 0.8, max = 1),
-              list(min = 0.5, max = 0.8),
-              list(min = 0.1, max = 0.3),
-              list(mean = 10, sd = 1))
-
-# create parameter matrix and conduct simulation
-x <- rfast99(params = params, n = 200, 
-             q = q, q.arg = q.arg, rep = 20)
-time <- seq(from = 0.01, to = 12.01, by = 0.5)
-y <- solve_fun(x, model = FFPK, time = time, 
-               vars = "output")
-```
-]
-
-.pull-right[
-```{r fig.height=5, dev='svg', eval=T}
-pksim(y)
-```
-]
-
----
-
-# Uncertainty analysis - Flip-flop kinetics
-
-.center[
-```{r, echo=F, fig.height=5, dev='svg'}
-par(mfrow=c(4,4),mar=c(0.8,0.8,0.8,0),oma=c(4,4,2,1), pch =".")
-for (j in c("F","KA","KE","V")) {
-  if ( j == "V") {
-    plot(y$a[,1,j], ylab = "V")
-  } else plot(y$a[,1,j], xaxt="n", ylab = "")
-  for (i in 2:3) {
-    if ( j == "V") {
-      plot(y$a[,i,j], ylab = "", yaxt="n")  
-    } else plot(y$a[,i,j], xaxt="n", yaxt="n", ylab = "")
-  } 
-  hist <- hist(y$a[,,j], plot=FALSE, 
-               breaks=seq(from=min(y$a[,,j]), to=max(y$a[,,j]), length.out=20))
-  barplot(hist$density, axes=FALSE, space=0, horiz = T, main = j) 
-}
-mtext("Model evaluation", SOUTH<-1, line=2, outer=TRUE)
-```
-]
-
----
-
-# Sensitivity analysis - Flip-flop kinetics
-
-.center[
-```{r, echo=F, fig.height=5, dev='svg'}
-par(mfcol=c(4,4),mar=c(0.8,0.8,0,0),oma=c(4,4,2,1), pch = ".")
-plot(x$a[,1,"F"], y$y[,1,"0.01",1], xaxt="n", main = "\nF")
-plot(x$a[,1,"F"], y$y[,1,"2.01",1], xaxt="n")
-plot(x$a[,1,"F"], y$y[,1,"6.01",1], xaxt="n")
-plot(x$a[,1,"F"], y$y[,1,"12.01",1])
-for (j in c("KA","KE","V")){
-  for (k in c("0.01", "2.01", "6.01", "12.01")){
-    if (k == "0.01") {
-      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n", xaxt="n", main = paste0("\n", j))
-    } else if (k == "12.01") {
-      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n")
-    } else plot(x$a[,1,j], y$y[,1,k,1], xaxt = "n", yaxt = "n")
-  }
-}
-mtext("Parameter", SOUTH<-1, line=2, outer=TRUE)
-mtext("Ccompartment", WEST<-2, line=2, outer=TRUE)
-```
-]
-
----
-
-# Sensitivity analysis - Flip-flop kinetics
-
-```r
-plot(y)
-```
-
-.center[
-```{r fig.height=4.5, fig.width=9, dev='svg', eval=T, echo=F}
-plot(y)
-```
-]
-
-
----
-
-# General workflow
-
-### 1 Model constructing or translating
-
-### 2 Verify modeling result
-
-- **Compare with published result**
-- **Mass balance** 
-
-### 3 Uncertainty and sensitivity analysis
-
-- **Morris elementary effects screening** 
-- **Fourier amplitude sensitivity test**
-
-### 4 Model calibration and validation
-
-- **Markov chain Monte Carlo** 
-  - Diagnostics (Goodness-of-fit, convergence)
-
----
-
-# Frequentist vs. Bayesian
-
-.pull-left[
-![](https://i.ibb.co/YPRVnd1/Screenshot-from-2019-12-03-13-50-13.png)
-]
-
-.pull-right[
-![](https://i.ibb.co/tPtbLmD/Screenshot-from-2019-12-03-13-49-53.png)
-]
-
-.footnote[
-https://link.springer.com/article/10.3758/s13423-016-1221-4
-]
----
-
-# Bayes' rule
-
-.font200[
-$$ p(\theta|y) = \frac{p(\theta) p(y|\theta) }{p(y)}$$
-]
-
-$y$: **Observed data**
-
-$\theta$: **Observed or unobserved parameter**
-
-</br>
-
-$p(\theta)$: *Prior distribution* of model parameter
-
-$p(y|\theta)$: *Likelihood* of the experiment data given by a parameter vector
-
-$p(\theta|y)$: *Posterior distribution*
-
-$p(y)$: *Likelihood* of data
-
----
-
-# Monty Hall Problem
-
-> Suppose you’re on a game show, and you’re given the choice of three doors. Behind one door is a car, behind the others, goats. You pick a door, say number 1, and the host, who knows what’s behind the doors, opens another door, say number 3, which has a goat. He says to you, ”Do you want to pick door number 2?” Is it to your advantage to switch your choice of doors?
-
-> Marilyn vos Savant. 1990. Ask Marilyn. *Parade Magazine*: 16.
-
-.pull-right[
-
-```{R echo=F, fig.height=5.5, fig.width=9}
-N <- 500
-set.seed(7)
-prize <- sample(1:3, N, replace = TRUE)
-stay <- sample(1:3, N, replace = TRUE)
-reveal <- rep(0, N)
-change <- rep(0, N)
-for(i in 1:N) {
-  x <- c(1:3)[-c(prize[i], stay[i])]
-  reveal[i] <- x[sample.int(length(x), size = 1)]
-  change[i] <- c(1:3)[-c(reveal[i], stay[i])]
-}
-changewin <- ifelse(change == prize, 1, 0)
-staywin <- ifelse(stay == prize, 1, 0)
-change_perc <- mean(changewin)
-stay_perc <- mean(staywin)
-plot(cumsum(changewin) / c(1:N), main = "'Convergence' to True Winning Proportions",
-     xlab = "Trial", ylab = "Win Percent", ylim = c(0, 1), col = "blue")
-abline(h = 2/3)
-points(cumsum(staywin) / c(1:N), type = "p", col = "red")
-abline(h = 1/3)
-legend("topright", legend = c("Switch to Other Door","Don't Switch"), pch = 1 , col = c(4,2))
-```
-
-]
-
----
-
-# Frequentist vs. Bayesian
-
-![](https://i.ibb.co/920t4Nt/Screenshot-from-2019-12-03-13-51-43.png)
-
-.footnote[
-https://link.springer.com/article/10.3758/s13423-016-1221-4
-]
-
----
-
-# Markov Chain Monte Carlo
-
-.font120[
-- **Metropolis-Hastings sampling algorithm**
-]
-
-The algorithm was named for Nicholas Metropolis (physicist) and Wilfred Keith Hastings (statistician). The algorithm proceeds as follows.
-
-**Initialize**
-
-1. Pick an initial parameter sets $\theta_{t=0} = \{\theta_1, \theta_2, ... \theta_n\}$
-
-**Iterate**
-
-1. *Generate*: randomly generate a candidate parameter state $\theta^\prime$ for the next sample by picking from the conditional distribution  $J(\theta^\prime|\theta_t)$
-2. *Compute*:  compute the acceptance probability 
-$A\left(\theta^{\prime}, \theta_{t}\right)=\min \left(1, \frac{P\left(\theta^{\prime}\right)}{P\left(\theta_{t}\right)} \frac{J\left(\theta_{t} | \theta^{\prime}\right)}{J\left(\theta^{\prime} | \theta_{t}\right)}\right)$
-2. *Accept or Reject*:
-  1. generate a uniform random number $u \in[0,1]$
-  2. if $u \leq A\left(x^{\prime}, x_{t}\right)$ accept the new state and set $\theta_{t+1}=\theta^{\prime}$, otherwise reject the new state, and copy the old state forward $\theta_{t+1}=\theta_{t}$
-
-???
-
-Markov chain Monte Carlo is a general method based on drawing values of theta from approximate distributions and then correcting those draws to better approximate target posterior p(theta|y).
-
----
-
-class:hide-logo
-.center[
-![:scale 90%](https://i.ibb.co/9hbLTb8/Screenshot-from-2019-12-04-06-21-26.png)
-]
-
-.footnote[https://chi-feng.github.io/mcmc-demo/app.html?algorithm=RandomWalkMH&target=standard]
-
----
-
-class: middle
-
-.font200[
-## The product of output is not ~~best-fit~~, but "prior" and "posterior".
-]
-
----
-
-# log-likelihood
-
-The log-likelihood function was used to assess the **goodness-of-fit** of the model to the data ([Woodruff and Bois, 1993](https://www.sciencedirect.com/science/article/pii/0378427493901035?via%3Dihub), [Hsieh et al., 2018](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full#B43))
-
-$$L L=\sum_{i=1}^{N}-\frac{1}{2} \cdot \frac{\left(y_{i}-\widehat{y}_{i}\right)^{2}}{S_{j[i]}^{2}}-\frac{1}{2} \ln \left(2 \pi s_{j[i]}^{2}\right)$$
-
-$N$: the total number of the data points 
-
-$y_i$: experimental observed
-
-$\hat{y}_i$: model predicted value
-
-$j[i]$: data type of data point $i$
-
-$S_{j[i]}^{2}$: the variance for data type $j$
-
----
-
 # Calibration & evaluation
 
 ###  Prepare model and input files 
@@ -1230,122 +1057,21 @@ $S_{j[i]}^{2}$: the variance for data type $j$
 
 ---
 
+# Simulation in GNU MCSim
 
-# MCMC()
+## Monte Carlo simulations
 
-.code75[
-```r
-# Input-file
+- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
 
-MCMC();
+**Used to:** Check possible simulation (under given parameter distributions) results before model calibration
 
-# <Global assignments and specifications>
+</br>
 
-Level {
+## SetPoints simulation
 
-  Distrib();  
-  Likelihood();
+- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
 
-  # Up to 10 levels of hierarchy
-  
-  Simulation {
-    # <Local assignments and specifications>
-  }
-  
-  Simulation {
-    # <Local assignments and specifications>
-  }
-  
-  # Unlimited number of simulation specifications
-} # end Level
-
-End.
-```
-]
-
----
-  
-# MCMC()
-
-The statement, gives general directives for MCMC simulations with following syntax:
-
-```r
- MCMC("<OutputFilename>", "<RestartFilename>", "<DataFilename>",
-          <nRuns>, <simTypeFlag>, <printFrequency>, <itersToPrint>,
-          <RandomSeed>);
-```
-
-.font75[
-`"<OutputFilename>"` Output file name, the default is "MCMC.default.out"
-
-`"<RestartFilename>"` Restart file name
-
-`"<DataFilename>"` Data file name
-
-`<nRuns>` an integer for the total sampling number (iteration)
-
-`<simTypeFlag>` an integer (from 0 to 5) to define the simulation type
-
-`<printFrequency>` an integer to set the interval of printed output 
-
-`<itersToPrint>` an integer to set the number of printed output from the final iteration 
-
-`<RandomSeed>` a numeric for pseudo-random number generator
-]
-
----
-
-# Simulation types
-
-**`<simTypeFlag>` an integer (from 0 to 5) to define the simulation type**
-
-`0`, start/restart a new or unfinished MCMC simulations
-
-`1`, use the last MCMC iteration to quickly check the model fit to the data
-
-`2`, improve computational speed when convergence is approximately obtained
-
-`3`, tempering MCMC with whole posterior
- 
-`4`, tempering MCMC with only likelihood
- 
-`5`,  stochastic optimization 
-
----
-
-background-image: url(https://raw.githubusercontent.com/stan-dev/logos/master/logo_tm.png)
-background-size: 100px
-background-position: 60% 90% 
-
-# Posterior check
-
-.pull-left[
-
-### Manipulate (**simuloR**)
-
-`mcmc_array()`
-
-### Visualize (**bayesplot**, **corrplot**)
-
-`mcmc_trace()`  
-
-`mcmc_dens_overlay()`  
-
-`mcmc_pairs()`  
-
-`corrplot()`
-
-### Report (**rstan**)
-
-`monitor()`  
-
-]
-
-.pull-right[
-
-![:scale 20%](https://www.gnu.org/software/mcsim/mcsimlogo.png)
-
-]
+**Used to:** Posterior predictive check, Local/global sensitivity analysis
 
 ---
 
@@ -1563,27 +1289,28 @@ abline(1,0)
 ```
 ]
 
+---
+
+# Summary
+
+.font200[
+- In the real-word study, we need to consider the uncertainty (from different sources) and variability (inter or intra-individual data) to consider all possible scenarios.
+
+- Bayesian statistics is a powerful tool to quantify the uncertainty and variability in pharmacokinetic modeling.
+
+- The sensitivity analysis approch can provide the useful information of parameter impact on PBPK model.
+]
 
 ---
 
 # Hands on Exercise
 
-### One-compartment PK model (generic)
+## Task 1: Uncertainty analysis & Model calibration for simple PK model
 
-- **Theophylline PK datasets**
-  - Exploratory data analysis (examine Cmax, Tmax for each subject)
+.font150[
+- In the previous exercise, we find that the predcited result can not used to describe the real cases. Therefore, we need to conduct the uncertainty analysis to figure out how to reset the model parameter.
 
-- **Uncertainty analysis & Calibration**
-
-- **Evaluation**
-  - Compare the Css before and after the calibration
-
-- **Application**
-  - Construct the relationship between daily dose (mg/kg-d) and Css (uM)
-  - Predict the Css based on the exposure value from USEPA chemical dashboard*
-
-.footnote[
-[*] https://comptox.epa.gov/dashboard/dsstoxdb/results?search=DTXSID5021336#exposure-predictions
+- Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model calibration.
 ]
 
 ---
@@ -1594,21 +1321,50 @@ background-position: 99% 80%
 
 # Hands on Exercise
 
-### Three-compartment PBPK model (1,3-butadiene)
+## Task 2: Monte Carlo Simulation for PBPK model
 
-- **1,3-butadiene PK datasets**
-
-- **Uncertainty analysis**
-  - Reproduce the published result (R)*
-  - Construct the relationship between body mass and quantity in fat (prior; MCSim**)
-
-- **Model calibration**
-
-- **Evaluation**
-  - Reconstruct the relationship (posterir; MCSim)
+- Reproduce the published Monte Carlo analysis result in Bois and Brochot (2016)*
+  - Testing parameter include body mass (`BDM`), pulmonary flow (`Flow_pul`), partition coefficient of arterial blood (`PC_art`) and metabolism rate (`Kmetwp`)
+- Construct the relationship between body mass and quantity in fat
 
 .footnote[
 [*] Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY  
+]
 
-[**] Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ
-]  
+---
+
+# Hands on Exercise
+
+## Task 3: Reuild PBPK model in MCSim
+
+- The Monte Carlo Simulation take a little bit longer with `ode` function in **deSolve** package. Therefore we want to improve the computational speed. Now, rewrite the R model code to **MCSim** and conduct Monte Carlo Simulation with the same parameter setting. The goal of this exercise is to compare the computational time and output (MCSim vs. R).
+
+```r
+Distrib (BDM, Normal, 73, 7.3);
+Distrib (Flow_pul, Normal, 5, 0.5);
+Distrib (PC_art, Normal, 2, 0.2);
+Distrib (Kmetwp, Normal, 0.25, 0.025);
+```
+
+---
+
+# Hands on Exercise
+
+## Task 4: Sensitivity analysis
+
+- The MCSim can provide faster computational speed than **deSolve**. Now, we can add additional parameters and see the relationship between body mass and quantity in fat changed. If we get a different result, which means there might have interaction between the parameters. The parameter values can refer from Bois (2013)*
+
+.code75[
+```r
+Distrib (Pct_BDW_wp,    TruncLogNormal, 0.2, 1.2, 0.1,  0.35);
+Distrib (Pct_Deadspace, TruncLogNormal, 0.4, 1.2, 0.23, 0.45);
+Distrib (Pct_Flow_fat,  TruncLogNormal, 0.05,1.2, 0.03, 0.09);
+Distrib (Pct_Flow_pp,   TruncLogNormal, 0.15,1.2, 0.06, 0.26);
+Distrib (PC_pp,         TruncLogNormal, 0.7, 1.2, 0.4,  1.2);
+Distrib (PC_wp,         TruncLogNormal, 0.7, 1.2, 0.4,  1.2);
+```
+]
+
+.footnote[
+[*] Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ
+]

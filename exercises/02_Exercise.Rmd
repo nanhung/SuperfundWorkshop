@@ -22,6 +22,63 @@ library(httk)
 theme_set(theme_bw())
 ```
 
+
+
+
+
+```{r}
+x <- rnorm(n = 28, mean = 10, sd =  2)
+x
+```
+
+```{r}
+mean(x)
+sd(x)
+```
+
+```{r fig.height=3.2, dev='svg'}
+hist(x)
+```
+
+
+# Generating random number
+
+```{r}
+runif(n=5, min=0, max=1)
+runif(n=5, min=0, max=1)
+set.seed(1)
+runif(n=5, min=0, max=1)
+set.seed(1)
+runif(n=5, min=0, max=1)
+```
+
+
+
+```{r fig.height=4.5, dev='svg'}
+x <- runif(10)
+plot(x)
+hist(x)
+```
+.pull-right[
+```{r fig.height=4.5, dev='svg'}
+x <- runif(100)
+plot(x)
+hist(x)
+```
+
+```{r fig.height=4.5, dev='svg'}
+x <- runif(1000)
+plot(x)
+hist(x)
+```
+
+```{r fig.height=4.5, dev='svg'}
+x <- runif(10000)
+plot(x)
+hist(x)
+```
+
+
 ```{r, eval=F}
 View(Theoph)
 ```

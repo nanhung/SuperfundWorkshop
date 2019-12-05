@@ -146,7 +146,7 @@ background-position: 95% 95%
 
 ---
 
-# TCE GSH conjugation pathway
+# Trichloroethylene GSH conjugation pathway
 
 .pull-left[
 - Initial conjugation with GSH
