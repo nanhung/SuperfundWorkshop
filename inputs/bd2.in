@@ -1,0 +1,24 @@
+#------------------------------------------------------------------------------
+# bd12.in
+#
+# Copyright (c) 1993-2016 Free Software Foundation, Inc.
+#------------------------------------------------------------------------------
+
+Integrate (Lsodes, 1e-6, 1e-6, 1);
+
+Simulation {
+  C_inh = NDoses (2, 1, 0, 0, 144000);
+  PrintStep(C_exh, 0, 144000, 1000);  
+}
+Simulation {
+  C_inh = NDoses (2, 10, 0, 0, 144000);
+  PrintStep(C_exh, 0, 144000, 1000);  
+}
+Simulation {
+  C_inh = NDoses (2, 100, 0, 0, 144000);
+  PrintStep(C_exh, 0, 144000, 1000);  
+}
+Simulation {
+  C_inh = NDoses (2, 1000, 0, 0, 144000);
+  PrintStep(C_exh, 0, 144000, 1000);  
+}
