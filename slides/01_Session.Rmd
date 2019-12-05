@@ -117,9 +117,26 @@ Pharmacokinetic modelling is performed to .large[.bolder["predict"]] the exposur
 <img src="https://ars.els-cdn.com/content/image/1-s2.0-S1021949816301946-fx1_lrg.jpg" height="330px" />
 ]
 
-???
-It quantify the fate of drug, which is ADME
-The top-right diagram is a simple example of PK model 
+---
+
+# Pharmacokinetic Model
+
+## What information we want to know through .bolder["prediction"]?
+
+.pull-left[
+# Time
+
+## When the chemical can reach the peak concentration in the body?
+
+
+]
+
+.pull-right[
+# Concentration
+
+## What is the peak concentration?
+
+]
 
 ---
 
@@ -151,6 +168,37 @@ To .font150[.bolder["predict"]] the **cumulative does** by constructed **compart
 
 ---
 
+# Mathematical method
+
+## How to conduct simulation?
+
+.font125[
+.pull-left[
+**Numerical**
+
+- Use the differential equation containing one or more functions of one independent variable and the derivatives of those functions.
+
+.font150[
+$$\frac{dD}{dt}=-k_{e} \cdot D$$
+]
+]
+
+.pull-right[
+**Analytical**
+
+- The simple equation with a independent variable of time 
+
+</br>
+
+.font150[
+$$D(t) = D_0 \cdot e^{-k_{e} \cdot t}$$
+]
+]
+
+]
+
+---
+
 background-image: url(https://i.ibb.co/t2hLp0m/pk1cpt.jpghttps://i.ibb.co/t2hLp0m/pk1cpt.jpg)
 background-size: 200px
 background-position: 40% 80%
@@ -158,7 +206,7 @@ background-position: 40% 80%
 # One-Compartment PK Model
 
 .pull-left[
-### Intravenous Administration
+## Intravenous Administration
 .font150[
 Ordinary differential equation
 
@@ -172,8 +220,11 @@ $D_t = D_0 \cdot e^{-k_{e} \cdot t}$
 ]
 
 .pull-right[
+
+</br>  
+</br>  
 .code75[
-```{r fig.height=4, dev='svg'}
+```{r fig.height=4, dev='svg', echo=F}
 D_0 <- 10
 t <- seq(0.01, 10.01, 1)
 k_e <- 0.5
@@ -188,7 +239,7 @@ plot(t, D_t, type = "b")
 # Flip-flop kinetics (1-compartment model)
 
 .pull-left[
-```{r}
+```{r, echo=F}
 D <- 1            # Intake Dose (mass)
 Fgutabs <- 0.9    # Absorption fraction (-)
 k_e <- 0.2        # Elimination rate (1/time)
@@ -203,10 +254,16 @@ Conc <- A * exp(-k_e * t) - A * exp(-k_a * t)
 
 ![](https://i.ibb.co/zQ4t9Wn/pk1cpt.jpg)
 
+$D$: Dose
+$F$: Bioavailability
+$K_a$ Absorption rate constant (/time)
+$k-e$
+$V$: 
+
 ]
 
 .pull-right[
-```{r fig.height=5.0, dev='svg', eval=T}
+```{r fig.height=6.0, dev='svg', eval=T, echo=F}
 plot(t, Conc, type = "b")
 ```
 ]
