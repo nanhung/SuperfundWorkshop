@@ -10,7 +10,8 @@
 
 States  = {Q_fat,             # Butadiene quantity in the fat        (mg)
   Q_wp,              # ~         in well-perfused tissues   (mg)
-  Q_pp};             # ~         in poorly-perfused tissues (mg)
+  Q_pp,
+  Q_met};             # ~         in poorly-perfused tissues (mg)
 
 
 Outputs = {C_alv,             # Butadiene concentration in alveolar air   (mg/l)
@@ -143,6 +144,7 @@ Dynamics {
   dt (Q_fat) = Flow_fat * (C_art - Cout_fat);
   dt (Q_wp)  = Flow_wp  * (C_art - Cout_wp) - dQmet_wp;
   dt (Q_pp)  = Flow_pp  * (C_art - Cout_pp);
+  dt (Q_met) = dQmet_wp;
   
 } # End of Dynamics
 

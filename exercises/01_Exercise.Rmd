@@ -21,6 +21,7 @@ Import the R packages
 ```{R message=FALSE, warning=FALSE}
 library(simuloR)
 library(httk)
+library(tidyverse)
 ```
 
 # 1 One-compartment model 
@@ -280,15 +281,61 @@ Construct the butadiene-PBPK model code for MCSim based ob the R model code
 
 ## Exercise 2.2
 
-Run Butadiene-PBPK model under 10 ppm exposure for 100 minutes and plot the time-course of exhaled air concentration from 0 to 1400 minutes.
+Run butadiene-PBPK model under 10 ppm exposure for 100 minutes and plot the time-course of exhaled air concentration from 0 to 1400 minutes.
 
 ```{r}
-out <- mcsim(model = "models/butadiene.model", input = "inputs/butadiene.in")
+out <- mcsim(model = "models/butadiene.model", input = "inputs/bd1.in")
+```
+
+
+```{r}
+par(mfrow=c(2,3))
+plot(out$Time, out$Q_fat, type="l")
+plot(out$Time, out$Q_wp, type="l")
+plot(out$Time, out$Q_pp, type="l")
+plot(out$Time, out$Q_met, type="l")
+plot(out$Time, out$C_ven, type="l")
+plot(out$Time, out$C_art, type="l")
 ```
 
 ## Exercise 2.3
 
-Estimate the steady-state of arterial and venous blood concentrations associated with butadiene exposures (from 0.1 ppm to 1000 ppm).
+Estimate the steady-state of exhaled air concentrations associated with butadiene exposures (from 0.1 ppm to 1000 ppm).
+
+
+```{r}
+out <- mcsim(model = "models/butadiene.model", input = "inputs/bd2.in")
+tail(out)
+```
+
+```{r}
+str.sim <- which(out[,1] == 0)
+end.sim <- which(out[,1] == 144000)
+str.sim
+end.sim
+```
+
+
+```{r}
+sim.1 <- str.sim[1]:end.sim[1]
+t1 <- out[sim.1,1] %>% as.character() %>% as.numeric()
+c1 <- out[sim.1,2] %>% as.character() %>% as.numeric()
+plot(t1, c1)
+```
+
+
+```{r}
+par(mfrow=c(2,2))
+for (i in 1:4){
+sim <- str.sim[i]:end.sim[i]
+t1 <- out[sim,1] %>% as.character() %>% as.numeric()
+c1 <- out[sim,2] %>% as.character() %>% as.numeric()
+plot(t1, c1, type="l")  
+}
+```
+
+
+# Session info
 
 ```{r}
 sessionInfo()

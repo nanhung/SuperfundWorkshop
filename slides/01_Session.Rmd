@@ -412,7 +412,7 @@ $A$: quantity; $Q$: flow rate; $r_{ds}$: deadspace ratio; $C$: concentration; $R
 # Inputs
 
 ```{r}
-C_inh <- approxfun(x = c(0, 100), y=c(10,0), method = "constant", f = 0, rule = 2) 
+C_inh <- approxfun(x = c(0, 120), y=c(10,0), method = "constant", f = 0, rule = 2) 
 ```
 
 ```{r fig.height=4, dev='svg'}
