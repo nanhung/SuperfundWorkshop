@@ -212,6 +212,394 @@ hist(x)
 
 ---
 
+
+class: middle, center
+
+--- Application ---
+# If you have *known* "parameters"
+# ------------------------------------>
+# <font color="red"> Parameters / Model / Data</font>
+# <------------------------------------
+# If you have *known* "data" 
+--- Calibration ---
+
+---
+
+</br>
+</br>
+
+## Currently, the Bayesian Markov chain Monte Carlo (MCMC) algorithm is an effective way to do population PBPK model calibration.   
+## It is a powerful tool, Because...
+
+.font150[
+>It gives us the opportunity to understand and quantify the .font120["uncertainty"] and .font120["variability"] from individuals to .font150[population] through **data** and **model**.
+]
+
+---
+
+background-image: url(https://i.ibb.co/JB7s1bK/Screenshot-from-2019-09-24-11-49-47.png)
+background-size: 700px
+background-position: 50% 80% 
+
+# Modeling in Risk Assessment  
+
+.footnote[https://www.epa.gov/risk/about-risk-assessment#whatisrisk]
+
+---
+
+background-image: url(https://i.ibb.co/SmNTtv2/WHO.png)
+background-size: 260px
+background-position: 80% 90% 
+
+# Uncertainty vs. Variability
+
+.font150[
+
+> **Uncertainty** relates to "lack of knowledge"" that, in theory, could be reduced by better data, whereas **variability** relates to an existing aspect of the real world that is outside our control.
+
+> [*World Health Organization (2017)*](https://www.who.int/ipcs/methods/harmonization/areas/hazard_assessment/en/)
+
+]
+
+???
+
+There is a clear definition to differentiate the uncertainty and variability in WHO document.
+
+---
+
+background-image: url()
+background-size: 200px
+background-position: 80% 80% 
+
+# Variability in Risk Assessment
+
+- Reduce chances using a strain that is a "poor" model of humans 
+- Obtaining information about "potential range" to inform risk assessment 
+
+.center[
+![:scale 60%](https://i.ibb.co/ykYp8BY/variability.png)
+]
+
+.font75[Chiu WA and Rusyn I, 2018. https://doi.org/10.1007/s00335-017-9731-6]
+
+---
+
+### Variability & Uncertainty
+
+.center[
+![:scale 70%](https://i.ibb.co/Kq4nStY/Screen-Shot-2019-05-08-at-7-25-22-AM.png)
+]
+
+.footnote[
+https://cran.r-project.org/web/packages/mc2d/index.html
+]
+
+---
+
+# Population pharmacokinetics
+
+.code75[
+```{r fig.height=4.6, dev='svg', eval=T}
+ggplot(Theoph, aes(x = Time, y =conc, color = Subject)) + 
+  geom_point() + geom_line() + labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
+]
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X10002623-gr5.jpg)
+background-size: 500px
+background-position: 70% 80% 
+
+# Bayesian Population Model
+
+**Individuals level**
+
+$E$: Exposure  
+
+$t$: Time  
+
+$\theta$: Specific parameters  
+
+$y$: condition the data
+
+</br>
+
+**Population level**
+
+$\mu$: Population means
+
+$\Sigma^2$: Population variances
+
+$\sigma^2$: Residual errors
+
+.footnote[https://doi.org/10.1016/j.tox.2010.06.007]
+
+---
+
+# Probabilistic Modeling
+
+.center[
+![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
+]
+
+.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
+
+---
+
+background-image: url(https://i.ibb.co/61ryV3d/Screenshot-from-2019-11-27-13-01-24.png)
+background-size: 350px
+background-position: 20% 90% 
+
+# Related publication 
+
+Bois et al. (1996) - [Population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007%2Fs002040050284)  
+Chiu and Bois (2006) - [Revisiting the population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007/s00204-006-0061-9)    
+
+.pull-right[
+![:scale 70%](https://i.ibb.co/c2ghZ7m/Screenshot-from-2019-11-27-13-01-46.png)
+]
+
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr1.jpg)
+background-size: 330px
+background-position: 20% 80% 
+
+# Related publication 
+
+.font75[
+Hack et al. (2006) - [Bayesian population analysis of a harmonized physiologically based pharmacokinetic model of trichloroethylene and its metabolites](https://www.sciencedirect.com/science/article/pii/S027323000600095X)
+]
+
+.pull-left[]
+
+.pull-right[
+![:scale 55%](https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr3.jpg)
+]
+
+---
+
+class: hide-logo
+
+.pull-left[
+
+## Related publication
+
+Chiu et al. (2009) - [Characterizing uncertainty and population variability in the toxicokinetics of trichloroethylene and metabolites in mice, rats, and humans using an updated database, physiologically based pharmacokinetic (PBPK) model, and Bayesian approach](https://www.sciencedirect.com/science/article/pii/S0041008X09003238)  
+
+</br>
+![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr3_lrg.jpg)  
+.font75[Hierarchical population statistical model for mice, rats, and humans. ]
+]
+
+.pull-right[
+
+![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr2.jpg)  
+.font75[Overall structure of updated PBPK model for TCE and metabolites. ]
+]
+
+---
+
+background-image: url(https://i.ibb.co/VHT9qZ3/chiu2019.jpg)
+background-size: 500px
+background-position: 50% 90% 
+
+# Related publication 
+
+- Characterizing PBPK parameters from individuals to population
+
+- Evaluating population **variability** and parameter **uncertainty**
+
+- Cross-species comparisons of metabolism in **risk assessment**
+
+.footnote[
+Chiu et al. 2009.  
+https://doi.org/10.1016/j.taap.2009.07.032  
+]
+
+???
+
+A brief summarizes the Bayesian approach in population PBPK modeling. We can use it to estimate the posterior parameter. Then used the parameter uncertainty to estimate the posterior population prediction and group-specific prediction. 
+
+Based on this information we can compare the metabolism across experimental animals and human and further use this information in risk assessment.
+
+---
+
+background-image: url(https://i.ibb.co/tYDnPDb/chiu2014-2.png)
+background-size: 500px
+background-position: 75% 80% 
+
+# Related publication 
+
+**Inter-strain & inter-individual variability**
+
+Chiu et al. (2014) - [Physiologically-Based Pharmacokinetic (PBPK) Modeling of Inter-strain Variability in Trichloroethylene Metabolism in the Mouse](https://ehp.niehs.nih.gov/doi/full/10.1289/ehp.1307623?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%3dpubmed)
+
+<img src="https://i.ibb.co/DVWYytX/chiu2014.png" height="380px" />
+
+???
+
+It is an extensive study.
+
+Previous animal studies mainly used single strain, B6C3F1 as a representative animal. But the issue to used B6C3F1 in extrapolation is the metabolism is very difference with the human. It had the highest rate of respiratory tract oxidative metabolism as compared to rats and humans. Also, it doesn't have representative variability in risk assessment.
+
+So in this study, instead of B6 strain, it includes 16 inbreds to discuss inter-strain variability and use it to compare with the human inter-individual variability. 
+
+Through the multi-strains model calibration and prediction, we can have consistent estimates of variability in human and mice
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr2_lrg.jpg)
+background-size: 300px
+background-position: 70% 95%
+
+# Recent study
+
+Funding: **U.S. EPA (STAR RD83561202)** and **National Institutes of Health (F32 ES026005)**
+
+Luo, Y.S., Hsieh, N.H., Soldatow, V.Y., Chiu, W.A. and Rusyn, I., 2018. [Comparative Analysis of Metabolism of Trichloroethylene and Tetrachloroethylene among Mouse Tissues and Strains](https://doi.org/10.1016/j.tox.2018.07.012). Toxicology, 409, pp.33-43.
+
+<hr>
+
+**Motivation**: Quantitative comparison of tissue- and strain-specific metabolism of TCE and PCE has not been performed
+
+</br>
+
+<img src= "https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr1.jpg" height="220px" />
+
+???
+
+---
+
+</br>
+
+</br>
+
+Predicted disposition of **TCE (A)**, **PCE (B)**, and their respective metabolites in male B6C3F1/J, C57BL/6J, and NZW/LacJ mice.
+
+.center[
+![](https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr5.jpg)
+]
+
+.font70[
+Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain.
+]
+
+???
+
+This is the result of the disposition of TCE and PCE and their respective metabolites in mice strains. 
+Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain. 
+Most of each parent compound (TCE and PCE) remained unmetabolized until excretion
+As you can see the disposition fractions are different across the mice strains. 
+For to the glutathione conjugation metabolism, the overall flux to conjugation was less than 0.3% of the administered dose for both chemicals. 
+
+---
+
+# Recent study
+
+Funding: **National Institutes of Health (P42 ES027704 and P42 ES ES005948)**
+
+Luo, Y.S., Cichocki, J.A., Hsieh, N.H., Lewis, L., Wright, F.A., Threadgill, D.W., Chiu, W.A. and Rusyn, I., 2019. [Using Collaborative Cross Mouse Population to Fill Data Gaps in Risk Assessment: A Case Study of Population-Based Analysis of Toxicokinetics and Kidney Toxicodynamics of Tetrachloroethylene](https://doi.org/10.1289/EHP5105). Environmental Health Perspectives, 127(6), p.067011.
+
+<hr>
+
+**Background:**
+
+- Interindividual variability in susceptibility remains poorly characterized for environmental chemicals such as tetrachloroethylene (PERC). 
+- Development of population-based experimental models provide a potential approach to fill this critical need in human health risk assessment.
+
+**Objectives:** 
+
+- To better characterize the contribution of glutathione (GSH) conjugation to kidney toxicity of PERC and the degree of associated interindividual toxicokinetic (TK) and toxicodynamic (TD) variability by using the Collaborative Cross (CC) mouse population.
+
+???
+
+This is our following research. This study aim to apply the developed multicompartment PK model in human health risk assessment. In this study, we used in animal experiment result from CC mouse population to characterize metabolism–toxicity interactions and quantify the interindividual variability. Our main objective is ...
+
+---
+
+class:clear, hide-logo
+
+.center[
+![:scale 80%](https://i.ibb.co/KF8PLWy/Screenshot-from-2019-09-24-11-57-00.png)
+]
+
+.footnote[https://factor.niehs.nih.gov/2019/9/papers/dert/index.htm]
+
+???
+
+This paper was been selected as Papers of the Month. The brief summary of this study is 
+- Mice exposed to PERC had lower kidney weight and more markers of kidney injury
+- Inbred mice used in previous studies generally exhibited metabolism of PERC at the lower end of the overall distribution
+- Default values that are generally used by the U.S. Environmental Protection Agency in human health risk assessments to adjust for population variation, the default values may protect 95% of the population but not the most sensitive individuals
+
+---
+
+class: hide-logo
+
+.pull-left[
+Interstrain Variability in Metabolism of PERC through Glutathione Conjugation Pathway
+
+![:scale 70%](https://ehp.niehs.nih.gov/cms/attachment/9d640350-b940-4fc6-b40c-2cc96767ae3e/ehp5105_f4.jpg)
+
+]
+
+.pull-right[
+Predicted disposition of PERC and its metabolites in CC mouse strains
+
+![:scale 90%](https://ehp.niehs.nih.gov/cms/attachment/e8287e06-d8ab-423f-a58e-5332bd18523c/ehp5105_f6.gif)
+]
+
+---
+
+class:clear
+
+**Chemical-Specific Adjustment Factors for Population Variability and Risk Assessment**
+
+![](https://i.ibb.co/f24zFvp/UF-table.png) 
+<hr>
+.center[![:scale 40%](https://i.ibb.co/WF2dr8S/UF.png)]
+
+???
+
+Based on the inter-strain estimation, we further used predicted disposition of PERC, TCA, and GSH conjugates across CC strains to calculate the chemical-specific adjustment factors for TK variability
+
+
+---
+
+# Related publication
+
+**U.S. Food and Drug Administration** 
+
+Enhancing the reliability, efficiency, and usability of Bayesian population PBPK modeling - Create, implement, and evaluate a robust Global Sensitivity Analysis algorithm to reduce PBPK model parameter dimensionality
+
+<hr>
+
+- Hsieh N-H, Reisfeld B, Bois FY and Chiu WA. 2018. [Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full). Frontiers in Pharmacology 9:588.
+
+- Bois et al. (Submitted) - Well tempered MCMC simulations for population pharmacokinetic models
+
+- Hsieh et al. (Submitted) - pksensi: An R Package to Apply Global Sensitivity Analysis in Physiologically Based Kinetic Modeling
+
+---
+
+# Inter & intra- variability modeling
+
+.center[
+.pull-left[
+**Inter-individual variability model**
+<img src= "https://i.ibb.co/QHMSrbq/inter.png" height="450px" /> 
+]
+.pull-right[
+**Inter- & intra-individual variability model**
+<img src= "https://i.ibb.co/2tzxQCN/inter-intra.png" height="450px" />
+]
+]
+
+---
+
 # MonteCarlo()
 
 The MonteCarlo specification gives general information required for the runs: (1) the output file name, (2) the number of runs to perform, and (3) a starting seed for the random number generator. Its syntax is:
@@ -841,6 +1229,7 @@ $S_{j[i]}^{2}$: the variance for data type $j$
   - Individual evaluation 
 
 ---
+
 
 # MCMC()
 
