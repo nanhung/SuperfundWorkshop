@@ -343,11 +343,78 @@ plot(t, Conc, type = "b")
 
 ---
 
+# Empirical compartmental models
+
+.pull-left[
+
+## Advantages
+
+- Can continue adding compartments to fit more complex concentration-time profiles.
+
+- Can provide useful descriptions of the data.
+
+]
+
+.pull-right[
+
+## Disadvantages
+
+- Cannot interpret compartments biologically.
+- Many A,D,M, and E processes are interconnected.
+- Cannot make predictions beyond the experiment being described.
+  - Different tissues
+  - Different exposure routes or conditions
+  - Different species
+  - Different individuals
+- Cannot incorporate everything else we know about biology!
+
+]
+
+---
+
 # Physiological-Based Pharmacokinetic (PBPK)
 
 Mathematically transcribing .bolder[anatomical, physiological, physical, and chemical] descriptions of the phenomena involved in the complex .bolder[ADME] processes.
 
 .center[![:scale 60%](http://pharmguse.net/pkdm/pbpm.jpg)]
+
+---
+
+# Why PBPK models?
+
+- There are some processes that empirical models have difficulty simulating – such as inhalation exposures.
+
+- We know a lot about the physiology/anatomy of the organisms we study and want to protect.
+  - Organ/tissue sizes
+  - Connections between organs/tissues
+  - Blood flow rates
+  - Ventilation rates
+  - Metabolizing enzymes
+  - Etc…
+
+By developing a model, we can incorporate that information to help us make inferences beyond the experimental data at hand.
+
+---
+
+# Building a PBPK model
+
+- Decide on what compartments are needed
+  - Target vs. non-target tissues
+  - Tissues with in vivo vs. in vitro vs. no data
+  - Exposure routes
+
+- Specify the (interrelated) equations for each compartment
+
+- Specify parameter values
+  - Physiological/anatomical parameters
+  - Chemical-specific parameters
+
+- Set up the inputs (doses, exposure concentrations, etc.) and outputs (blood, tissue, exhaled breath concentrations).
+
+- Solve using numerical differential equation solver and compare with data
+
+</br>
+.bolder[Iteration may be needed for refining model and/or conducting additional experiments]
 
 ---
 
@@ -383,6 +450,28 @@ Chen et al. (2015) [Physiologically based pharmacokinetic modeling of zinc oxide
 
 ---
 
+# Compartmental equations: “Storage” compartments
+
+- Flow in and out of “storage” compartments involve only blood flow
+
+- Key parameters/variables
+    
+    $Q_i$ = tissue blood flow
+
+    $P_i$ = tissue-blood partition coefficient
+
+    $V_i$ = volume of tissue
+
+    $C_a$ = arterial blood concentration
+
+    $CV_i$ = venous blood concentration leaving tissue
+
+    $A_i$ = amount in tissue
+
+    $C_i$ = concentration in tissue
+
+---
+
 class: hide-logo
 
 .pull-left[
@@ -396,12 +485,18 @@ class: hide-logo
 
 # Basic transport equations
 
-.font125[
 The model equations follow the principles of mass transport, fluid dynamics, and biochemistry in order to simulate the fate of a substance in the body.
-]
 
-.font200[
+rate in $= Q_iC_{art}$  &  rate out $= Q_iC_{VT} = Q_i \cdot C_i/P_i$
+
+Change in amount = rate in – rate out
+
+.font125[
 $$\frac{d A_{i}}{d t}=Q_{i}\left(C_{a r t}-\frac{A_{i}}{P_{i} V_{i}}\right)$$
+
+or
+
+$$\frac{d C{i}}{d t}=\frac{Q_{i}}{V_i}\left(C_{a r t}-\frac{C_{i}}{P_{i} V_{i}}\right)$$
 ]
 
 $A_i$ is amount of chemical, $Q_i$ is blood flow, $C_art$ incoming arterial blood concentration, $P_i$ the tissue over blood partition coefficient and $V_i$ the volume of compartment $i$.
@@ -490,6 +585,22 @@ According to Toxic Substances Control Act (TSCA), to address thousands of chemic
 
 .footnote[source: [USEPA](https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=NCCT&dirEntryId=340966)]
 
+
+---
+
+# Computational toolkits
+
+### Multiple software packages available to solve differential equations
+
+.font150[
+- ASCL – “traditionally” used by many established PBPK modelers (but now discontinued!)
+- Berkeley Madonna – used in some PBPK modeling courses
+- MatLab – flexible interactive interface (more expensive, but more powerful)
+- GNU MCSim – specialized software for Bayesian uncertainty and population variability analyses
+]
+
+
+### All of them incorporate methods for “optimizing” the model fit by adjusting parameter values.
 
 ---
 
