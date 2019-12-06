@@ -48,13 +48,21 @@ background-position: 95% 95%
 
 # Content
 
-## Basic Pharmacokinetics Concepts
+## 1 Basic Pharmacokinetics Concepts
 
-## Pharmacokinetic Models
+## 2 Pharmacokinetic Models
+ 
+## 3 Computational Toolkits
 
-## Computational Toolkits
+## 4 Hands-on Exercise
 
-## Appendix
+---
+
+class:middle, center
+
+.font300[
+# Basic Pharmacokinetics Concepts
+]
 
 ---
 
@@ -229,6 +237,58 @@ Lash, L.H., et al. 2014. [Trichloroethylene biotransformation and its role in mu
 
 ---
 
+class:middle, center
+
+.font300[
+# Pharmacokinetic Models
+]
+
+---
+
+background-image: url(https://wol-prod-cdn.literatumonline.com/cms/attachment/87cce77b-8dd4-4928-869f-b230e0cffcc4/psp412134-fig-0003-m.jpg)
+background-size: 700px
+background-position: 90% 90%
+
+# Why Pharmacokinetic Modeling
+
+- **Pharmaceutical research**
+
+- **Drug development**
+
+- **Health risk assessment**
+
+        .  
+        .  
+        .  
+
+---
+
+# High Throughput Risk Prioritization
+
+According to Toxic Substances Control Act (TSCA), to address thousands of chemicals, we need to use **new approach methodologies (NAMs)** to prioritize the existing and new chemicals for testing.
+
+.pull-left[
+
+## Main components 
+
+### 1. High throughput hazard characterization
+
+### 2. High throughput exposure forecasts
+
+### 3. High throughput **toxicokinetics**
+
+]
+
+.pull-right[
+
+![:scale 75%](https://i.ibb.co/ZW5Nq1S/Screenshot-from-2019-12-04-11-30-13.png)
+
+]
+
+.footnote[source: [USEPA](https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=NCCT&dirEntryId=340966)]
+
+---
+
 # Pharmacokinetic Model
 
 ### What information we want to know through .bolder["prediction"]?
@@ -292,7 +352,7 @@ background-image: url(https://i.ibb.co/t2hLp0m/pk1cpt.jpghttps://i.ibb.co/t2hLp0
 background-size: 200px
 background-position: 40% 80%
 
-# Intravenous Administration
+# Intravenous administration
 
 .pull-left[
 .font150[
@@ -314,7 +374,7 @@ $A_t = A_0 \cdot e^{-k_{e} \cdot t}$
 A_0 <- 10
 t <- c(0,1,2,4,8,10)
 k_e <- 0.5
-A_t <- D_0*exp(-k_e*t) 
+A_t <- A_0*exp(-k_e*t) 
 plot(t, A_t, type = "b")
 ```
 ]
@@ -564,48 +624,11 @@ Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.c
 
 ---
 
-background-image: url(https://wol-prod-cdn.literatumonline.com/cms/attachment/87cce77b-8dd4-4928-869f-b230e0cffcc4/psp412134-fig-0003-m.jpg)
-background-size: 700px
-background-position: 90% 90%
+class:middle, center
 
-# Why Pharmacokinetic Modeling
-
-- **Pharmaceutical research**
-
-- **Drug development**
-
-- **Health risk assessment**
-
-        .  
-        .  
-        .  
-
----
-
-# High Throughput Risk Prioritization
-
-According to Toxic Substances Control Act (TSCA), to address thousands of chemicals, we need to use **new approach methodologies (NAMs)** to prioritize the existing and new chemicals for testing.
-
-.pull-left[
-
-## Main components 
-
-### 1. High throughput hazard characterization
-
-### 2. High throughput exposure forecasts
-
-### 3. High throughput **toxicokinetics**
-
+.font300[
+# Computational toolkits
 ]
-
-.pull-right[
-
-![:scale 75%](https://i.ibb.co/ZW5Nq1S/Screenshot-from-2019-12-04-11-30-13.png)
-
-]
-
-.footnote[source: [USEPA](https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=NCCT&dirEntryId=340966)]
-
 
 ---
 
@@ -667,7 +690,7 @@ background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/93/GPLv3_
 background-size: 200px
 background-position: 50% 80% 
 
-# Advantages of MCSim and R/RStudio
+# Advantages of MCSim and R
 
 .center[.font125[*"Free and Open Source Software"* under GNU General Public License]]
 
@@ -682,7 +705,7 @@ background-image: url(http://lcolladotor.github.io/figs/2016-03-07-BiocParallel/
 background-size: 750px
 background-position: 90% 40% 
 
-# Advantages in MCSim and R
+# Advantages
 
 .font125[*"Parallel computing"*]  
 <img src="http://lcolladotor.github.io/figs/2016-03-07-BiocParallel/cloud.jpg" height="300px" />
@@ -695,9 +718,60 @@ background-position: 90% 40%
 
 ---
 
-# GUI vs. CLI
+# Advantages - Reproducible research
 
-![:scale 98%](https://i.ibb.co/9qPVfhy/Screenshot-from-2019-11-28-13-46-14.png)
+.center[
+![:scale 84%](https://i.ibb.co/nBPdYgW/Screenshot-from-2019-12-03-17-24-16.png)
+]
+
+.footnote[Reproducibility and Replicability in Science (2019) http://nap.edu/25303]
+
+---
+
+background-image: url(https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/tidyverse.png)
+background-size: 500px
+background-position: 90% 90% 
+
+# Conducting data analysis through R
+
+- Implement a wide variety of statistical and graphical techniques
+
+- Comprehensive research workflow and toolkits (e.g., RMarkdown)
+
+- Integration with low-level language (e.g., C, C++, Fortran)
+
+- Highly extensible through the use of user-submitted packages
+
+- Webapp development .font75[(e.g., http://webpopix.org/shiny/ShinyExamples.html)]
+
+.footnote[[Image source](https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/PopulationChangeSpeciesOccurrence/)]
+
+---
+
+
+background-image: url(https://www.rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-Flat.png)
+background-size: 300px
+background-position: 95% 95% 
+
+# RStudio
+
+### Free and open-source integrated development environment
+
+### Powerful and user friendly programming interface
+
+### Designed to make it easy to write scripts
+
+### Easy to view and interact with the objects 
+
+### R project with version control (e.g., git) 
+
+### Support cloud computing https://rstudio.cloud/
+
+---
+
+</br>
+
+![](https://i.ibb.co/6vWf06v/Screenshot-from-2019-11-28-15-31-26.png)
 
 ---
 
@@ -757,6 +831,29 @@ This project mainly focus on using GNU MCSim
 
 This founder of this project is Dr. Frédéric Y. Bois. He had been worked in CalEPA as Staff Toxicologist for 5 years.
 
+---
+
+# GNU MCSim Overview
+
+The *GNU MCSim* consists in two pieces, a **model generator** and a **simulation engine**:
+
+<hr>
+
+The model generator, **"mod"**
+
+- Created to facilitate structural model definition and maintenance, while keeping execution time short. You can code your model using a simplified syntax and use mod to translate it to `C` (`model.c`).
+
+
+The simulation engine, **"sim"**
+
+- A set of routines which are linked to your model during compilation to produce executable program (`mcsim.model`). After that, you can run simulations of your model under a variety of conditions, specify an associated statistical model, and perform simulations.
+
+---
+
+# GNU MCSim Workflow
+.center[
+![:scale 90%](https://i.ibb.co/RNxBfN5/GNU-MCSIm-Workflow.png)
+]
 
 ---
 
@@ -800,42 +897,6 @@ background-position: 50% 90%
 
 ---
 
-background-image: url(https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/tidyverse.png)
-background-size: 500px
-background-position: 90% 90% 
-
-# R
-
-- Implement a wide variety of statistical and graphical techniques
-
-- Comprehensive research workflow and toolkits (e.g., RMarkdown)
-
-- Integration with low-level language (e.g., C, C++, Fortran)
-
-- Highly extensible through the use of user-submitted packages
-
-- Webapp development .font75[(e.g., http://webpopix.org/shiny/ShinyExamples.html)]
-
-.footnote[[Image source](https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/PopulationChangeSpeciesOccurrence/)]
-
----
-
-# Reproducible research
-
-.center[
-![:scale 84%](https://i.ibb.co/nBPdYgW/Screenshot-from-2019-12-03-17-24-16.png)
-]
-
-.footnote[Reproducibility and Replicability in Science (2019) http://nap.edu/25303]
-
----
-
-</br>
-
-![](https://i.ibb.co/6vWf06v/Screenshot-from-2019-11-28-15-31-26.png)
-
----
-
 background-image: url(https://i.ibb.co/0c8rQ4p/httk.png)
 background-size: 540px
 background-position: 50% 98% 
@@ -863,23 +924,6 @@ C code
 **deSolve** package
 <i class="fa fa-arrow-right"></i>
 Prediction
-
----
-
-# A General PBTK Model
-
-- Exposures are absorbed from gut lumen.
-
-- Blood flows move the chemical throughout the body. The total blood flow to all tissues equals the cardiac output.
-
-- Some tissues (e.g. arterial blood) are simple compartments, while others (e.g. kidney) are compound compartments consisting of separate blood and tissue sections with constant partitioning (i.e., tissue specific partition coefficients).
-
-- Some specific tissues (lung, kidney, gut, and liver) are modeled explicitly, others (e.g. fat, brain, bones) are lumped into the “Rest of Body” compartment.
-
-- The only ways chemicals “leaves” the body are through metabolism (change into a metabolite) in the
-liver or excretion by glomerular filtration into the proximal tubules of the kidney (which filter into the lumen of the kidney). 
-
-.footnote[https://www.epa.gov/sites/production/files/2018-04/documents/intro-to-httk-042717.pdf]
 
 ---
 
@@ -929,26 +973,6 @@ background-position: 95% 90%
 
 ---
 
-background-image: url(https://www.rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-Flat.png)
-background-size: 300px
-background-position: 95% 95% 
-
-# RStudio
-
-### Free and open-source integrated development environment
-
-### Powerful and user friendly programming interface
-
-### Designed to make it easy to write scripts
-
-### Easy to view and interact with the objects 
-
-### R project with version control (e.g., git) 
-
-### Support cloud computing https://rstudio.cloud/
-
----
-
 background-image: url(https://files.explosm.net/comics/comicsavegamenew.png)
 background-size: 400px
 background-position: 60% 90% 
@@ -989,6 +1013,8 @@ class: hide-logo
 
 # High Performance Research Computing
 
+**The efficient way to conduct parallel computing**
+
 .center[![:scale 60%](https://i.ibb.co/c6ht46y/Screenshot-from-2019-11-28-15-10-21.png)]
 
 ---
@@ -999,107 +1025,58 @@ background-position: 90% 80%
 
 # Linux
 
-![:scale 60%](https://i.ibb.co/y592vn2/Screenshot-from-2019-11-28-15-17-34.png)
+**The open source Unix-like operating systems for high performance research computing**
 
----
-
-# GNU Overview
-
-The *GNU MCSim* consists in two pieces, a **model generator** and a **simulation engine**:
-
-<hr>
-
-The model generator, **"mod"**
-
-- Created to facilitate structural model definition and maintenance, while keeping execution time short. You can code your model using a simplified syntax and use mod to translate it to `C` (`model.c`).
-
-
-The simulation engine, **"sim"**
-
-- A set of routines which are linked to your model during compilation to produce executable program (`mcsim.model`). After that, you can run simulations of your model under a variety of conditions, specify an associated statistical model, and perform simulations.
-
----
-
-# GNU MCSim Workflow
-.center[
-![:scale 90%](https://i.ibb.co/RNxBfN5/GNU-MCSIm-Workflow.png)
-]
-
----
-
-# Comments on style
-
-### For your model file to be **readable** and **understandable**.
-
-- All variable names begin with a capital letter followed by meaningful lower case subscripts.
-- Where two subscripts are necessary, they can be separated by an underscore, such as in `PC_fat`.
-- Where there is only one subscript an underscore can still be used to increase readability as in `Q_fat`.
-- Where two words are used in combination to name one item, they can be separated visually by capitalizing each word, as in `BodyWt`.
-
-</br>
-
-.font80[
-> “Good coding style is like using correct punctuation.   
-> You can manage without it, but it sure makes things easier to read.”  
-> — Hadley Wickham, Chief Scientist @RStudio
-]
-
-.footnote[
-Some other contents can be found in  [GNU MCSim's user manual 5.3.11](https://www.gnu.org/software/mcsim/mcsim.html#Syntax-of-mod-files) and [R programming style guide](http://adv-r.had.co.nz/Style.html)
-]
-
----
-
-# Additional R packages for analysis
-
-[data.table](https://cran.r-project.org/web/packages/data.table/index.html) - Fast reading of large output file, especially from MCMC with long iterations and high dimensional parameter space.
-
-[tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html) - Powerful data science toolbox that can use to manipulate (`dplyr`) and plot (`ggplot`) the simulation result.
-
-[sensitivity](https://cran.r-project.org/web/packages/sensitivity/index.html) - A collection of functions for factor screening, global sensitivity analysis and reliability sensitivity analysis.
-
-[pksensi](https://cran.r-project.org/web/packages/pksensi/index.html) - Applying the global sensitivity analysis (eFAST) workflow to investigate the parameter uncertainty and sensitivity in pharmacokinetic (PK) models.
-
-[bayesplot](https://cran.r-project.org/web/packages/bayesplot/index.html) - Plotting functions for posterior analysis.
-
-[rstan](https://cran.r-project.org/web/packages/rstan/index.html) - Diagnose the simulation result from MCMC.
-
-```r
-# Quick installation
-pkgs <- c("bayesplot", "data.table", "pksensi", "rstan", "sensitivity", "tidyverse")
-install.packages(pkgs)
-```
----
-
-background-image: url(https://i.ibb.co/ZLRrNJy/syntaxhighlight.png)
-background-size: 620px
-background-position: 50% 90% 
-
-# Tips of MCSim under R(Studio)
-
-Generally, the GNU MCSim used `.model` and `.in` as the extension to name the model- and input-file. However, RStudio doesn't support the syntax highlight for these extensions. You can add `.R` as the extension for these files to help you edit your model or input in RStudio with syntax highlighting. Also, it can help you format your code in the code bracket.
+![:scale 55%](https://i.ibb.co/y592vn2/Screenshot-from-2019-11-28-15-17-34.png)
 
 ---
 
 # Summary
 
 - Role of pharmacokinetics in risk assessment 
-  - toxicity is driven by concentration at the target tissue site.
+  - toxicity is driven by concentration at the **target tissue site**.
 
 - Basic pharmacokinetics  
-  - A,D,M,E each may affect internal dose, and differences between species or among individuals.
+  - **A,D,M,E** each may affect internal dose, and differences between species or among individuals.
 
 - Pharmacokinetic modelling  
-  - Information from physiology and chemistry are common ways to characterize the concentration-time relationship.
+  - Information from **physiology** and **chemistry** are common ways to characterize the concentration-time relationship.
 
 - Computational toolkits  
-  - The open soure computational tools (e.g., R & GNU MCSim) are powerful and can help us conduct the model simulation and data analysis
+  - The **open soure** computational tools (e.g., R & GNU MCSim) are powerful and can help us conduct the model simulation and data analysis
+
+---
+
+class:middle, center
+
+.font300[
+# Hands on Exercise
+]
 
 ---
 
 # Hands on Exercise
 
-## Task 1: Exploratory data analysis
+Task 1. **Exploratory analysis of PK data** (`code`: https://rpubs.com/Nanhung/SRP19_1)
+- Learn how to use R to conduct basic analyis for PK data
+
+Task 2. **PK model development** (`code`: https://rpubs.com/Nanhung/SRP19_2)
+- Learn how to use R and MCSim to build a model 
+
+Task 3. **Parameter setting and model simulation** (`code` https://rpubs.com/Nanhung/SRP19_3)
+- Understand the parameter seting in PK model and conduct the simulation 
+
+Task 4. **PBPK model development** (`code` https://rpubs.com/Nanhung/SRP19_4)
+- Instead of PK model, we need to know how to build a PBPK model
+
+Task 5. **Application of PBPK model** (`code` https://rpubs.com/Nanhung/SRP19_5)
+- Here, we have a well-built PBPK model and its parameters, let's apply the model in the exposure assessment
+
+---
+
+# Hands on Exercise
+
+## Task 1: Exploratory analysis of PK data
 
 - Now, we have a theophylline PK dataset. The purpose of this exercise is to develop the simple PK model and use it to describe the PK of theophylline. First, look into the theophylline dataset. The `Theoph` data frame has 132 rows and 5 columns of data from an experiment on the pharmacokinetics of theophylline. Then, find the Cmax and Tmax for each individual. 
 
@@ -1148,7 +1125,7 @@ parms <- httk::parameterize_1comp(chem.name = "theophylline")
 
 # Hands on Exercise
 
-## Task 4: Developing the PBPK model
+## Task 4: PBPK model development
 
 - Instead of simple PK model, in this exercise we want to apply the well developed PBPK model for 1,3 butadiene.
 

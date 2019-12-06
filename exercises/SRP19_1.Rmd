@@ -1,0 +1,185 @@
+---
+title: "Hands-on Exercise 1: Task 1. Exploratory data analysis"
+author: "Nan-Hung Hsieh"
+date: "2019/12/09 (update: `r Sys.Date()`)"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+  fig_caption: yes  
+
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{R message=FALSE, warning=FALSE}
+library(tidyverse)
+theme_set(theme_bw())
+```
+
+```{r}
+head(Theoph)
+```
+
+
+```{r}
+tail(Theoph)
+```
+
+
+```{r}
+subset(Theoph, Subject == 1)
+```
+
+
+```{r}
+subset(Theoph, Subject == 1) %>% summary()
+```
+
+
+```{r}
+s1 <- subset(Theoph, Subject == 1) 
+plot(s1$Time, s1$conc)
+```
+
+
+```{r}
+plot(Theoph$Time, Theoph$conc, col=Theoph$Subject)
+```
+
+
+```{r}
+par(mfrow=c(3,4))
+for(i in 1:12){
+  dat <- subset(Theoph, Subject == i)  
+  plot(dat$Time, dat$conc, main = i)
+}
+```
+
+```{r}
+Theoph %>% ggplot(aes(x = Time, y =conc, color = Subject)) + 
+  geom_point()
+```
+
+```{r}
+Theoph %>% ggplot(aes(x = Time, y =conc, color = Subject)) + 
+  geom_point() + geom_line() + 
+  labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
+
+```{r}
+Theoph %>% ggplot(aes(x = Time, y =conc)) + 
+  geom_point() + geom_line() + 
+  facet_wrap(~Subject) + 
+  labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
+
+
+```{r}
+class(Theoph$Subject)
+```
+
+```{r}
+Theoph$Subject
+```
+
+```{r}
+Theoph$Subject <- factor(Theoph$Subject, 
+                            level = c("1", "2", "3", "4", "5", "6", 
+                                      "7", "8", "9", "10", "11","12"))
+```
+
+
+```{r}
+Theoph$Subject
+```
+
+
+```{r}
+Theoph %>% ggplot(aes(x = Time, y =conc)) + 
+  geom_point() + geom_line() + 
+  facet_wrap(~Subject) + 
+  labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
+
+
+```{r}
+s1.Cmax <- max(s1$conc)
+s1.Cmax
+```
+
+
+```{r}
+which(s1$conc == s1.Cmax)
+```
+
+
+```{r}
+t.pt <- which(s1$conc == s1.Cmax)
+T_max <- s1$Time[t.pt]
+```
+
+
+
+
+
+```{r}
+Cmax_pop <- Theoph %>% group_by(Subject) %>% summarise(C_max = max(conc))
+Cmax_pop
+```
+
+
+```{r}
+hist(Cmax_pop$C_max)
+```
+
+
+```{r}
+boxplot(Cmax_pop$C_max)
+```
+
+
+```{r}
+Theoph %>% group_by(Subject) %>% summarise(C_max = max(conc), Wt=mean(Wt))
+```
+
+```{r}
+Theoph %>% group_by(Subject) %>% 
+  summarise(C_max = max(conc), Wt=mean(Wt)) %>% 
+  ggplot(aes(x=Wt, y=C_max)) + geom_point()
+```
+
+
+```{r}
+Theoph %>% group_by(Subject) %>% 
+  summarise(C_max = max(conc), Wt=mean(Wt)) %>% 
+  ggplot(aes(x=Wt, y=C_max)) + geom_point() + geom_smooth(method = "lm")
+```
+
+
+```{r}
+df <- Theoph %>% group_by(Subject) %>% summarize(C_max = max(conc))
+df$T_max <- NA
+df
+```
+
+
+```{r}
+dat <- subset(Theoph, Subject==1)
+C_max.pt <- which(dat$conc == df$C_max[1])
+df$T_max[1] <- dat$Time[C_max.pt]
+df
+```
+
+
+```{r}
+for(i in 2:12){
+  dat <- subset(Theoph, Subject==i)
+  C_max.pt <- which(dat$conc == df$C_max[i])
+  df$T_max[i] <- dat$Time[C_max.pt]
+}
+df
+```
