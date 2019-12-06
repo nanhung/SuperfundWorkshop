@@ -22,7 +22,7 @@ Inputs = { Oral_input }; # Drug input (mg)
 
 # Outputs -----------------------------------------------------------------
 Outputs = { 
-  Ccompartment
+Ccompartment
 };  # Concentration in central compartment (uM)
 
 
