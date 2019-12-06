@@ -31,6 +31,27 @@ library(simuloR)
 library(dplyr)
 ```
 
+
+# Content
+
+## 1 Uncertainty and Variability
+
+## 2 Monte Carlo simulation - Prediction
+ 
+## 3 Markov Chain Monte Carlo simulation - Calibration
+
+## 4 Hands-on Exercise
+
+---
+
+class:middle, center
+
+.font300[
+# Uncertainty and Variability
+]
+
+---
+
 # Deterministic vs Probabilistic
 
 ## Traditional - Deterministic
@@ -86,6 +107,17 @@ The objective of a **probabilistic risk analysis** is the quantification of risk
 
 ---
 
+class: middle, center
+
+--- Application ---
+# If you have *known* "parameters"
+# ------------------------------------>
+# <font color="red"> Parameters / Model / Data</font>
+# <------------------------------------
+# If you have *known* "data" 
+--- Calibration ---
+
+---
 
 # Monte Carlo Simulation
 
@@ -113,7 +145,7 @@ ENIAC (Electronic Numerical Integrator and Computer)
 
 ---
 
-# Uncertainty in modeling
+# Modeling uncertainty
 
 ### Deterministic Simulation
 
@@ -200,7 +232,9 @@ background-position: 80% 80%
 ![:scale 60%](https://i.ibb.co/ykYp8BY/variability.png)
 ]
 
-.font75[Chiu WA and Rusyn I, 2018. https://doi.org/10.1007/s00335-017-9731-6]
+.font75[
+Chiu WA and Rusyn I, 2018. Advancing chemical risk assessment decision-making with population variability data: challenges and opportunities. https://doi.org/10.1007/s00335-017-9731-6
+]
 
 ---
 
@@ -254,315 +288,29 @@ First order elimination rate, ...
 
 ---
 
-class: middle
+# Simulation in GNU MCSim
 
-.font200[
-In PK modeling...
+## Monte Carlo simulations
 
-We can conduct **Monte Carlo simulation** to quantify the possible outcomes (concentration).
+- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
 
-But, in some cases,  
-
-we might want know which parameter have high (or no) **"impact"** on model output
-
-]
-
----
-
-background-image: url(https://i.ibb.co/dcm90HB/Screen-Shot-2019-04-30-at-8-48-27-PM.png)
-background-size: 760px
-background-position: 50% 90% 
-
-# Uncertainty & sensitivity analysis
-
----
-
-# Sensitivity Analysis
-
-.font150[
-> "The study of how uncertainty in the output of a model (numerical or otherwise) can be apportioned to different sources of uncertainty in the model input." 
-
-]
-
-![:scale 90%](https://i.ibb.co/0smnKjL/SA.png)
-
-.footnote[
-Img: Krishnan, K. and Andersen, M.E. eds., 2010. Quantitative modeling in toxicology. John Wiley & Sons.
-]
-
----
-
-# Why we need SA?
-
-### Parameter Prioritization
-
-- Identify the most important factors
-
-- Adjust the uncertainty in the model response in experiment design
-
-### Parameter Fixing
-
-- Identify the least important factors
-
-- Simplify the model if it has too many factors
-
-### Parameter Mapping
-
-- Identify critical regions of the inputs that are responsible for extreme values of the model response
-
----
-
-background-image: url(https://i.ibb.co/30S1XtS/Screen-Shot-2019-04-30-at-9-10-08-PM.png)
-background-size: contain
-background-position: 70% 10% 
-
-# SA in experiment design
-
-.footnote[
-https://doi.org/10.1002/psp4.6
-]
-
-???
-
-It consequently provides useful insight into which model input contributes most to the variability of the model output
-
----
-
-# Classification of SA Methods
-
-.footnote[http://evelynegroen.github.io]
-
-.pull-left[
-
-**Local** (One-at-a-time)
-
-<img src="http://evelynegroen.github.io/assets/images/fig11local.jpg" height="240px" />
-
-**"Local"** SA focus on sensitivity at a particular set of input parameters, usually using gradients or partial derivatives
-
-]
-
-
-???
-Usually, some people have experience in modeling they have the knowledge in local sensitivity analysis. 
-
-This method is very simple. You move one parameter and fix other parameters then check the change of model outputs. 
-
-On the other side, some researcher also developed the approach that moves all parameters at a time and checks the change of model output. We call it Global sensitivity analysis or variance-based sensitivity analysis.
-
---
-
-.pull-right[
-
-**Global** (All-at-a-time)
-
-<img src="http://evelynegroen.github.io/assets/images/fig2global.jpg" height="240px" />
-
-**"Global"** SA calculates the contribution from the variety of all model parameters, including .bolder[Single parameter effects] and .bolder[Multiple parameter interactions]
-
-]
-
-???
-
-Usually, some people have experience in modeling they have the knowledge in local sensitivity analysis.
-
-This method is very simple. You move one parameter and fix other parameters then check the change of model outputs.
-
-On the other side, some researcher also developed the approach that moves all parameters at a time and checks the change of model output. We call it Global sensitivity analysis or variance-based sensitivity analysis.
-
----
-
-# Sensitivity indices
-
-.font120[First order] $(S_i)$
-
-- The output variance contributed by the specific parameter $x_i$,  
-also known as .bolder[main effect]
-
-.font120[Interaction] $(S_{ij})$
-
-- The output variance contributed by any non-identical pair of input parameters
-
-.font120[Total order] $(S_{T})$
-
-- The output variance contributed by the specific parameter and interaction,  
-also known as .bolder[total effect]
-
-
-<hr/>
-
-.left[
-**“Local”** SA usually only addresses first order effects
-
-**“Global”** SA can address total effect that include main effect and interaction
-]
-
----
-
-# Variance-Based Method
-
-- Variance-based method for sensitivity analysis were first employed by chemists ([Cukier et al. 1973](http://scitation.aip.org/content/aip/journal/jcp/59/8/10.1063/1.1680571)). The method, known as **FAST** (Fourier Amplitude Sensitivity Test). 
-
-- Robust in **factor fixing**, but had relatively high computational cost than local SA.
-
-### Main effect
-
-$$S_{i}=\frac{V\left[E\left(Y | X_{i}\right)\right]}{V(Y)}$$
+**Used to:** Check possible simulation (under given parameter distributions) results before model calibration
 
 </br>
 
-### Total effect
-Example of parameter 1 for model with three parameters
+## SetPoints simulation
 
-$$S_{T 1}=S_{1}+S_{12}+S_{13}+S_{123}$$
+- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
 
-$$S_{1}+ S_2 + S_{3} + S_{12}+S_{13} + S_{23} + S_{123} = 1$$
-
----
-
-# Project
-
-Funding: Food and Drug Administration (1U01FD005838)
-
-Project Start: Sep-2016
-
-Name: **<span style="color: red">Enhancing the reliability, efficiency, and usability of Bayesian population PBPK modeling</span>**
-
-- Specific Aim 1: Develop, implement, and evaluate methodologies for parallelizing time-intensive calculations and enhancing a simulated tempering-based MCMC algorithm for Bayesian parameter estimation  
-(.font120[**Revise algorithm in model calibration**])
-
-.highlight[
-- Specific Aim 2: Create, implement, and evaluate a robust **Global Sensitivity Analysis** algorithm to reduce PBPK model parameter dimensionality  
-(.font120[**Parameter fixing**])
-]  
-
-- Specific Aim 3: Design, build, and test a user-friendly, open source computational platform for implementing an integrated approach for population PBPK modeling  
-(.font120[**User friendly interface**])
+**Used to:** Posterior predictive check, Local/global sensitivity analysis
 
 ---
 
-# Parameter fixing in PBPK
+class:middle, center
 
-.font75[
-- Hsieh N-H, Reisfeld B, Bois FY and Chiu WA. 2018. [Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full). Frontiers in Pharmacology 9:588.
-- Hsieh et al. (Submitted) - pksensi: An R Package to Apply Global Sensitivity Analysis in Physiologically Based Kinetic Modeling
+.font300[
+# Markov Chain Monte Carlo simulation
 ]
-.center[
-![:scale 70%](https://i.ibb.co/tqpDLrk/sensitivity-workflow.png)
-]
-
----
-
-# Parameter fixing in PBPK
-
-.center[![](https://i.ibb.co/nkJ8nTQ/Workflow.png)]
-
----
-
-# Uncertainty analysis - Flip-flop kinetics
-
-.pull-left[
-```{r eval=T}
-library(pksensi)
-
-# define parameter distributions
-params <- c("F","KA","KE","V")
-q <- c("qunif", "qunif", "qunif", "qnorm")
-q.arg <- list(list(min = 0.8, max = 1),
-              list(min = 0.5, max = 0.8),
-              list(min = 0.1, max = 0.3),
-              list(mean = 10, sd = 1))
-
-# create parameter matrix and conduct simulation
-x <- rfast99(params = params, n = 200, 
-             q = q, q.arg = q.arg, rep = 20)
-time <- seq(from = 0.01, to = 12.01, by = 0.5)
-y <- solve_fun(x, model = FFPK, time = time, 
-               vars = "output")
-```
-]
-
-.pull-right[
-```{r fig.height=5, dev='svg', eval=T}
-pksim(y)
-```
-]
-
----
-
-# Uncertainty analysis - PK model
-
-.center[
-```{r, echo=F, fig.height=5, dev='svg'}
-par(mfrow=c(4,4),mar=c(0.8,0.8,0.8,0),oma=c(4,4,2,1), pch =".")
-for (j in c("F","KA","KE","V")) {
-  if ( j == "V") {
-    plot(y$a[,1,j], ylab = "V")
-  } else plot(y$a[,1,j], xaxt="n", ylab = "")
-  for (i in 2:3) {
-    if ( j == "V") {
-      plot(y$a[,i,j], ylab = "", yaxt="n")  
-    } else plot(y$a[,i,j], xaxt="n", yaxt="n", ylab = "")
-  } 
-  hist <- hist(y$a[,,j], plot=FALSE, 
-               breaks=seq(from=min(y$a[,,j]), to=max(y$a[,,j]), length.out=20))
-  barplot(hist$density, axes=FALSE, space=0, horiz = T, main = j) 
-}
-mtext("Model evaluation", SOUTH<-1, line=2, outer=TRUE)
-```
-]
-
----
-
-# Sensitivity analysis - PK model
-
-.center[
-```{r, echo=F, fig.height=5, dev='svg'}
-par(mfcol=c(4,4),mar=c(0.8,0.8,0,0),oma=c(4,4,2,1), pch = ".")
-plot(x$a[,1,"F"], y$y[,1,"0.01",1], xaxt="n", main = "\nF")
-plot(x$a[,1,"F"], y$y[,1,"2.01",1], xaxt="n")
-plot(x$a[,1,"F"], y$y[,1,"6.01",1], xaxt="n")
-plot(x$a[,1,"F"], y$y[,1,"12.01",1])
-for (j in c("KA","KE","V")){
-  for (k in c("0.01", "2.01", "6.01", "12.01")){
-    if (k == "0.01") {
-      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n", xaxt="n", main = paste0("\n", j))
-    } else if (k == "12.01") {
-      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n")
-    } else plot(x$a[,1,j], y$y[,1,k,1], xaxt = "n", yaxt = "n")
-  }
-}
-mtext("Parameter", SOUTH<-1, line=2, outer=TRUE)
-mtext("Ccompartment", WEST<-2, line=2, outer=TRUE)
-```
-]
-
----
-
-# Sensitivity analysis - PK model
-
-```r
-plot(y)
-```
-
-.center[
-```{r fig.height=4.5, fig.width=9, dev='svg', eval=T, echo=F}
-plot(y)
-```
-]
-
-
----
-
-class: middle, center
-
---- Application ---
-# If you have *known* "parameters"
-# ------------------------------------>
-# <font color="red"> Parameters / Model / Data</font>
-# <------------------------------------
-# If you have *known* "data" 
---- Calibration ---
 
 ---
 
@@ -616,44 +364,6 @@ $p(y)$: *Likelihood* of data
 
 ---
 
-# Monty Hall Problem
-
-> Suppose you’re on a game show, and you’re given the choice of three doors. Behind one door is a car, behind the others, goats. You pick a door, say number 1, and the host, who knows what’s behind the doors, opens another door, say number 3, which has a goat. He says to you, ”Do you want to pick door number 2?” Is it to your advantage to switch your choice of doors?
-
-> Marilyn vos Savant. 1990. Ask Marilyn. *Parade Magazine*: 16.
-
-.pull-left[
-]
-.pull-right[
-
-```{R echo=F, fig.height=5.2, fig.width=9}
-N <- 500
-set.seed(7)
-prize <- sample(1:3, N, replace = TRUE)
-stay <- sample(1:3, N, replace = TRUE)
-reveal <- rep(0, N)
-change <- rep(0, N)
-for(i in 1:N) {
-  x <- c(1:3)[-c(prize[i], stay[i])]
-  reveal[i] <- x[sample.int(length(x), size = 1)]
-  change[i] <- c(1:3)[-c(reveal[i], stay[i])]
-}
-changewin <- ifelse(change == prize, 1, 0)
-staywin <- ifelse(stay == prize, 1, 0)
-change_perc <- mean(changewin)
-stay_perc <- mean(staywin)
-plot(cumsum(changewin) / c(1:N), main = "'Convergence' to True Winning Proportions",
-     xlab = "Trial", ylab = "Win Percent", ylim = c(0, 1), col = "blue")
-abline(h = 2/3)
-points(cumsum(staywin) / c(1:N), type = "p", col = "red")
-abline(h = 1/3)
-legend("topright", legend = c("Switch to Other Door","Don't Switch"), pch = 1 , col = c(4,2))
-```
-
-]
-
----
-
 # Frequentist vs. Bayesian
 
 ![](https://i.ibb.co/920t4Nt/Screenshot-from-2019-12-03-13-51-43.png)
@@ -661,6 +371,26 @@ legend("topright", legend = c("Switch to Other Door","Don't Switch"), pch = 1 , 
 .footnote[
 https://link.springer.com/article/10.3758/s13423-016-1221-4
 ]
+
+---
+
+class: middle
+
+# Through Markov Chain Monte Carlo ...
+
+.font200[
+## The product of output is not ~~best-fit~~, but "prior" and "posterior".
+]
+
+---
+
+# Probabilistic Modeling
+
+.center[
+![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
+]
+
+.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
 
 ---
 
@@ -700,343 +430,19 @@ class:hide-logo
 
 ---
 
-class: middle
-
-.font200[
-## The product of output is not ~~best-fit~~, but "prior" and "posterior".
-]
-
----
-
-# log-likelihood
-
-The log-likelihood function was used to assess the **goodness-of-fit** of the model to the data ([Woodruff and Bois, 1993](https://www.sciencedirect.com/science/article/pii/0378427493901035?via%3Dihub), [Hsieh et al., 2018](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full#B43))
-
-$$L L=\sum_{i=1}^{N}-\frac{1}{2} \cdot \frac{\left(y_{i}-\widehat{y}_{i}\right)^{2}}{S_{j[i]}^{2}}-\frac{1}{2} \ln \left(2 \pi s_{j[i]}^{2}\right)$$
-
-$N$: the total number of the data points 
-
-$y_i$: experimental observed
-
-$\hat{y}_i$: model predicted value
-
-$j[i]$: data type of data point $i$
-
-$S_{j[i]}^{2}$: the variance for data type $j$
-
----
-
-# General workflow
-
-### 1 Model constructing or translating
-
-### 2 Verify modeling result
-
-- **Compare with published result**
-- **Mass balance** 
-
-### 3 Uncertainty and sensitivity analysis
-
-- **Morris elementary effects screening** 
-- **Fourier amplitude sensitivity test**
-
-### 4 Model calibration and validation
-
-- **Markov chain Monte Carlo** 
-  - Diagnostics (Goodness-of-fit, convergence)
-
----
-
-# Probabilistic Modeling
-
-.center[
-![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
-]
-
-.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
-
----
-
-background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X10002623-gr5.jpg)
-background-size: 500px
-background-position: 70% 80% 
-
-# Bayesian Population Model
-
-**Individuals level**
-
-$E$: Exposure  
-
-$t$: Time  
-
-$\theta$: Specific parameters  
-
-$y$: condition the data
-
-</br>
-
-**Population level**
-
-$\mu$: Population means
-
-$\Sigma^2$: Population variances
-
-$\sigma^2$: Residual errors
-
-.footnote[https://doi.org/10.1016/j.tox.2010.06.007]
-
----
-
-
-background-image: url(https://i.ibb.co/61ryV3d/Screenshot-from-2019-11-27-13-01-24.png)
-background-size: 350px
-background-position: 20% 90% 
-
-# Related publication 
-
-Bois et al. (1996) - [Population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007%2Fs002040050284)  
-Chiu and Bois (2006) - [Revisiting the population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007/s00204-006-0061-9)    
-
-.pull-right[
-![:scale 70%](https://i.ibb.co/c2ghZ7m/Screenshot-from-2019-11-27-13-01-46.png)
-]
-
-
----
-
-background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr1.jpg)
-background-size: 330px
-background-position: 20% 80% 
-
-# Related publication 
-
-.font75[
-Hack et al. (2006) - [Bayesian population analysis of a harmonized physiologically based pharmacokinetic model of trichloroethylene and its metabolites](https://www.sciencedirect.com/science/article/pii/S027323000600095X)
-]
-
-.pull-left[]
-
-.pull-right[
-![:scale 55%](https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr3.jpg)
-]
-
----
-
-class: hide-logo
-
-.pull-left[
-
-## Related publication
-
-Chiu et al. (2009) - [Characterizing uncertainty and population variability in the toxicokinetics of trichloroethylene and metabolites in mice, rats, and humans using an updated database, physiologically based pharmacokinetic (PBPK) model, and Bayesian approach](https://www.sciencedirect.com/science/article/pii/S0041008X09003238)  
-
-</br>
-![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr3_lrg.jpg)  
-.font75[Hierarchical population statistical model for mice, rats, and humans. ]
-]
-
-.pull-right[
-
-![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr2.jpg)  
-.font75[Overall structure of updated PBPK model for TCE and metabolites. ]
-]
-
----
-
-background-image: url(https://i.ibb.co/VHT9qZ3/chiu2019.jpg)
-background-size: 500px
+background-image: url(https://i.ibb.co/Gx6xKrq/mcmc-diagram.png)
+background-size: 600px
 background-position: 50% 90% 
 
-# Related publication 
+# Simulation in GNU MCSim
 
-- Characterizing PBPK parameters from individuals to population
-
-- Evaluating population **variability** and parameter **uncertainty**
-
-- Cross-species comparisons of metabolism in **risk assessment**
+### Markov-chain Monte Carlo (MCMC) simulation
+- Performs a series of simulations along a Markov chain in the model parameter space. 
+- They can be used to obtain the Bayesian <font color="red">**posterior**</font> distribution of the model parameters, given a statistical model, <font color="blue">**prior**</font> parameter distributions and data for which a **likelihood function** can be computed. 
+**Used to** Model calibration
 
 .footnote[
-Chiu et al. 2009.  
-https://doi.org/10.1016/j.taap.2009.07.032  
-]
-
-???
-
-A brief summarizes the Bayesian approach in population PBPK modeling. We can use it to estimate the posterior parameter. Then used the parameter uncertainty to estimate the posterior population prediction and group-specific prediction. 
-
-Based on this information we can compare the metabolism across experimental animals and human and further use this information in risk assessment.
-
----
-
-background-image: url(https://i.ibb.co/tYDnPDb/chiu2014-2.png)
-background-size: 500px
-background-position: 75% 80% 
-
-# Related publication 
-
-**Inter-strain & inter-individual variability**
-
-Chiu et al. (2014) - [Physiologically-Based Pharmacokinetic (PBPK) Modeling of Inter-strain Variability in Trichloroethylene Metabolism in the Mouse](https://ehp.niehs.nih.gov/doi/full/10.1289/ehp.1307623?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%3dpubmed)
-
-<img src="https://i.ibb.co/DVWYytX/chiu2014.png" height="380px" />
-
-???
-
-It is an extensive study.
-
-Previous animal studies mainly used single strain, B6C3F1 as a representative animal. But the issue to used B6C3F1 in extrapolation is the metabolism is very difference with the human. It had the highest rate of respiratory tract oxidative metabolism as compared to rats and humans. Also, it doesn't have representative variability in risk assessment.
-
-So in this study, instead of B6 strain, it includes 16 inbreds to discuss inter-strain variability and use it to compare with the human inter-individual variability. 
-
-Through the multi-strains model calibration and prediction, we can have consistent estimates of variability in human and mice
-
----
-
-background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr2_lrg.jpg)
-background-size: 300px
-background-position: 70% 95%
-
-# Recent study
-
-Funding: **U.S. EPA (STAR RD83561202)** and **National Institutes of Health (F32 ES026005)**
-
-Luo, Y.S., Hsieh, N.H., Soldatow, V.Y., Chiu, W.A. and Rusyn, I., 2018. [Comparative Analysis of Metabolism of Trichloroethylene and Tetrachloroethylene among Mouse Tissues and Strains](https://doi.org/10.1016/j.tox.2018.07.012). Toxicology, 409, pp.33-43.
-
-<hr>
-
-**Motivation**: Quantitative comparison of tissue- and strain-specific metabolism of TCE and PCE has not been performed
-
-</br>
-
-<img src= "https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr1.jpg" height="220px" />
-
-???
-
----
-
-</br>
-
-</br>
-
-Predicted disposition of **TCE (A)**, **PCE (B)**, and their respective metabolites in male B6C3F1/J, C57BL/6J, and NZW/LacJ mice.
-
-.center[
-![](https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr5.jpg)
-]
-
-.font70[
-Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain.
-]
-
-???
-
-This is the result of the disposition of TCE and PCE and their respective metabolites in mice strains. 
-Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain. 
-Most of each parent compound (TCE and PCE) remained unmetabolized until excretion
-As you can see the disposition fractions are different across the mice strains. 
-For to the glutathione conjugation metabolism, the overall flux to conjugation was less than 0.3% of the administered dose for both chemicals. 
-
----
-
-# Recent study
-
-Funding: **National Institutes of Health (P42 ES027704 and P42 ES ES005948)**
-
-Luo, Y.S., Cichocki, J.A., Hsieh, N.H., Lewis, L., Wright, F.A., Threadgill, D.W., Chiu, W.A. and Rusyn, I., 2019. [Using Collaborative Cross Mouse Population to Fill Data Gaps in Risk Assessment: A Case Study of Population-Based Analysis of Toxicokinetics and Kidney Toxicodynamics of Tetrachloroethylene](https://doi.org/10.1289/EHP5105). Environmental Health Perspectives, 127(6), p.067011.
-
-<hr>
-
-**Background:**
-
-- Interindividual variability in susceptibility remains poorly characterized for environmental chemicals such as tetrachloroethylene (PERC). 
-- Development of population-based experimental models provide a potential approach to fill this critical need in human health risk assessment.
-
-**Objectives:** 
-
-- To better characterize the contribution of glutathione (GSH) conjugation to kidney toxicity of PERC and the degree of associated interindividual toxicokinetic (TK) and toxicodynamic (TD) variability by using the Collaborative Cross (CC) mouse population.
-
-???
-
-This is our following research. This study aim to apply the developed multicompartment PK model in human health risk assessment. In this study, we used in animal experiment result from CC mouse population to characterize metabolism–toxicity interactions and quantify the interindividual variability. Our main objective is ...
-
----
-
-class:clear, hide-logo
-
-.center[
-![:scale 80%](https://i.ibb.co/KF8PLWy/Screenshot-from-2019-09-24-11-57-00.png)
-]
-
-.footnote[https://factor.niehs.nih.gov/2019/9/papers/dert/index.htm]
-
-???
-
-This paper was been selected as Papers of the Month. The brief summary of this study is 
-- Mice exposed to PERC had lower kidney weight and more markers of kidney injury
-- Inbred mice used in previous studies generally exhibited metabolism of PERC at the lower end of the overall distribution
-- Default values that are generally used by the U.S. Environmental Protection Agency in human health risk assessments to adjust for population variation, the default values may protect 95% of the population but not the most sensitive individuals
-
----
-
-class: hide-logo
-
-.pull-left[
-Interstrain Variability in Metabolism of PERC through Glutathione Conjugation Pathway
-
-![:scale 70%](https://ehp.niehs.nih.gov/cms/attachment/9d640350-b940-4fc6-b40c-2cc96767ae3e/ehp5105_f4.jpg)
-
-]
-
-.pull-right[
-Predicted disposition of PERC and its metabolites in CC mouse strains
-
-![:scale 90%](https://ehp.niehs.nih.gov/cms/attachment/e8287e06-d8ab-423f-a58e-5332bd18523c/ehp5105_f6.gif)
-]
-
----
-
-class:clear
-
-**Chemical-Specific Adjustment Factors for Population Variability and Risk Assessment**
-
-![](https://i.ibb.co/f24zFvp/UF-table.png) 
-<hr>
-.center[![:scale 40%](https://i.ibb.co/WF2dr8S/UF.png)]
-
-???
-
-Based on the inter-strain estimation, we further used predicted disposition of PERC, TCA, and GSH conjugates across CC strains to calculate the chemical-specific adjustment factors for TK variability
-
-
----
-
-# Related publication
-
-**U.S. Food and Drug Administration** 
-
-Enhancing the reliability, efficiency, and usability of Bayesian population PBPK modeling - Create, implement, and evaluate a robust Global Sensitivity Analysis algorithm to reduce PBPK model parameter dimensionality
-
-<hr>
-
-- Hsieh N-H, Reisfeld B, Bois FY and Chiu WA. 2018. [Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full). Frontiers in Pharmacology 9:588.
-
-- Bois et al. (Submitted) - Well tempered MCMC simulations for population pharmacokinetic models
-
-- Hsieh et al. (Submitted) - pksensi: An R Package to Apply Global Sensitivity Analysis in Physiologically Based Kinetic Modeling
-
----
-
-# Inter & intra- variability modeling
-
-.center[
-.pull-left[
-**Inter-individual variability model**
-<img src= "https://i.ibb.co/QHMSrbq/inter.png" height="450px" /> 
-]
-.pull-right[
-**Inter- & intra-individual variability model**
-<img src= "https://i.ibb.co/2tzxQCN/inter-intra.png" height="450px" />
-]
+[Source](http://sbml.org/images/1/17/StatMeeting_F_Bois.pdf)
 ]
 
 ---
@@ -1054,24 +460,6 @@ Enhancing the reliability, efficiency, and usability of Bayesian population PBPK
 ### Evaluate the model fit
   - Global evaluation
   - Individual evaluation 
-
----
-
-# Simulation in GNU MCSim
-
-## Monte Carlo simulations
-
-- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
-
-**Used to:** Check possible simulation (under given parameter distributions) results before model calibration
-
-</br>
-
-## SetPoints simulation
-
-- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
-
-**Used to:** Posterior predictive check, Local/global sensitivity analysis
 
 ---
 
@@ -1291,24 +679,79 @@ abline(1,0)
 
 ---
 
+# General Bayesian-PBPK Workflow
+
+### 1 Model constructing or translating
+
+### 2 Verify modeling result
+
+- **Compare with published result**
+- **Mass balance** 
+
+### 3 Uncertainty (and sensitivity) analysis
+
+### 4 Model calibration and validation
+
+- **Markov chain Monte Carlo** 
+  - Diagnostics (Goodness-of-fit, convergence)
+
+---
+
 # Summary
 
-.font200[
+.font150[
 - In the real-word study, we need to consider the **uncertainty** (from different sources) and **variability** (inter or intra-individual data) to include all possible scenarios.
 
-- **Bayesian statistics** is a powerful tool to quantify the uncertainty and variability in pharmacokinetic modeling.
+- If we have parameter, we can apply **Monte Carlo technique** to qunatify the uncertainty and variability.
 
-- The **sensitivity analysis** approch can provide the useful information of parameter impact on PBPK model.
+- If we have data, we can calibrate the "unknown" parameter (prior) to "known" parameter (posterior) in our model through **Bayesian statistics**.
+]
+
+---
+
+class:middle, center
+
+.font300[
+# Hands on Exercise
 ]
 
 ---
 
 # Hands on Exercise
 
-## Task 1: Uncertainty analysis & Model calibration for simple PK model
+Task 1. **Uncertainty analysis on PK model** (`code`: https://rpubs.com/Nanhung/SRP19_6)
+- Before model calibration, we need to learn how to conduct Monte Carlo simulation to set the proper parameter distribution
+
+Task 2. **Model calibration** (`code`: https://rpubs.com/Nanhung/SRP19_7)
+- After the uncertainty analysis, we can calibrate the model parameters by Markov chain Monte Carlo technique
+
+Task 3. **Monte Carlo Simulation for PBPK model** (`code`: https://rpubs.com/Nanhung/SRP19_8)
+- Learn how parameter effect on model variable in PBPK model
+
+Task 4. **PBPK model in MCSim** (`code`: https://rpubs.com/Nanhung/SRP19_9)
+- Sometimes, the simulation process in R is very computational expensive. We need to solve it.
+
+---
+
+# Hands on Exercise
+
+## Task 1: **Uncertainty analysis on PK model**
 
 .font150[
-- In the previous exercise, we find that the predcited result can not used to describe the real cases. Therefore, we need to conduct the uncertainty analysis to figure out how to reset the model parameter.
+- In the previous exercise, we find that the predcited result can not used to describe the real cases. 
+
+- Therefore, we need to conduct the uncertainty analysis to figure out how to reset the model parameter.
+
+]
+
+---
+
+# Hands on Exercise
+
+## Task 2: **Model calibration**
+
+.font150[
+- After the uncertainty analysis, we can calibrate the model parameters by Markov chain Monte Carlo technique
 
 - Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model calibration.
 ]
@@ -1321,7 +764,7 @@ background-position: 99% 80%
 
 # Hands on Exercise
 
-## Task 2: Monte Carlo Simulation for PBPK model
+## Task 3: **Monte Carlo Simulation for PBPK model**
 
 - Reproduce the published Monte Carlo analysis result in Bois and Brochot (2016)*
   - Testing parameter include body mass (`BDM`), pulmonary flow (`Flow_pul`), partition coefficient of arterial blood (`PC_art`) and metabolism rate (`Kmetwp`)
@@ -1335,9 +778,11 @@ background-position: 99% 80%
 
 # Hands on Exercise
 
-## Task 3: Reuild PBPK model in MCSim
+## Task 4: **PBPK model in MCSim**
 
-- The Monte Carlo Simulation take a little bit longer with `ode` function in **deSolve** package. Therefore we want to improve the computational speed. Now, rewrite the R model code to **MCSim** and conduct Monte Carlo Simulation with the same parameter setting. The goal of this exercise is to compare the computational time and output (MCSim vs. R).
+- The Monte Carlo Simulation take a little bit longer with `ode` function in **deSolve** package. 
+- Therefore we want to improve the computational speed. Now, rewrite the R model code to **MCSim** and conduct Monte Carlo Simulation with the same parameter setting. 
+- The goal of this exercise is to compare the computational time and output (MCSim vs. R).
 
 ```r
 Distrib (BDM, Normal, 73, 7.3);
@@ -1345,26 +790,3 @@ Distrib (Flow_pul, Normal, 5, 0.5);
 Distrib (PC_art, Normal, 2, 0.2);
 Distrib (Kmetwp, Normal, 0.25, 0.025);
 ```
-
----
-
-# Hands on Exercise
-
-## Task 4: Sensitivity analysis
-
-- The MCSim can provide faster computational speed than **deSolve**. Now, we can add additional parameters and see the relationship between body mass and quantity in fat changed. If we get a different result, which means there might have interaction between the parameters. The parameter values can refer from Bois (2013)*
-
-.code75[
-```r
-Distrib (Pct_BDW_wp,    TruncLogNormal, 0.2, 1.2, 0.1,  0.35);
-Distrib (Pct_Deadspace, TruncLogNormal, 0.4, 1.2, 0.23, 0.45);
-Distrib (Pct_Flow_fat,  TruncLogNormal, 0.05,1.2, 0.03, 0.09);
-Distrib (Pct_Flow_pp,   TruncLogNormal, 0.15,1.2, 0.06, 0.26);
-Distrib (PC_pp,         TruncLogNormal, 0.7, 1.2, 0.4,  1.2);
-Distrib (PC_wp,         TruncLogNormal, 0.7, 1.2, 0.4,  1.2);
-```
-]
-
-.footnote[
-[*] Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ
-]
