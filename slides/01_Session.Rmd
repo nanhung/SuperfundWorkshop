@@ -1363,7 +1363,7 @@ bd.model = function(t, y, parameters) {
       
       # Arterial blood concentration
       # Convert input given in ppm to mg/l to match other units
-      C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flow_alv / PC_art)
+        C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flow_alv / PC_art)
       
       # Venous blood concentration (mg/L)
       C_ven = dQ_ven / Flow_tot

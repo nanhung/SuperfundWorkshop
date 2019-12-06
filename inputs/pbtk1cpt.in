@@ -2,26 +2,18 @@
 # Simulation file for one-compartment model with first order absorption.
 # 
 # Default parameter value are based on theophylline sourced from R httk package 
-# 
-# Nan-Hung Hsieh - Dec 2019
 #-------------------------------------------------------------------------------
 Integrate (Lsodes, 1e-8, 1e-8, 1);
 
-MW = 228.291; # 
-
-Fgutabs    = 0.8911081;
-IngDose    = 1.0;   # ingested dose (mg)
-Period     = 24;     # period of the exposure/no exposure cycle (h)
-kgutabs    = 2.18;  # absortion rate (/h)
-
-# Volumes (L)
-Vdist = 5.012049; 
-
-# Rate constant (/h)
-kelim = 0.02183918;
+MW         = 180.167;  # moleculor mass (g/mol)
+IngDose    = 4.02;     # ingested dose (mg)
+Period     = 48;       # period of the exposure/no exposure cycle (h)
+Fgutabs    = 0.9142;   # bioavailability (-) 
+kgutabs    = 2.18;     # absortion rate (/h)
+kelim      = 0.2654;   # elimination rate constant (/h)
+Vdist      = 0.7802;   # volumes (L)
 
 Simulation {
-  Print (Oral_input, A_rest, A_elim, Ccompartment, 0.1, 0.5, 1, 1.5, 2, 4, 6, 8, 12, 16, 20, 24); 
-  #PrintStep (Oral_input, A_rest, A_elim, Ccompartment, 0.01, 23.01, 1); 
+  Print (Ccompartment 0.00   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
 }
 End.
