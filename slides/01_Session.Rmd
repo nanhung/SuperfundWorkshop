@@ -46,6 +46,18 @@ background-position: 95% 95%
 
 ---
 
+# Content
+
+## Basic Pharmacokinetics Concepts
+
+## Pharmacokinetic Models
+
+## Computational Toolkits
+
+## Appendix
+
+---
+
 class:middle, center
 
 .font300[
@@ -82,6 +94,21 @@ in Toxicology?
 
 - <font color="red">PK is focus on .bolder[TIME (t)] and .bolder[CONCENTRATION (C)]</font color>
 
+]
+
+---
+
+# Pharmacokinetics / Pharmacodynamics
+
+.large[
+Pharmacokinetics is the study of the fate of chemical in a living organism through .bolder[ADME] process (**absorption**, **distribution**, **metabolism**, and **elimination**).
+]
+
+.center[![](https://media.springernature.com/original/springer-static/image/art%3A10.1007%2Fs00535-015-1061-4/MediaObjects/535_2015_1061_Fig1_HTML.gif)
+
+.font125[
+**"PK"** focus on .bolder[DOSE] to .bolder[CONCENTRATION] / **"PD"** focus on .bolder[Concentration] to .bolder[Response]
+]
 ]
 
 ---
@@ -202,21 +229,6 @@ Lash, L.H., et al. 2014. [Trichloroethylene biotransformation and its role in mu
 
 ---
 
-# Pharmacokinetics / Pharmacodynamics
-
-.large[
-Pharmacokinetics is the study of the fate of chemical in a living organism through .bolder[ADME] process (**absorption**, **distribution**, **metabolism**, and **elimination**).
-]
-
-.center[![](https://media.springernature.com/original/springer-static/image/art%3A10.1007%2Fs00535-015-1061-4/MediaObjects/535_2015_1061_Fig1_HTML.gif)
-
-.font125[
-**"PK"** focus on .bolder[DOSE] to .bolder[CONCENTRATION] / **"PD"** focus on .bolder[Concentration] to .bolder[Response]
-]
-]
-
----
-
 # Pharmacokinetic Model
 
 ### What information we want to know through .bolder["prediction"]?
@@ -234,6 +246,7 @@ Pharmacokinetics is the study of the fate of chemical in a living organism throu
 # Concentration
 .font150[
 - What is the peak concentration?
+- What is the average concentration?
 ]
 ]
 
@@ -250,7 +263,7 @@ Pharmacokinetics is the study of the fate of chemical in a living organism throu
 - Use the differential equation containing one or more functions of one independent variable and the derivatives of those functions.
 
 .font150[
-$$\frac{dD}{dt}=-k_{e} \cdot D$$
+$$\frac{dA}{dt}=-k_{e} \cdot A$$
 ]
 ]
 
@@ -262,13 +275,13 @@ $$\frac{dD}{dt}=-k_{e} \cdot D$$
 </br>
 
 .font150[
-$$D(t) = D_0 \cdot e^{-k_{e} \cdot t}$$
+$$A(t) = A_0 \cdot e^{-k_{e} \cdot t}$$
 ]
 ]
 ]
 
 .footnote[
-$D$: dose (mass); $D_0$ input dose (mass); $t$: time; $k_e$: Elimination rate constant (/time)
+$A$: Amount in body (mass); $D_0$ initial amount (mass); $t$: time; $k_e$: Elimination rate constant (/time)
 
 
 ]
@@ -285,11 +298,11 @@ background-position: 40% 80%
 .font150[
 **Numerical**
 
-$\frac{dD}{dt}=-k_{e} \cdot D$
+$\frac{dA}{dt}=-k_{e} \cdot A$
 
 **Analytical**
 
-$D_t = D_0 \cdot e^{-k_{e} \cdot t}$
+$A_t = A_0 \cdot e^{-k_{e} \cdot t}$
 ]
 
 ]
@@ -298,11 +311,11 @@ $D_t = D_0 \cdot e^{-k_{e} \cdot t}$
 
 .code75[
 ```{r fig.height=4.5, dev='svg'}
-D_0 <- 10
+A_0 <- 10
 t <- c(0,1,2,4,8,10)
 k_e <- 0.5
-D_t <- D_0*exp(-k_e*t) 
-plot(t, D_t, type = "b")
+A_t <- D_0*exp(-k_e*t) 
+plot(t, A_t, type = "b")
 ```
 ]
 ]
@@ -326,6 +339,8 @@ Conc <- A * exp(-k_e * t) - A * exp(-k_a * t)
 </br>
 
 ![](https://i.ibb.co/zQ4t9Wn/pk1cpt.jpg)
+
+$$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
 
 $D$: Dose (mass)  
 $F$: Bioavailability (-)  
@@ -450,7 +465,7 @@ Chen et al. (2015) [Physiologically based pharmacokinetic modeling of zinc oxide
 
 ---
 
-# Compartmental equations: “Storage” compartments
+# Compartmental equations
 
 - Flow in and out of “storage” compartments involve only blood flow
 
@@ -509,9 +524,17 @@ background-position: 95% 90%
 
 class: clear
 
-![:scale 60%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T01.png)
+![:scale 56%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T01.png)
+
+.footnote[
+Chen et al. (2015) [Physiologically based pharmacokinetic modeling of zinc oxide nanoparticles and zinc nitrate in mice.](https://doi.org/10.2147/IJN.S86785)
+]
 
 ---
+
+background-image: url(https://i.ibb.co/5FFXtJS/Screenshot-from-2019-12-03-10-50-20.png)
+background-size: 350px
+background-position: 90% 80%
 
 # Different exposure routes
 
@@ -532,13 +555,11 @@ $$\frac{\partial A_{\mathrm{iv}}}{\partial t}=Q_{\mathrm{liv}}\left(C_{\mathrm{a
 
 ]
 
-
-.pull-right[
-![:scale 65%](https://i.ibb.co/5FFXtJS/Screenshot-from-2019-12-03-10-50-20.png)
-]
-
 .footnote[
 $A$: quantity; $Q$: flow rate; $r_{ds}$: deadspace ratio; $C$: concentration; $R_{ing}$: administration rate; $P$ partition coefficient; $k$ rate constant
+
+Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology
+
 ]
 
 ---
@@ -646,7 +667,7 @@ background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/93/GPLv3_
 background-size: 200px
 background-position: 50% 80% 
 
-# Advantages of MCSim and R
+# Advantages of MCSim and R/RStudio
 
 .center[.font125[*"Free and Open Source Software"* under GNU General Public License]]
 
