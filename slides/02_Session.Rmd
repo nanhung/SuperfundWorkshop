@@ -38,7 +38,7 @@ library(dplyr)
 
 ## 2 Monte Carlo simulation - Prediction
  
-## 3 Markov Chain Monte Carlo simulation - Calibration
+## 3 Markov Chain Monte Carlo - Calibration
 
 ## 4 Hands-on Exercise
 
@@ -82,109 +82,6 @@ Choose the "specific" value (or the most conservative scenario) in the risk asse
 Combine "all" information and characterize the **uncertainty**
 ]
 ]
-
----
-
-# Uncertainty in Risk Analysis
-
-.font150[
-The objective of a **probabilistic risk analysis** is the quantification of risk from made man-made and natural activities ([Vesely and Rasmuson, 1984](https://onlinelibrary.wiley.com/doi/10.1111/j.1539-6924.1984.tb00950.x)).  
-]
-
-**Two major types of uncertainty need to be differentiated:**
-
-### (1) Uncertainty due to physical variability
-
-### (2) Uncertainty due to lack of knowledge in
-
-.font125[
-- Modeling uncertainty
-
-- Parameter uncertainty
-
-- Completeness uncertainty
-]
-
----
-
-class: middle, center
-
---- Application ---
-# If you have *known* "parameters"
-# ------------------------------------>
-# <font color="red"> Parameters / Model / Data</font>
-# <------------------------------------
-# If you have *known* "data" 
---- Calibration ---
-
----
-
-# Monte Carlo Simulation
-
-.font125[
-- A method of estimating the value of unknown quantity using the principle of inferential statistics
-- Inferential statistics
-  - **Population**: Universal information
-  - **Sample**: a proper subset of population
-- .bolder[Repeatedly Random Sampling]
-]
-
-.pull-left[
-.pull-left[<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/STAN_ULAM_HOLDING_THE_FERMIAC.jpg/300px-STAN_ULAM_HOLDING_THE_FERMIAC.jpg" height="220px" />  
-Stanislaw Ulam  
-]
-.pull-right[<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/JohnvonNeumann-LosAlamos.gif/220px-JohnvonNeumann-LosAlamos.gif" height="220px" />  
-John von Neumann
-]
-]
-
-.pull-right[
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/ENIAC_Penn1.jpg/1280px-ENIAC_Penn1.jpg" height="220px" />  
-ENIAC (Electronic Numerical Integrator and Computer)
-]
-
----
-
-# Modeling uncertainty
-
-### Deterministic Simulation
-
-- Define exposure unit & calculate point estimate
-
-### 1-D Monte Carlo Simulation: Uncertainty
-
-- Identify probability distributions to simulate probabilistic outputs
-
-### 2-D Monte Carlo Simulation: Uncertainty & Variability
-
-- Bayesian statistics to characterize population uncertainty and variability
-
----
-
-background-image: url(http://sci.tea-nifty.com/photos/uncategorized/2012/07/28/elephant.gif)
-background-size: 240px
-background-position: 50% 90% 
-
-# Uncertainty in parameter
-
-- **The parameter** is an element of a system that determine the model output. 
-
-- **Parameter uncertainty** comes from the model parameters that are inputs to the mathematical model but whose exact values are unknown and cannot be controlled in physical experiments. 
-
-$$y = f(x_i) $$
-
-</br></br>
-
-.pull-left[
-> With four parameters I can fit an elephant, and with five I can make him wiggle his trunk. 
->
-> -John von Neumann
-]
-.pull-right[
-
-]
-
-.footnote[Mayer J, Khairy K, Howard J. Drawing an elephant with four complex parameters. Am. J. Phys. 78, 648 (2010) https://doi.org/10.1119/1.3254017]
 
 
 ---
@@ -250,6 +147,117 @@ https://cran.r-project.org/web/packages/mc2d/index.html
 
 ---
 
+class: middle, center
+
+--- Application ---
+# If you have *known* "parameters"
+# ------------------------------------>
+# <font color="red"> Parameters / Model / Data</font>
+# <------------------------------------
+# If you have *known* "data" 
+--- Calibration ---
+
+---
+
+class:middle, center
+
+.font300[
+# Monte Carlo Simulation
+]
+
+---
+
+# Monte Carlo Simulation
+
+.font125[
+- A method of estimating the value of unknown quantity using the principle of inferential statistics
+- Inferential statistics
+  - **Population**: Universal information
+  - **Sample**: a proper subset of population
+- .bolder[Repeatedly Random Sampling]
+]
+
+.pull-left[
+.pull-left[<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/STAN_ULAM_HOLDING_THE_FERMIAC.jpg/300px-STAN_ULAM_HOLDING_THE_FERMIAC.jpg" height="220px" />  
+Stanislaw Ulam  
+]
+.pull-right[<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/JohnvonNeumann-LosAlamos.gif/220px-JohnvonNeumann-LosAlamos.gif" height="220px" />  
+John von Neumann
+]
+]
+
+.pull-right[
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/ENIAC_Penn1.jpg/1280px-ENIAC_Penn1.jpg" height="220px" />  
+ENIAC (Electronic Numerical Integrator and Computer)
+]
+
+---
+
+
+# Uncertainty in Risk Analysis
+
+.font150[
+The objective of a **probabilistic risk analysis** is the quantification of risk from made man-made and natural activities ([Vesely and Rasmuson, 1984](https://onlinelibrary.wiley.com/doi/10.1111/j.1539-6924.1984.tb00950.x)).  
+]
+
+**Two major types of uncertainty need to be differentiated:**
+
+### (1) Uncertainty due to physical variability
+
+### (2) Uncertainty due to lack of knowledge in
+
+.font125[
+- Modeling uncertainty
+
+- Parameter uncertainty
+
+- Completeness uncertainty
+]
+
+---
+
+# Modeling uncertainty
+
+### Deterministic Simulation
+
+- Define exposure unit & calculate point estimate
+
+### 1-D Monte Carlo Simulation: Uncertainty
+
+- Identify probability distributions to simulate probabilistic outputs
+
+### 2-D Monte Carlo Simulation: Uncertainty & Variability
+
+- Bayesian statistics to characterize population uncertainty and variability
+
+---
+
+background-image: url(http://sci.tea-nifty.com/photos/uncategorized/2012/07/28/elephant.gif)
+background-size: 240px
+background-position: 50% 90% 
+
+# Uncertainty in parameter
+
+- **The parameter** is an element of a system that determine the model output. 
+
+- **Parameter uncertainty** comes from the model parameters that are inputs to the mathematical model but whose exact values are unknown and cannot be controlled in physical experiments. 
+
+$$y = f(x_i) $$
+
+</br></br>
+
+.pull-left[
+> With four parameters I can fit an elephant, and with five I can make him wiggle his trunk. 
+>
+> -John von Neumann
+]
+.pull-right[
+
+]
+
+.footnote[Mayer J, Khairy K, Howard J. Drawing an elephant with four complex parameters. Am. J. Phys. 78, 648 (2010) https://doi.org/10.1119/1.3254017]
+
+---
 
 # Uncertainty in PBPK model parameter
 
@@ -309,7 +317,7 @@ First order elimination rate, ...
 class:middle, center
 
 .font300[
-# Markov Chain Monte Carlo simulation
+# Markov Chain Monte Carlo
 ]
 
 ---
