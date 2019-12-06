@@ -277,6 +277,150 @@ pbtk1cpt <- function(t, state, parameters) {
 
 - Compartment model (MCSim)
 
+Syntax of the model description file
+
+
+```r
+# Model description file (this is a comment)
+
+<Global variable specifications>
+
+States = { 
+  <state variables for the model, such as quantity> 
+}
+Outputs = { 
+  <output variables, such as concentration> 
+}
+Inputs = { 
+  <input variables, such as exposure dose>
+}
+Initialize {
+  <Equations for initializing or scaling model parameters>
+}
+Dynamics {
+  <Equations for computing derivatives of the state variables>
+}
+CalcOutputs {
+  <Equations for computing output variables>
+}
+End. # mandatory ending keyword
+```
+]
+
+
+General syntax 
+
+Variable assignments 
+
+```r
+<variable-name> = <constant-value-or-expression> ;
+```
+
+Colon conditional assignments 
+
+```r
+<variable-name> = (<test> ? <value-if-true> : <value-if-false>);
+```
+
+For example
+
+```r
+Adjusted_param = (Input_var > 0.0 ? Param * 1.1 : Param);
+```
+
+
+Syntax of (simulation) input-file
+
+For the basic simulation 
+
+```r
+# Input-file (text after # are comments)
+<Global assignments and specifications>
+Simulation {
+  <Specifications for first simulation>
+}
+Simulation {
+  <Specifications for second simulation>
+}
+# Unlimited number of simulation specifications
+End. # Mandatory End keyword. Everything after this line is ignored
+```
+
+
+
+Syntax of (simulation) input-file
+
+For MCMC simulation
+
+```r
+# Input-file
+<Global assignments and specifications>
+Level {
+  # Up to 10 levels of hierarchy
+  Simulation {
+    <Specifications and data for first simulation>
+  }
+  Simulation {
+    <Specifications and data for second simulation>
+  }
+  # Unlimited number of simulation specifications
+} # end Level
+End. # Mandatory keyword.
+```
+
+
+
+Distribution functions
+
+- **Normal** takes two reals numbers as parameters: the mean and the standard deviation, the latter being strictly positive.
+
+- **LogNormal**, takes two reals numbers as parameters: the geometric mean (exponential of the mean in log-space) and the geometric standard deviation (exponential, strictly superior to 1, of the standard deviation in log-space).
+
+- **Uniform**, with two shape parameters: the minimum and the maximum of the sampling range (real numbers).
+
+- **LogUniform** with two shape parameters: the minimum and the maximum of the sampling range (real numbers) in natural space.
+
+- **TruncNormal** (truncated normal distribution), takes four real parameters: the mean, the standard deviation (strictly positive), the minimum and the maximum.
+mean, and its standard deviation.
+
+- **InvGamma** (inverse gamma distribution), needs two strictly positive real parameters: the shape and the scale.
+
+
+
+Input functions
+
+These functions can use to different exposure types
+
+```r
+- PerDose(): # specifies a periodic input of constant
+
+    PerDose(<magnitude>, <period>, <initial-time>, <exposure-time>);
+
+  
+- PerExp(): # specifies a periodic exponential input.
+
+    PerExp(<magnitude>, <period>, <initial-time>, <decay-constant>);  
+
+  
+- PerTransit(): models a delayed input mechanism  
+
+    PerTransit(<magnitude>, <period>, <initial-time-in-period>, 
+              <decay-constant>, <number-of-input-compartments>);  
+    
+              
+- NDoses(): specifies a number of stepwise inputs of variable magnitude and their starting times
+    
+    NDoses(<n>, <list-of-magnitudes>, <list-of-initial-times>);
+
+
+- Spikes(): specifies a number of instantaneous inputs of variable magnitude and their exact times of occurrence.
+    
+    Spikes(<n>, <list-of-magnitudes>, <list-of-times>);
+
+```
+
+
+
 ```
 States  = { 
   A_rest, 
