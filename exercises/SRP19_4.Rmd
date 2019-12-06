@@ -1,0 +1,283 @@
+---
+title: "Exercise 1.4 Developing the PBPK model"
+author: "Nan-Hung Hsieh"
+date: "2019/12/09 (update: `r Sys.Date()`)"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+  fig_caption: yes  
+---
+
+```{R message=FALSE, warning=FALSE}
+library(deSolve)
+```
+
+## Task
+
+- Instead of simple PK model, in this exercise we want to apply the well developed PBPK model for 1,3 butadiene.
+
+- First, reproduce the simulation result from the published paper*.
+
+## Inputs
+
+```{r}
+C_inh <- approxfun(x = c(0, 120), y=c(10,0), method = "constant", f = 0, rule = 2) 
+```
+
+```{r}
+plot(C_inh(1:300), type="l", xlab = "Time (min)", ylab = "Butadiene inhaled concentration (ppm)")
+```
+
+## Parameters and outputs 
+
+```{r}
+parameters <- c("BDM" = 73,            # Body mass (kg)
+                "Height" = 1.6,        # Body height (m)
+                "Age" = 40,            # in years
+                "Sex" = 1,             # code 1 is male, 2 is female
+                "Flow_pul" = 5,        # Pulmonary ventilation rate (L/min)
+                "Pct_Deadspace" = 0.7, # Fraction of pulmonary deadspace
+                "Vent_Perf" = 1.14,    # Ventilation over perfusion ratio
+                "Pct_LBDM_wp" = 0.2,   # wp tissue as fraction of lean mass
+                "Pct_Flow_fat" = 0.1,  # Fraction of cardiac output to fat
+                "Pct_Flow_pp" = 0.35,  # ~ to pp
+                "PC_art" = 2,          # Blood/air partition coefficient
+                "PC_fat" = 22,         # Fat/blood ~
+                "PC_wp" = 0.8,         # wp/blood ~
+                "PC_pp" = 0.8,         # pp/blood ~
+                "Kmetwp" = 0.25)       # Rate constant for metabolism
+```
+
+```{r}
+y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
+       "Q_wp" = 0,  # ~ in well-perfused (mg)
+       "Q_pp" = 0,  # ~ in poorly-perfused (mg)
+       "Q_met" = 0) # ~ metabolized (mg)
+```
+
+
+
+## Model structure
+
+```r
+# Define the model equations
+bd.model <- function(t, y, parameters) {
+  with (as.list(y), {
+    with (as.list(parameters), {
+      
+      # Define constants
+
+      # Calculate flow and volumes
+      
+      # Calculate the tissue, blood, and air
+
+      # Differentials for quantities
+
+      # The function bd.model must return at least the derivatives
+      list(c(dQ_fat, dQ_wp, dQ_pp, dQ_met), # derivatives
+           c("C_ven" = C_ven, "C_art" = C_art)) # extra outputs
+           
+    }) # end with parameters
+  }) # end with y
+} # end bd.model
+```
+
+## Constants
+
+```r
+# Known constants
+Height = 1.6                            # use to calculate fraction of body fat
+Age = 40                                # use to calculate fraction of body fat
+Sex = 1                                 # use to calculate fraction of body fat
+MW_bu = 54.0914                         # butadiene molecular weight (in grams)
+ppm_per_mM = 24450                       # ppm to mM under normal conditions
+ppm_per_mg_per_l = ppm_per_mM / MW_bu
+mg_per_l_per_ppm = 1 / ppm_per_mg_per_l
+
+```
+
+## Air and blood flow
+
+```r
+# Calculate Flow_alv from total pulmonary flow
+Flow_alv = Flow_pul * (1 - Pct_Deadspace)
+      
+# Calculate total blood flow from Flow_alv and the V/P ratio
+Flow_tot = Flow_alv / Vent_Perf
+      
+# Calculate fraction of body fat
+Pct_BDM_fat = (1.2 * BDM / (Height * Height) - 10.8 *(2 - Sex) + 0.23 * Age - 5.4) * 0.01
+      
+# Calculate actual blood flows from total flow and percent flows
+Flow_fat = Pct_Flow_fat * Flow_tot
+Flow_pp = Pct_Flow_pp * Flow_tot
+Flow_wp = Flow_tot * (1 - Pct_Flow_pp - Pct_Flow_fat)
+```
+
+## Volumes
+
+```r
+# Actual volumes, 10% of body mass (bones…) get no butadiene
+Eff_V_fat = Pct_BDM_fat * BDM
+Eff_V_wp = Pct_LBDM_wp * BDM * (1 - Pct_BDM_fat)
+Eff_V_pp = 0.9 * BDM - Eff_V_fat - Eff_V_wp
+```
+
+## Concentrations - tissues & blood
+
+```r
+# Calculate the concentrations
+C_fat = Q_fat / Eff_V_fat
+C_wp = Q_wp / Eff_V_wp
+C_pp = Q_pp / Eff_V_pp
+      
+# Venous blood concentrations at the organ exit
+Cout_fat = C_fat / PC_fat
+Cout_wp = C_wp / PC_wp
+Cout_pp = C_pp / PC_pp
+      
+# Sum of Flow * Concentration for all compartments
+dQ_ven = Flow_fat * Cout_fat + Flow_wp * Cout_wp + Flow_pp * Cout_pp
+C_inh.current = C_inh(t)     # to avoid calling C_inh() twice
+      
+# Arterial blood concentration
+# Convert input given in ppm to mg/l to match other units
+C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flow_alv / PC_art)
+      
+# Venous blood concentration (mg/L)
+C_ven = dQ_ven / Flow_tot
+```
+
+## Concentrations - air
+
+```r
+# Alveolar air concentration (mg/L)
+C_alv = C_art / PC_art
+      
+# Exhaled air concentration (ppm)
+if (C_alv <= 0) {
+  C_exh = 10E-30    # avoid round off errors
+} else {
+  C_exh = (1 - Pct_Deadspace) * C_alv * ppm_per_mg_per_l + Pct_Deadspace * C_inh.current
+}
+```
+
+## Differentials for quantities
+
+```r
+# Quantity metabolized in liver (included in well-perfused)
+dQmet_wp = Kmetwp * Q_wp
+      
+# Differentials for quantities
+dQ_fat = Flow_fat * (C_art - Cout_fat)
+dQ_wp = Flow_wp * (C_art - Cout_wp) - dQmet_wp
+dQ_pp = Flow_pp * (C_art - Cout_pp)
+dQ_met = dQmet_wp
+```
+
+## `bd.model`
+```{r}
+# Define the model equations
+bd.model = function(t, y, parameters) {
+  with (as.list(y), {
+    with (as.list(parameters), {
+      
+      # Define some known constants
+      Height = 1.6       # use to calculate fraction of body fat
+      Age = 40           # use to calculate fraction of body fat
+      Sex = 1            # use to calculate fraction of body fat
+      MW_bu = 54.0914    # butadiene molecular weight (in grams)
+
+      # Conversions from/to ppm
+      ppm_per_mM = 24450 # ppm to mM under normal conditions
+      ppm_per_mg_per_l = ppm_per_mM / MW_bu
+      mg_per_l_per_ppm = 1 / ppm_per_mg_per_l
+      
+      # Calculate Flow_alv from total pulmonary flow
+      Flow_alv = Flow_pul * (1 - Pct_Deadspace)
+      
+      # Calculate total blood flow from Flow_alv and the V/P ratio
+      Flow_tot = Flow_alv / Vent_Perf
+      
+      # Calculate fraction of body fat
+      Pct_BDM_fat = (1.2 * BDM / (Height * Height) - 10.8
+                     *(2 - Sex) + 0.23 * Age - 5.4) * 0.01
+      
+      # Actual volumes, 10% of body mass (bones…) get no butadiene
+      Eff_V_fat = Pct_BDM_fat * BDM
+      Eff_V_wp = Pct_LBDM_wp * BDM * (1 - Pct_BDM_fat)
+      Eff_V_pp = 0.9 * BDM - Eff_V_fat - Eff_V_wp
+      
+      # Calculate actual blood flows from total flow and percent flows
+      Flow_fat = Pct_Flow_fat * Flow_tot
+      Flow_pp = Pct_Flow_pp * Flow_tot
+      Flow_wp = Flow_tot * (1 - Pct_Flow_pp - Pct_Flow_fat)
+      
+      # Calculate the concentrations
+      C_fat = Q_fat / Eff_V_fat
+      C_wp = Q_wp / Eff_V_wp
+      C_pp = Q_pp / Eff_V_pp
+      
+      # Venous blood concentrations at the organ exit
+      Cout_fat = C_fat / PC_fat
+      Cout_wp = C_wp / PC_wp
+      Cout_pp = C_pp / PC_pp
+      
+      # Sum of Flow * Concentration for all compartments
+      dQ_ven = Flow_fat * Cout_fat + Flow_wp * Cout_wp + Flow_pp * Cout_pp
+      C_inh.current = C_inh(t) # to avoid calling C_inh() twice
+      
+      # Arterial blood concentration
+      # Convert input given in ppm to mg/l to match other units
+        C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flow_alv / PC_art)
+      
+      # Venous blood concentration (mg/L)
+      C_ven = dQ_ven / Flow_tot
+      
+      # Alveolar air concentration (mg/L)
+      C_alv = C_art / PC_art
+      
+      # Exhaled air concentration (ppm)
+      if (C_alv <= 0) {
+        C_exh = 10E-30 # avoid round off errors
+      } else {
+        C_exh = (1 - Pct_Deadspace) * C_alv * ppm_per_mg_per_l + Pct_Deadspace * C_inh.current
+      }
+      
+      # Quantity metabolized in liver (included in well-perfused)
+      dQmet_wp = Kmetwp * Q_wp
+      
+      # Differentials for quantities
+      dQ_fat = Flow_fat * (C_art - Cout_fat)
+      dQ_wp = Flow_wp * (C_art - Cout_wp) - dQmet_wp
+      dQ_pp = Flow_pp * (C_art - Cout_pp)
+      dQ_met = dQmet_wp
+
+      # The function bd.model must return at least the derivatives
+      list(c(dQ_fat, dQ_wp, dQ_pp, dQ_met), # derivatives
+           c("C_ven" = C_ven, "C_art" = C_art)) # extra outputs
+
+    }) # end with parameters
+  }) # end with y
+} # end bd.model
+
+```
+
+
+## Simulation
+```{r}
+# Define the computation output times
+t <- seq(from=0, to=1440, by=10)
+
+# Solve ODE
+out <- ode(times=t, func=bd.model, y=y, parms=parameters)
+head(out)
+```
+
+## Plot
+```{r}
+plot(out)
+```
+
