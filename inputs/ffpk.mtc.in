@@ -1,0 +1,18 @@
+# pbtk1cpt.mtc.in ---------------------------------------------------------------
+
+MonteCarlo ("simmc.out", 
+            1000, 
+            10101010);
+
+MW       = 180.164; # Molecular weight (g/mole)
+IngDose  = 5.0;     # ingested dose (mg)
+
+Distrib (Fgutabs, Uniform, 0.8, 1);
+Distrib (kgutabs, LogNormal, 2.18, 3);
+Distrib (kelim, LogNormal, 0.02183918, 3); 
+Distrib (Vdist, LogUniform, 0.1, 10); 
+
+Simulation {
+  Print (Ccompartment, 0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24); 
+}
+End.

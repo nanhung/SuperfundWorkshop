@@ -1,5 +1,5 @@
 ---
-title: "<strong>Session 2:</strong> </br> Application of Monte Carlo simulation and Markov Chain Monte Carlo"
+title: "<strong>Session 2:</strong> </br> Application of Monte Carlo simulation and Markov Chain Monte Carlo in PBPK modeling"
 subtitle: "<html><div style='float:left'></div><hr color='#500000' size=1px width=796px></html>"
 author: ".font125[Nan-Hung Hsieh, PhD] </br> Postdoc @ Texas A&M Superfund Decision Science Core"
 institute: ""
@@ -17,10 +17,75 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('..')
+wd <- getwd()
+knitr::opts_knit$set(root.dir =  wd)
+```
+
 ```{r, include=FALSE}
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 library(sensitivity)
+library(simuloR)
+library(dplyr)
 ```
+
+# Deterministic vs Probabilistic
+
+## Traditional - Deterministic
+
+.font200[
+**Choose the "specific" value (or the most conservative scenario) in the risk assessment**
+
+.right[.bolder[Is it good enough?]]
+]
+
+---
+
+# Deterministic vs Probabilistic
+
+.pull-left[
+## Traditional - Deterministic
+
+.font200[
+Choose the "specific" value (or the most conservative scenario) in the risk assessment
+]
+]
+
+.pull-right[
+
+## Modern - Probabilistic
+
+.font200[
+Combine "all" information and characterize the **uncertainty**
+]
+]
+
+---
+
+# Uncertainty in Risk Analysis
+
+.font150[
+The objective of a **probabilistic risk analysis** is the quantification of risk from made man-made and natural activities ([Vesely and Rasmuson, 1984](https://onlinelibrary.wiley.com/doi/10.1111/j.1539-6924.1984.tb00950.x)).  
+]
+
+**Two major types of uncertainty need to be differentiated:**
+
+### (1) Uncertainty due to physical variability
+
+### (2) Uncertainty due to lack of knowledge in
+
+.font125[
+- Modeling uncertainty
+
+- Parameter uncertainty
+
+- Completeness uncertainty
+]
+
+---
+
 
 # Monte Carlo Simulation
 
@@ -29,7 +94,7 @@ library(sensitivity)
 - Inferential statistics
   - **Population**: Universal information
   - **Sample**: a proper subset of population
-- .bolder[Repeatly Random Sampling]
+- .bolder[Repeatedly Random Sampling]
 ]
 
 .pull-left[
@@ -45,25 +110,6 @@ John von Neumann
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/ENIAC_Penn1.jpg/1280px-ENIAC_Penn1.jpg" height="220px" />  
 ENIAC (Electronic Numerical Integrator and Computer)
 ]
-
-
----
-
-# Uncertainty in Risk Analysis
-
-The objective of a **probabilistic risk analysis** is the quantification of risk from made man-made and natural activities ([Vesely and Rasmuson, 1984](https://onlinelibrary.wiley.com/doi/10.1111/j.1539-6924.1984.tb00950.x)).  
-
-Two major types of uncertainty need to be differentiated:
-
-### (1) Uncertainty due to physical variability
-
-### (2) Uncertainty due to lack of knowledge in
-
-- Modeling uncertainty
-
-- Parameter uncertainty
-
-- Completeness uncertainty
 
 ---
 
@@ -108,184 +154,65 @@ $$y = f(x_i) $$
 
 .footnote[Mayer J, Khairy K, Howard J. Drawing an elephant with four complex parameters. Am. J. Phys. 78, 648 (2010) https://doi.org/10.1119/1.3254017]
 
----
-
-
-# Monte Carlo Simulation in R
-
-```{r}
-x <- rnorm(n = 28, mean = 10, sd =  2)
-x
-```
-
-.pull-left[
-```{r}
-mean(x)
-sd(x)
-```
-]
-
-.pull-right[
-```{r fig.height=3.6}
-hist(x)
-```
-]
 
 ---
 
-# Generating random number
+background-image: url(https://i.ibb.co/JB7s1bK/Screenshot-from-2019-09-24-11-49-47.png)
+background-size: 700px
+background-position: 50% 80% 
 
-```{r}
-runif(n=5, min=0, max=1)
-runif(n=5, min=0, max=1)
-set.seed(1)
-runif(n=5, min=0, max=1)
-set.seed(1)
-runif(n=5, min=0, max=1)
-```
+# Modeling in Risk Assessment  
 
-.bolder[Be sure to set the seed before conducting a simulation!]
+.footnote[https://www.epa.gov/risk/about-risk-assessment#whatisrisk]
 
 ---
 
-# Monte Carlo Simulation in R
-.pull-left[
-.pull-left[
-```{r fig.height=4.5}
-x <- runif(10)
-plot(x)
-hist(x)
-```
-]
-.pull-right[
-```{r fig.height=4.5}
-x <- runif(100)
-plot(x)
-hist(x)
-```
-]
+background-image: url(https://i.ibb.co/SmNTtv2/WHO.png)
+background-size: 260px
+background-position: 80% 90% 
+
+# Uncertainty vs. Variability
+
+.font150[
+
+> **Uncertainty** relates to "lack of knowledge"" that, in theory, could be reduced by better data, whereas **variability** relates to an existing aspect of the real world that is outside our control.
+
+> [*World Health Organization (2017)*](https://www.who.int/ipcs/methods/harmonization/areas/hazard_assessment/en/)
+
 ]
 
-.pull-right[
-.pull-left[
-```{r fig.height=4.5}
-x <- runif(1000)
-plot(x)
-hist(x)
-```
-]
-.pull-right[
-```{r fig.height=4.5}
-x <- runif(10000)
-plot(x)
-hist(x)
-```
-]
-]
+???
+
+There is a clear definition to differentiate the uncertainty and variability in WHO document.
 
 ---
 
-# Simulation in GNU MCSim
+background-image: url()
+background-size: 200px
+background-position: 80% 80% 
 
-## Monte Carlo simulations
+# Variability in Risk Assessment
 
-- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
+- Reduce chances using a strain that is a "poor" model of humans 
+- Obtaining information about "potential range" to inform risk assessment 
 
-**Used to:** Check possible simulation (under given parameter distributions) results before model calibration
+.center[
+![:scale 60%](https://i.ibb.co/ykYp8BY/variability.png)
+]
 
-</br>
-
-## SetPoints simulation
-
-- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
-
-**Used to:** Posterior analysis, Local/global sensitivity analysis
+.font75[Chiu WA and Rusyn I, 2018. https://doi.org/10.1007/s00335-017-9731-6]
 
 ---
 
-# MonteCarlo()
+### Variability & Uncertainty
 
-The MonteCarlo specification gives general information required for the runs: (1) the output file name, (2) the number of runs to perform, and (3) a starting seed for the random number generator. Its syntax is:
-
-```r
-MonteCarlo("<OutputFilename>", <nRuns>, <RandomSeed>);
-```
-
-- `"<OutputFilename>"` The character string <OutputFilename>, enclosed in double quotes, should be a valid filename for your operating system. 
-
-- `<nRuns>` The number of runs <nRuns> should be an integer, and is only limited by either your storage space for the output file or the largest (long) integer available on your machine. 
-
-- `<RandomSeed>` The seed <RandomSeed> of the pseudo-random number generator can be any positive integer (including zero). 
-
-Here is an example of use:
-
-```r
-MonteCarlo("simmc.out", 50000, 9386);
-```
-
----
-
-# Distrib()
-
-The specification of distributions for simple Monte Carlo simulations,
-
-```r
-Distrib(<parameter identifier>, <distribution-name>, [<shape parameters>]);
-```
-
-For examples:
-
-The distribution of absorption rate constant (`Ka`) is ranged bewteen 0.2 to 0.8. It can be written as, 
-
-```r
-Distrib (Ka, Uniform, 0.2, 0.8);
-```
----
-
-# Log-transformed
-
-.pull-left[
-
-```{r}
-# Assumed the uniform distribution U(0.01, 100)
-x <- runif(10000, 0.01, 100)
-```
-
-.pull-left[
-```{r fig.height=6}
-plot(x)
-```
+.center[
+![:scale 70%](https://i.ibb.co/Kq4nStY/Screen-Shot-2019-05-08-at-7-25-22-AM.png)
 ]
 
-.pull-right[
-```{r fig.height=6}
-plot(x, log="y")
-```
+.footnote[
+https://cran.r-project.org/web/packages/mc2d/index.html
 ]
-]
-
-.pull-right[
-
-```{r}
-x <- runif(10000, -2, 2)
-x <- 10^x
-```
-
-.pull-left[
-```{r fig.height=6}
-plot(x)
-```
-]
-
-.pull-right[
-```{r fig.height=6}
-plot(x, log="y")
-```
-]
-]
-
-
-.bolder[Use log-transformed techniques to prevent the sampling problem!]
 
 ---
 
@@ -327,57 +254,18 @@ First order elimination rate, ...
 
 ---
 
-# Example
+class: middle
 
-```r
-## ./mcsim.one.model.R.exe one.mtc.in.R ####
-## Monte Carlo simulation input file for one compartment model
-MonteCarlo ("simmc.out", 10, 95814);
-Distrib (Ka,  Uniform, 0.2,    0.8);
-Distrib (Ke,  Uniform, 0.03,   0.1);
-Simulation { # 1
-  OralDose = 100; 
-  BW = 60;
-  PrintStep (C_central, 0, 8, 1);
-}
-End.
-```
+.font200[
+In PK modeling...
 
----
+We can conduct **Monte Carlo simulation** to quantify the possible outcomes (concentration).
 
-# SetPoints()
+But, in some cases,  
 
-This command specifies an output filename, the name of a text file containing (1) the chosen parameter values, (2) the number of simulations to perform and (3) a list of model parameters to read in. It has the following syntax:
+we might want know which parameter have high (or no) **"impact"** on model output
 
-```r
-SetPoints("<OutputFilename>", "<SetPointsFilename>", <nRuns>, 
-            <parameter identifier>, <parameter identifier>, ...);
-```
-
-- `"<OutputFilename>"` The character string <OutputFilename>, enclosed in double quotes.
-
-- `"<SetPointsFilename>"` The character string <SetPointsFilename>, enclosed in double quotes.
-
-- `<nRuns>` should be less or equal to the number of lines (minus one) in the set points file. If a zero is given, all lines of the file are read. 
-
-- `<parameter identifier>` a comma-separated list of the parameters or vectors to be read in the SetPointsFilename. 
-
----
-
-# Example
-
-```r
-## ./mcsim.one.model.R.exe one.setpt.in.R ####
-## Setpoint simulation input file for one compartment model
-## Use "sim.out" that generated from "one.mtc.in.R"
-SetPoints ("setpts.out", "simmc.out", 0, Ka, Ke);
-Simulation { # 1
-  OralDose = 100; 
-  BW = 60;
-  PrintStep (C_central, 0, 8, 1);
-}
-End.
-```
+]
 
 ---
 
@@ -484,7 +372,7 @@ On the other side, some researcher also developed the approach that moves all pa
 
 ---
 
-# Sensitivity indeices
+# Sensitivity indices
 
 .font120[First order] $(S_i)$
 
@@ -532,26 +420,6 @@ $$S_{1}+ S_2 + S_{3} + S_{12}+S_{13} + S_{23} + S_{123} = 1$$
 
 ---
 
-# Steps to performing sensitivity analysis
-
-1. Identify all model factor $(x_i)$ which should be consider in analysis
-
-2. Characterise the uncertainty for each selected input factor
-
-3. Generate a sample of a given size from the previously defined probability distribution
-
-4. Define the variable of interest $(y_{i,t})$
-
-5. Execute the model for each combination of factor
-
-6. **Visualize and interpret the outputs**
-
-7. Estimate the sensitivity measures ("*check convergence*")
-
-8. Decision making
-
----
-
 # Project
 
 Funding: Food and Drug Administration (1U01FD005838)
@@ -585,25 +453,145 @@ Name: **<span style="color: red">Enhancing the reliability, efficiency, and usab
 
 ---
 
-# General workflow
+# Parameter fixing in PBPK
 
-### 1 Model constructing or translating
+.center[![](https://i.ibb.co/nkJ8nTQ/Workflow.png)]
 
-### 2 Verify modeling result
+---
 
-- **Compare with published result**
-- **Mass balance** 
+# Uncertainty analysis - Flip-flop kinetics
 
-### 3 Uncertainty and sensitivity analysis
+.pull-left[
+```{r eval=T}
+library(pksensi)
 
-- **Morris elementary effects screening** 
-- **Fourier amplitude sensitivity test**
+# define parameter distributions
+params <- c("F","KA","KE","V")
+q <- c("qunif", "qunif", "qunif", "qnorm")
+q.arg <- list(list(min = 0.8, max = 1),
+              list(min = 0.5, max = 0.8),
+              list(min = 0.1, max = 0.3),
+              list(mean = 10, sd = 1))
 
-### 4 Model calibration and validation
+# create parameter matrix and conduct simulation
+x <- rfast99(params = params, n = 200, 
+             q = q, q.arg = q.arg, rep = 20)
+time <- seq(from = 0.01, to = 12.01, by = 0.5)
+y <- solve_fun(x, model = FFPK, time = time, 
+               vars = "output")
+```
+]
 
-- **Markov chain Monte Carlo** 
-  - Diagnostics (Goodness-of-fit, convergence)
+.pull-right[
+```{r fig.height=5, dev='svg', eval=T}
+pksim(y)
+```
+]
 
+---
+
+# Uncertainty analysis - PK model
+
+.center[
+```{r, echo=F, fig.height=5, dev='svg'}
+par(mfrow=c(4,4),mar=c(0.8,0.8,0.8,0),oma=c(4,4,2,1), pch =".")
+for (j in c("F","KA","KE","V")) {
+  if ( j == "V") {
+    plot(y$a[,1,j], ylab = "V")
+  } else plot(y$a[,1,j], xaxt="n", ylab = "")
+  for (i in 2:3) {
+    if ( j == "V") {
+      plot(y$a[,i,j], ylab = "", yaxt="n")  
+    } else plot(y$a[,i,j], xaxt="n", yaxt="n", ylab = "")
+  } 
+  hist <- hist(y$a[,,j], plot=FALSE, 
+               breaks=seq(from=min(y$a[,,j]), to=max(y$a[,,j]), length.out=20))
+  barplot(hist$density, axes=FALSE, space=0, horiz = T, main = j) 
+}
+mtext("Model evaluation", SOUTH<-1, line=2, outer=TRUE)
+```
+]
+
+---
+
+# Sensitivity analysis - PK model
+
+.center[
+```{r, echo=F, fig.height=5, dev='svg'}
+par(mfcol=c(4,4),mar=c(0.8,0.8,0,0),oma=c(4,4,2,1), pch = ".")
+plot(x$a[,1,"F"], y$y[,1,"0.01",1], xaxt="n", main = "\nF")
+plot(x$a[,1,"F"], y$y[,1,"2.01",1], xaxt="n")
+plot(x$a[,1,"F"], y$y[,1,"6.01",1], xaxt="n")
+plot(x$a[,1,"F"], y$y[,1,"12.01",1])
+for (j in c("KA","KE","V")){
+  for (k in c("0.01", "2.01", "6.01", "12.01")){
+    if (k == "0.01") {
+      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n", xaxt="n", main = paste0("\n", j))
+    } else if (k == "12.01") {
+      plot(x$a[,1,j], y$y[,1,k,1], yaxt = "n")
+    } else plot(x$a[,1,j], y$y[,1,k,1], xaxt = "n", yaxt = "n")
+  }
+}
+mtext("Parameter", SOUTH<-1, line=2, outer=TRUE)
+mtext("Ccompartment", WEST<-2, line=2, outer=TRUE)
+```
+]
+
+---
+
+# Sensitivity analysis - PK model
+
+```r
+plot(y)
+```
+
+.center[
+```{r fig.height=4.5, fig.width=9, dev='svg', eval=T, echo=F}
+plot(y)
+```
+]
+
+
+---
+
+class: middle, center
+
+--- Application ---
+# If you have *known* "parameters"
+# ------------------------------------>
+# <font color="red"> Parameters / Model / Data</font>
+# <------------------------------------
+# If you have *known* "data" 
+--- Calibration ---
+
+---
+
+</br>
+</br>
+
+## Currently, the Bayesian Markov chain Monte Carlo (MCMC) algorithm is an effective way to do population PBPK model calibration.   
+## It is a powerful tool, Because...
+
+.font150[
+>It gives us the opportunity to understand and quantify the .font120["uncertainty"] and .font120["variability"] from individuals to .font150[population] through **data** and **model**.
+]
+
+---
+
+
+# Frequentist vs. Bayesian
+
+.pull-left[
+![](https://i.ibb.co/YPRVnd1/Screenshot-from-2019-12-03-13-50-13.png)
+]
+
+.pull-right[
+![](https://i.ibb.co/tPtbLmD/Screenshot-from-2019-12-03-13-49-53.png)
+]
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
+]
 ---
 
 # Bayes' rule
@@ -634,9 +622,11 @@ $p(y)$: *Likelihood* of data
 
 > Marilyn vos Savant. 1990. Ask Marilyn. *Parade Magazine*: 16.
 
+.pull-left[
+]
 .pull-right[
 
-```{R echo=F, fig.height=7, fig.width=9}
+```{R echo=F, fig.height=5.2, fig.width=9}
 N <- 500
 set.seed(7)
 prize <- sample(1:3, N, replace = TRUE)
@@ -660,6 +650,16 @@ abline(h = 1/3)
 legend("topright", legend = c("Switch to Other Door","Don't Switch"), pch = 1 , col = c(4,2))
 ```
 
+]
+
+---
+
+# Frequentist vs. Bayesian
+
+![](https://i.ibb.co/920t4Nt/Screenshot-from-2019-12-03-13-51-43.png)
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
 ]
 
 ---
@@ -691,6 +691,15 @@ Markov chain Monte Carlo is a general method based on drawing values of theta fr
 
 ---
 
+class:hide-logo
+.center[
+![:scale 90%](https://i.ibb.co/9hbLTb8/Screenshot-from-2019-12-04-06-21-26.png)
+]
+
+.footnote[https://chi-feng.github.io/mcmc-demo/app.html?algorithm=RandomWalkMH&target=standard]
+
+---
+
 class: middle
 
 .font200[
@@ -717,6 +726,321 @@ $S_{j[i]}^{2}$: the variance for data type $j$
 
 ---
 
+# General workflow
+
+### 1 Model constructing or translating
+
+### 2 Verify modeling result
+
+- **Compare with published result**
+- **Mass balance** 
+
+### 3 Uncertainty and sensitivity analysis
+
+- **Morris elementary effects screening** 
+- **Fourier amplitude sensitivity test**
+
+### 4 Model calibration and validation
+
+- **Markov chain Monte Carlo** 
+  - Diagnostics (Goodness-of-fit, convergence)
+
+---
+
+# Probabilistic Modeling
+
+.center[
+![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
+]
+
+.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X10002623-gr5.jpg)
+background-size: 500px
+background-position: 70% 80% 
+
+# Bayesian Population Model
+
+**Individuals level**
+
+$E$: Exposure  
+
+$t$: Time  
+
+$\theta$: Specific parameters  
+
+$y$: condition the data
+
+</br>
+
+**Population level**
+
+$\mu$: Population means
+
+$\Sigma^2$: Population variances
+
+$\sigma^2$: Residual errors
+
+.footnote[https://doi.org/10.1016/j.tox.2010.06.007]
+
+---
+
+
+background-image: url(https://i.ibb.co/61ryV3d/Screenshot-from-2019-11-27-13-01-24.png)
+background-size: 350px
+background-position: 20% 90% 
+
+# Related publication 
+
+Bois et al. (1996) - [Population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007%2Fs002040050284)  
+Chiu and Bois (2006) - [Revisiting the population toxicokinetics of tetrachloroethylene](https://link.springer.com/article/10.1007/s00204-006-0061-9)    
+
+.pull-right[
+![:scale 70%](https://i.ibb.co/c2ghZ7m/Screenshot-from-2019-11-27-13-01-46.png)
+]
+
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr1.jpg)
+background-size: 330px
+background-position: 20% 80% 
+
+# Related publication 
+
+.font75[
+Hack et al. (2006) - [Bayesian population analysis of a harmonized physiologically based pharmacokinetic model of trichloroethylene and its metabolites](https://www.sciencedirect.com/science/article/pii/S027323000600095X)
+]
+
+.pull-left[]
+
+.pull-right[
+![:scale 55%](https://ars.els-cdn.com/content/image/1-s2.0-S027323000600095X-gr3.jpg)
+]
+
+---
+
+class: hide-logo
+
+.pull-left[
+
+## Related publication
+
+Chiu et al. (2009) - [Characterizing uncertainty and population variability in the toxicokinetics of trichloroethylene and metabolites in mice, rats, and humans using an updated database, physiologically based pharmacokinetic (PBPK) model, and Bayesian approach](https://www.sciencedirect.com/science/article/pii/S0041008X09003238)  
+
+</br>
+![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr3_lrg.jpg)  
+.font75[Hierarchical population statistical model for mice, rats, and humans. ]
+]
+
+.pull-right[
+
+![:scale 85%](https://ars.els-cdn.com/content/image/1-s2.0-S0041008X09003238-gr2.jpg)  
+.font75[Overall structure of updated PBPK model for TCE and metabolites. ]
+]
+
+---
+
+background-image: url(https://i.ibb.co/VHT9qZ3/chiu2019.jpg)
+background-size: 500px
+background-position: 50% 90% 
+
+# Related publication 
+
+- Characterizing PBPK parameters from individuals to population
+
+- Evaluating population **variability** and parameter **uncertainty**
+
+- Cross-species comparisons of metabolism in **risk assessment**
+
+.footnote[
+Chiu et al. 2009.  
+https://doi.org/10.1016/j.taap.2009.07.032  
+]
+
+???
+
+A brief summarizes the Bayesian approach in population PBPK modeling. We can use it to estimate the posterior parameter. Then used the parameter uncertainty to estimate the posterior population prediction and group-specific prediction. 
+
+Based on this information we can compare the metabolism across experimental animals and human and further use this information in risk assessment.
+
+---
+
+background-image: url(https://i.ibb.co/tYDnPDb/chiu2014-2.png)
+background-size: 500px
+background-position: 75% 80% 
+
+# Related publication 
+
+**Inter-strain & inter-individual variability**
+
+Chiu et al. (2014) - [Physiologically-Based Pharmacokinetic (PBPK) Modeling of Inter-strain Variability in Trichloroethylene Metabolism in the Mouse](https://ehp.niehs.nih.gov/doi/full/10.1289/ehp.1307623?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%3dpubmed)
+
+<img src="https://i.ibb.co/DVWYytX/chiu2014.png" height="380px" />
+
+???
+
+It is an extensive study.
+
+Previous animal studies mainly used single strain, B6C3F1 as a representative animal. But the issue to used B6C3F1 in extrapolation is the metabolism is very difference with the human. It had the highest rate of respiratory tract oxidative metabolism as compared to rats and humans. Also, it doesn't have representative variability in risk assessment.
+
+So in this study, instead of B6 strain, it includes 16 inbreds to discuss inter-strain variability and use it to compare with the human inter-individual variability. 
+
+Through the multi-strains model calibration and prediction, we can have consistent estimates of variability in human and mice
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr2_lrg.jpg)
+background-size: 300px
+background-position: 70% 95%
+
+# Recent study
+
+Funding: **U.S. EPA (STAR RD83561202)** and **National Institutes of Health (F32 ES026005)**
+
+Luo, Y.S., Hsieh, N.H., Soldatow, V.Y., Chiu, W.A. and Rusyn, I., 2018. [Comparative Analysis of Metabolism of Trichloroethylene and Tetrachloroethylene among Mouse Tissues and Strains](https://doi.org/10.1016/j.tox.2018.07.012). Toxicology, 409, pp.33-43.
+
+<hr>
+
+**Motivation**: Quantitative comparison of tissue- and strain-specific metabolism of TCE and PCE has not been performed
+
+</br>
+
+<img src= "https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr1.jpg" height="220px" />
+
+???
+
+---
+
+</br>
+
+</br>
+
+Predicted disposition of **TCE (A)**, **PCE (B)**, and their respective metabolites in male B6C3F1/J, C57BL/6J, and NZW/LacJ mice.
+
+.center[
+![](https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr5.jpg)
+]
+
+.font70[
+Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain.
+]
+
+???
+
+This is the result of the disposition of TCE and PCE and their respective metabolites in mice strains. 
+Pie charts are used to provide a relative comparison among various metabolites as predicted by the model in each strain. 
+Most of each parent compound (TCE and PCE) remained unmetabolized until excretion
+As you can see the disposition fractions are different across the mice strains. 
+For to the glutathione conjugation metabolism, the overall flux to conjugation was less than 0.3% of the administered dose for both chemicals. 
+
+---
+
+# Recent study
+
+Funding: **National Institutes of Health (P42 ES027704 and P42 ES ES005948)**
+
+Luo, Y.S., Cichocki, J.A., Hsieh, N.H., Lewis, L., Wright, F.A., Threadgill, D.W., Chiu, W.A. and Rusyn, I., 2019. [Using Collaborative Cross Mouse Population to Fill Data Gaps in Risk Assessment: A Case Study of Population-Based Analysis of Toxicokinetics and Kidney Toxicodynamics of Tetrachloroethylene](https://doi.org/10.1289/EHP5105). Environmental Health Perspectives, 127(6), p.067011.
+
+<hr>
+
+**Background:**
+
+- Interindividual variability in susceptibility remains poorly characterized for environmental chemicals such as tetrachloroethylene (PERC). 
+- Development of population-based experimental models provide a potential approach to fill this critical need in human health risk assessment.
+
+**Objectives:** 
+
+- To better characterize the contribution of glutathione (GSH) conjugation to kidney toxicity of PERC and the degree of associated interindividual toxicokinetic (TK) and toxicodynamic (TD) variability by using the Collaborative Cross (CC) mouse population.
+
+???
+
+This is our following research. This study aim to apply the developed multicompartment PK model in human health risk assessment. In this study, we used in animal experiment result from CC mouse population to characterize metabolism–toxicity interactions and quantify the interindividual variability. Our main objective is ...
+
+---
+
+class:clear, hide-logo
+
+.center[
+![:scale 80%](https://i.ibb.co/KF8PLWy/Screenshot-from-2019-09-24-11-57-00.png)
+]
+
+.footnote[https://factor.niehs.nih.gov/2019/9/papers/dert/index.htm]
+
+???
+
+This paper was been selected as Papers of the Month. The brief summary of this study is 
+- Mice exposed to PERC had lower kidney weight and more markers of kidney injury
+- Inbred mice used in previous studies generally exhibited metabolism of PERC at the lower end of the overall distribution
+- Default values that are generally used by the U.S. Environmental Protection Agency in human health risk assessments to adjust for population variation, the default values may protect 95% of the population but not the most sensitive individuals
+
+---
+
+class: hide-logo
+
+.pull-left[
+Interstrain Variability in Metabolism of PERC through Glutathione Conjugation Pathway
+
+![:scale 70%](https://ehp.niehs.nih.gov/cms/attachment/9d640350-b940-4fc6-b40c-2cc96767ae3e/ehp5105_f4.jpg)
+
+]
+
+.pull-right[
+Predicted disposition of PERC and its metabolites in CC mouse strains
+
+![:scale 90%](https://ehp.niehs.nih.gov/cms/attachment/e8287e06-d8ab-423f-a58e-5332bd18523c/ehp5105_f6.gif)
+]
+
+---
+
+class:clear
+
+**Chemical-Specific Adjustment Factors for Population Variability and Risk Assessment**
+
+![](https://i.ibb.co/f24zFvp/UF-table.png) 
+<hr>
+.center[![:scale 40%](https://i.ibb.co/WF2dr8S/UF.png)]
+
+???
+
+Based on the inter-strain estimation, we further used predicted disposition of PERC, TCA, and GSH conjugates across CC strains to calculate the chemical-specific adjustment factors for TK variability
+
+
+---
+
+# Related publication
+
+**U.S. Food and Drug Administration** 
+
+Enhancing the reliability, efficiency, and usability of Bayesian population PBPK modeling - Create, implement, and evaluate a robust Global Sensitivity Analysis algorithm to reduce PBPK model parameter dimensionality
+
+<hr>
+
+- Hsieh N-H, Reisfeld B, Bois FY and Chiu WA. 2018. [Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full). Frontiers in Pharmacology 9:588.
+
+- Bois et al. (Submitted) - Well tempered MCMC simulations for population pharmacokinetic models
+
+- Hsieh et al. (Submitted) - pksensi: An R Package to Apply Global Sensitivity Analysis in Physiologically Based Kinetic Modeling
+
+---
+
+# Inter & intra- variability modeling
+
+.center[
+.pull-left[
+**Inter-individual variability model**
+<img src= "https://i.ibb.co/QHMSrbq/inter.png" height="450px" /> 
+]
+.pull-right[
+**Inter- & intra-individual variability model**
+<img src= "https://i.ibb.co/2tzxQCN/inter-intra.png" height="450px" />
+]
+]
+
+---
+
 # Calibration & evaluation
 
 ###  Prepare model and input files 
@@ -733,233 +1057,314 @@ $S_{j[i]}^{2}$: the variance for data type $j$
 
 ---
 
-# Example: linear modeling
+# Simulation in GNU MCSim
 
-.code60[
+## Monte Carlo simulations
+
+- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
+
+**Used to:** Check possible simulation (under given parameter distributions) results before model calibration
+
+</br>
+
+## SetPoints simulation
+
+- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
+
+**Used to:** Posterior predictive check, Local/global sensitivity analysis
+
+---
+
+## Example - Linear model
 
 .pull-left[
-
-**model-file**
-
+.code75[
 ```r
 ## linear.model.R ####
-
 Outputs = {y}
 
 # Model Parameters
-A = 0; # Default value of intercept
-B = 1; # Default value of slope
+A = 0; # 
+B = 1;
 
-# Statistical parameter
-SD_true = 0;
+CalcOutputs { y = A + B * t); }
 
-CalcOutputs { 
-  y = A + B * t + NormalRandom(0,SD_true); 
-}
 End.
-
 ```
+]
 ]
 
 .pull-right[
-
-**input-file**
-
+.code75[
 ```r
-## ./mcsim.linear.model.R.exe linear_mcmc.in.R ####
-
-MCMC ("MCMC.default.out","", # name of output file
-     "",         # name of data file
-     2000,0,     # iterations, print predictions flag
-     1,2000,     # printing frequency, iters to print
-     10101010);  # random seed (default)
+## linear_mcmc.in.R ####
+MCMC ("MCMC.default.out","", # name of output 
+     "",           # name of data file
+     2000,0,       # iterations, print predictions flag,
+     1,2000,       # printing frequency, iters to print
+     10101010);    # random seed (default )
 
 Level {
   
   Distrib(A, Normal, 0, 2); # prior of intercept 
   Distrib(B, Normal, 1, 2); # prior of slope 
   
-  Likelihood(y, Normal, Prediction(y), 0.5);
+  Likelihood(y, Normal, Prediction(y), 0.05);
   
   Simulation {
     PrintStep (y, 0, 10, 1); 
-    Data (y, 0.0, 0.15, 2.32, 4.33, 4.61, 6.68, 7.89, 7.13, 7.27, 9.4, 10.0);
+    Data  (y, 0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+                7.89, 7.13, 7.27, 9.4, 10.0);
   }
 }
-End.
-  
-```
-
-]
-]
-
----
-
-# Demo - linear model
-
-## 1 Single chain testing
-
-- **MCMC simulation** 
-
-## 2 Multi-chains simulation
-
-- **Check convergence**
-
-- **Evaluation of model fit**
-
----
-
-# MCMC()
-
-```r
-# Input-file
-
-MCMC();
-
-# <Global assignments and specifications>
-
-Level {
-
-  Distrib();  
-  Likelihood();
-
-  # Up to 10 levels of hierarchy
-  
-  Simulation {
-    # <Local assignments and specifications>
-  }
-  
-  Simulation {
-    # <Local assignments and specifications>
-  }
-  
-  # Unlimited number of simulation specifications
-} # end Level
 
 End.
 ```
-
----
-  
-# MCMC()
-
-The statement, gives general directives for MCMC simulations with following syntax:
-
-```r
- MCMC("<OutputFilename>", "<RestartFilename>", "<DataFilename>",
-          <nRuns>, <simTypeFlag>, <printFrequency>, <itersToPrint>,
-          <RandomSeed>);
-```
-
-.font75[
-`"<OutputFilename>"` Output file name, the default is "MCMC.default.out"
-
-`"<RestartFilename>"` Restart file name
-
-`"<DataFilename>"` Data file name
-
-`<nRuns>` an integer for the total sampling number (iteration)
-
-`<simTypeFlag>` an integer (from 0 to 5) to define the simulation type
-
-`<printFrequency>` an integer to set the interval of printed output 
-
-`<itersToPrint>` an integer to set the number of printed output from the final iteration 
-
-`<RandomSeed>` a numeric for pseudo-random number generator
+]
 ]
 
 ---
 
-# Simulation types
+## Example - MCMC simulation
 
-**`<simTypeFlag>` an integer (from 0 to 5) to define the simulation type**
+.pull-left[
+.code75[
+```{r message=F}
+model <- "models/linear.model"
+input <- "inputs/linear.mcmc.in"
+set.seed(1111) 
+out <- mcsim(model, input) 
+head(out)
+tail(out, 4)
+```
+]
+]
 
-`0`, start/restart a new or unfinished MCMC simulations
-
-`1`, use the last MCMC iteration to quickly check the model fit to the data
-
-`2`, improve computational speed when convergence is approximately obtained
-
-`3`, tempering MCMC with whole posterior
- 
-`4`, tempering MCMC with only likelihood
- 
-`5`,  stochastic optimization 
-
----
-
-# Check convergence
-
-### Manipulate (MCSim under R)
-
-`mcmc_array()`
-
-### Visualize (**bayesplot**, **corrplot**)
-
-`mcmc_trace()`  
-
-`mcmc_dens_overlay()`  
-
-`mcmc_pairs()`  
-
-`corrplot()`
-
-### Report (**rstan**)
-
-`monitor()`  
+.pull-right[
+.code75[
+```{r, fig.height=5, dev='svg'}
+plot(out$A.1., type = "l", xlab = "Iteration", ylab = "")
+lines(out$B.1., col = 2)
+legend("topright", legend = c("Intercept", "Slope"), 
+       col = c(1,2), lty = 1)
+```
+]
+]
 
 ---
 
-# Demo - Ethylbenzene PBPK Model
+## Example - Posterior check
 
-### Model verification (tutorial 1)
+.pull-left[
+.code75[
+```{r, fig.height=5, dev='svg'}
+plot(out$A.1., out$B.1., type = "b",
+     xlab = "Intercept", ylab = "Slope")
 
-**- Compare the simulated result with previous study**
+```
+]
+]
 
-### Uncertainty analysis (tutorial 2)
-
-**- Set the probability distribution for model parameters**
-
-### Morris elementary effects screening (tutorial 2)
-
-**- Find the influential parameters**
-
-### MCMC calibration (tutorial 3)
-
-**- Estimate the "posterior"**
-
----
-
-# Final thoughts
-
-MCMC simulation is a computational intensive process for metamodel or big data, one of the important issue today is how to improve the efficiency in the modeling.
-
-- If possible, remove or turn-off unnecessary state variable (e.g., mass balance, metabolites). 
-
-- Re-parameterization ([Chiu et al., 2006](https://rd.springer.com/article/10.1007/s00204-006-0061-9))
-
-- Global sensitivity analysis and parameter fixing ([Hsieh et al., 2018](https://www.frontiersin.org/articles/10.3389/fphar.2018.00588/full))
-
-- Parallel computing
-
-- Grouped data
-
-- Algorithm
-
-- Software, hardware, ...
+.pull-right[
+.code75[
+```{r fig.height=5, dev='svg'}
+str <- ceiling(nrow(out)/2) + 1
+end <- nrow(out)
+j <- c(str:end)
+plot(out$A.1.[j], out$B.1.[j], type = "b",
+     xlab = "Intercept", ylab = "Slope")
+```
+]
+]
 
 ---
 
-class: center, middle
+## Example - Posterior check
 
-# Thanks!
+.pull-left[
+.code50[
+```{r fig.height=5, dev='svg'}
+out$A.1.[j] %>% density() %>% plot(main = "Intercept")
+plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
+prior.dens <- do.call("dnorm", c(list(x=plot.rng), c(0,2)))
+lines(plot.rng, prior.dens, lty="dashed")
+```
+]
+]
 
-</br>
+.pull-right[
+.code50[
+```{r fig.height=5, dev='svg'}
+out$B.1.[j] %>% density() %>% plot(main = "Slope")
+plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
+prior.dens <- do.call("dnorm", c(list(x=plot.rng), c(1,2)))
+lines(plot.rng, prior.dens, lty="dashed")
+```
+]
+]
 
-question? 
+---
 
+## Example - Evaluation of prediction
+
+.pull-left[
+.code75[
+```r
+# Observed
+x <- seq(0,10,1)
+y <- c(0.0, 0.15, 2.32, 4.33, 4.61, 6.68, 
+       7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Expected
+dim.x <- ncol(out)
+for(i in 1:11){
+  out[,ncol(out)+1] <- out$A.1. + out$B.1.*x[i]
+}
+
+# Plot
+plot(x, y, pch ="")
+for(i in 1901:2000){
+  lines(x, out[i,c((dim.x+1):ncol(out))],col="grey")
+}
+points(x, y)
+```
+]
+]
+
+.pull-right[
+```{r echo=FALSE, fig.height=6, dev='svg'}
+# Observed
+x <- seq(0,10,1)
+y <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+       7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Expected
+dim.x <- ncol(out)
+for(i in 1:11){
+  out[,ncol(out)+1] <- out$A.1. + out$B.1.*x[i]
+}
+
+# plot
+plot(x, y, pch ="")
+for(i in 1901:2000){
+  lines(x, out[i,c((dim.x+1):ncol(out))],col="grey")
+}
+points(x, y)
+```
+]
+
+---
+
+## Example - Evaluation of prediction
+
+.pull-left[
+.code75[
+```r
+# Use prediction from the last iteration
+i <- 2000
+Expected <- out[i, c((dim.x+1):ncol(out))] %>% 
+  as.numeric()
+Observed <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+              7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Plot
+plot(Expected, Observed/Expected, pch='x')
+abline(1,0)
+```
+]
+]
+
+.pull-right[
+```{r echo=FALSE, fig.height=6, dev='svg'}
+# Use prediction from the last iteration
+i <- 2000
+Expected <- out[i, c((dim.x+1):ncol(out))] %>% 
+  as.numeric()
+Observed <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+              7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Plot
+plot(Expected, Observed/Expected, pch='x')
+abline(1,0)
+```
+]
+
+---
+
+# Summary
+
+.font200[
+- In the real-word study, we need to consider the uncertainty (from different sources) and variability (inter or intra-individual data) to consider all possible scenarios.
+
+- Bayesian statistics is a powerful tool to quantify the uncertainty and variability in pharmacokinetic modeling.
+
+- The sensitivity analysis approch can provide the useful information of parameter impact on PBPK model.
+]
+
+---
+
+# Hands on Exercise
+
+## Task 1: Uncertainty analysis & Model calibration for simple PK model
+
+.font150[
+- In the previous exercise, we find that the predcited result can not used to describe the real cases. Therefore, we need to conduct the uncertainty analysis to figure out how to reset the model parameter.
+
+- Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model calibration.
+]
+
+---
+
+background-image: url(https://i.ibb.co/yn7tD14/Screenshot-from-2019-12-04-15-32-34.png)
+background-size: 350px
+background-position: 99% 80% 
+
+# Hands on Exercise
+
+## Task 2: Monte Carlo Simulation for PBPK model
+
+- Reproduce the published Monte Carlo analysis result in Bois and Brochot (2016)*
+  - Testing parameter include body mass (`BDM`), pulmonary flow (`Flow_pul`), partition coefficient of arterial blood (`PC_art`) and metabolism rate (`Kmetwp`)
+- Construct the relationship between body mass and quantity in fat
 
 .footnote[
-The slide, code, and record can find on my website: [nanhung.rbind.io](https://nanhung.rbind.io/talk/)
+[*] Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY  
+]
+
+---
+
+# Hands on Exercise
+
+## Task 3: Reuild PBPK model in MCSim
+
+- The Monte Carlo Simulation take a little bit longer with `ode` function in **deSolve** package. Therefore we want to improve the computational speed. Now, rewrite the R model code to **MCSim** and conduct Monte Carlo Simulation with the same parameter setting. The goal of this exercise is to compare the computational time and output (MCSim vs. R).
+
+```r
+Distrib (BDM, Normal, 73, 7.3);
+Distrib (Flow_pul, Normal, 5, 0.5);
+Distrib (PC_art, Normal, 2, 0.2);
+Distrib (Kmetwp, Normal, 0.25, 0.025);
+```
+
+---
+
+# Hands on Exercise
+
+## Task 4: Sensitivity analysis
+
+- The MCSim can provide faster computational speed than **deSolve**. Now, we can add additional parameters and see the relationship between body mass and quantity in fat changed. If we get a different result, which means there might have interaction between the parameters. The parameter values can refer from Bois (2013)*
+
+.code75[
+```r
+Distrib (Pct_BDW_wp,    TruncLogNormal, 0.2, 1.2, 0.1,  0.35);
+Distrib (Pct_Deadspace, TruncLogNormal, 0.4, 1.2, 0.23, 0.45);
+Distrib (Pct_Flow_fat,  TruncLogNormal, 0.05,1.2, 0.03, 0.09);
+Distrib (Pct_Flow_pp,   TruncLogNormal, 0.15,1.2, 0.06, 0.26);
+Distrib (PC_pp,         TruncLogNormal, 0.7, 1.2, 0.4,  1.2);
+Distrib (PC_wp,         TruncLogNormal, 0.7, 1.2, 0.4,  1.2);
+```
+]
+
+.footnote[
+[*] Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ
 ]

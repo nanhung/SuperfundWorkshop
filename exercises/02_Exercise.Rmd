@@ -1,0 +1,319 @@
+---
+title: "Workflow of pharmacokinetic modeling (model construction + data manipulation + visualization)"
+author: "Nan-Hung Hsieh"
+date: "2019/12/09 (update: `r Sys.Date()`)"
+output: 
+  html_document:
+  fig_caption: yes  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('..')
+wd <- getwd()
+knitr::opts_knit$set(root.dir =  wd)
+```
+
+```{R message=FALSE, warning=FALSE}
+library(simuloR)
+library(ggplot2)
+library(pksensi)
+library(httk)
+theme_set(theme_bw())
+```
+
+
+
+
+
+```{r}
+x <- rnorm(n = 28, mean = 10, sd =  2)
+x
+```
+
+```{r}
+mean(x)
+sd(x)
+```
+
+```{r fig.height=3.2, dev='svg'}
+hist(x)
+```
+
+
+# Generating random number
+
+```{r}
+runif(n=5, min=0, max=1)
+runif(n=5, min=0, max=1)
+set.seed(1)
+runif(n=5, min=0, max=1)
+set.seed(1)
+runif(n=5, min=0, max=1)
+```
+
+
+
+```{r fig.height=4.5, dev='svg'}
+x <- runif(10)
+plot(x)
+hist(x)
+```
+.pull-right[
+```{r fig.height=4.5, dev='svg'}
+x <- runif(100)
+plot(x)
+hist(x)
+```
+
+```{r fig.height=4.5, dev='svg'}
+x <- runif(1000)
+plot(x)
+hist(x)
+```
+
+```{r fig.height=4.5, dev='svg'}
+x <- runif(10000)
+plot(x)
+hist(x)
+```
+
+
+```{r, eval=F}
+View(Theoph)
+```
+
+
+```{r}
+Theoph.MW <- 180.164 #g/mol
+Theoph$conc.uM<-Theoph$conc * 1000 / Theoph.MW #uM
+```
+
+
+```{r}
+plot(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+```
+
+```{r}
+ggplot(Theoph, aes(x = Time, y =conc.uM, color = Subject)) + 
+  geom_point() + geom_line() + labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
+
+```{r}
+unique(Theoph$Dose)
+```
+
+```{r}
+params <- parameterize_1comp(chem.name='Theophylline', species='Human')
+out_httk <- solve_1comp(parameters=params, daily.dose = 5)
+```
+
+```{r}
+out_df<- as.data.frame(out_httk)
+plot(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+lines(out_df$time*24, out_df$Ccompartment)
+```
+
+# Uncertainty analysis
+
+```{r}
+ffpk.mtc.out <- mcsim("models/ffpk.model", "inputs/ffpk.mtc.in")
+```
+
+
+```{r}
+head(ffpk.mtc.out)
+```
+
+```{r}
+par(mfrow = c(1,4))
+hist(ffpk.mtc.out$Fgutabs, main = "Fgutabs", xlab = "", ylab = "")
+hist(ffpk.mtc.out$kgutabs, main = "kgutabs", xlab = "", ylab = "")
+hist(ffpk.mtc.out$kelim, main = "kelim", xlab = "", ylab = "")
+hist(ffpk.mtc.out$Vdist, main = "Vdist", xlab = "", ylab = "")
+```
+
+```{r}
+# Find location of the first and last time points by which()
+index <- which(names(ffpk.mtc.out)=="Ccompartment_1.1" | names(ffpk.mtc.out)=="Ccompartment_1.11")
+# Use apply() to find the quantile of each time point
+X <- apply(ffpk.mtc.out[,index[1]:index[2]], 2, quantile, c(0.5, 0.01,0.99))
+dat <- t(X)
+# Set column names
+colnames(dat) <- c("median", "LCL", "UCL")
+df <- as.data.frame(dat)
+# Set corresponding time
+df$time <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
+df
+```
+
+```{r}
+t <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
+str.pt <- which(names(ffpk.mtc.out)=="Ccompartment_1.1") 
+end.pt <- which(names(ffpk.mtc.out)=="Ccompartment_1.11") 
+par(mfrow = c(1,1))
+plot(Theoph$Time, Theoph$conc.uM, pch = "")
+for(i in 1:1000){
+  lines(t, ffpk.mtc.out[i,str.pt:end.pt], col="grey")
+}
+points(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+```
+
+
+# pksensi
+
+1. Set parameter distributions (assign parms, dist, q.qarg)
+```{r}
+parameters <- c("Fgutabs",  "kgutabs", "kelim", "Vdist")  
+dist <- c("Uniform", "LogNormal", "LogNormal", "LogNormal") # MCSim definition
+q.arg <- list(list(0.8, 1.0),
+            list(2.18, 3),
+            list(0.02183918, 2),
+            list(5.012049, 3))
+```
+
+2. Set experiment time-points, output variables, and conditions
+
+```{r}
+outputs <- c("Ccompartment")
+times <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
+conditions <- c("MW = 180.164", "Period = 48", "IngDose = 5.0")
+```
+
+3. Modeling
+
+```{r}
+mcmc_out <- makemcsim("models/pbtk1cpt.model")
+```
+
+```{r}
+set.seed(2222)
+y<-solve_mcsim(mName = "models/pbtk1cpt.model", params = parameters, vars = outputs, monte_carlo = 1000,
+               dist = dist, q.arg = q.arg, time = times, condition = conditions)
+```
+
+```{r}
+pksim(y)
+points(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+```
+
+
+
+# Calibration
+
+```{r}
+set.seed(1)
+ffpk.mcmc.out <- mcsim(model = "models/ffpk.model", input = "inputs/ffpk.mcmc.in")
+```
+
+
+```{r}
+par(mfrow = c(2,2))
+plot(ffpk.mcmc.out$Fgutabs.1., type = "l")
+plot(ffpk.mcmc.out$kgutabs.1., type = "l")
+plot(ffpk.mcmc.out$kelim.1., type = "l")
+plot(ffpk.mcmc.out$Vdist.1., type = "l")
+```
+
+
+
+```{r}
+check.out <- read.delim("MCMC.check.out") 
+plot(check.out$Data, check.out$Prediction, xlim=c(0,60), ylim=c(0,60))
+abline(0,1)
+```
+
+
+Use R
+```{r}
+IngDose <- 4.02
+Fgutabs <- ffpk.mcmc.out$Fgutabs.1.
+kgutabs <- ffpk.mcmc.out$kgutabs.1.
+kelim <- ffpk.mcmc.out$kelim.1.	
+Vdist <- ffpk.mcmc.out$Vdist.1.
+MW <- 180.164
+
+t <- Theoph$Time[1:11]
+obs<- Theoph$conc.uM[1:11]
+A <- (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim))
+
+Conc.matrix <- matrix(nrow = length(Fgutabs), ncol = length(t))
+for(i in 1:11){
+  Conc.matrix[,i] <- A * exp(-kelim * t[i]) - A * exp(-kgutabs * t[i])
+}
+Ccompartment <- Conc.matrix / MW * 1000
+plot(t, obs, pch = "")
+for(i in 501:1000){
+  lines(t, Ccompartment[i,], col="grey")
+}
+points(t, obs)
+```
+
+
+```{r}
+plot(obs, obs, pch = "")
+for(i in 501:1000){
+  points(obs, Ccompartment[i,], pch = "+")
+}
+abline(0,1)
+```
+
+```{r}
+plot(obs, obs, ylim = c(0.1, 10), pch = "", log="y")
+for(i in 501:1000){
+  points(obs, obs/Ccompartment[i,], pch = "+")
+}
+abline(0,0)
+abline(log(2,10), 0, lty=2)
+abline(log(0.5,10), 0, lty=2)
+```
+
+Use setpoints
+```{r}
+ffpk.setpts.out <- mcsim("models/ffpk.model", input = "inputs/ffpk.setpts.in")
+```
+
+```{r}
+t <- Theoph$Time[1:11]
+obs<- Theoph$conc.uM[1:11]
+str.pt <- which(names(ffpk.setpts.out)=="Ccompartment_1.1") 
+end.pt <- which(names(ffpk.setpts.out)=="Ccompartment_1.11") 
+par(mfrow = c(1,1))
+plot(t, obs, pch = "")
+for(i in 501:1000){
+  lines(t, ffpk.setpts.out[i,str.pt:end.pt], col="grey")
+}
+points(t, obs)
+```
+
+Use setpoints - Global evaluation
+
+
+
+Compare the CSS
+
+```{r}
+library(httk)
+calc_analytic_css(chem.name = "theophylline", model = "1compartment")
+```
+
+
+```{r}
+parameters <- parameterize_1comp(chem.name = "theophylline")
+parameters$Fgutabs <- median(ffpk.mcmc.out$Fgutabs.1.) / parameters$hepatic.bioavailability
+parameters$kgutabs <- median(ffpk.mcmc.out$kgutabs.1.)
+parameters$kelim <- median(ffpk.mcmc.out$kelim.1.)
+parameters$Vdist <- median(ffpk.mcmc.out$Vdist.1.)
+unlist(parameters)
+calc_analytic_css(parameters = parameters, model = "1compartment")
+```
+
+
+
+```{r}
+sessionInfo()
+```
+
+# Reference
+
+Bois F.Y. 2013. [Bayesian Inference](https://link.springer.com/protocol/10.1007/978-1-62703-059-5_25#Bib1). In: Reisfeld B., Mayeno A. (eds) Computational Toxicology. Methods in Molecular Biology (Methods and Protocols), vol 930. Humana Press, Totowa, NJ
