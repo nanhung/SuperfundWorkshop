@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 1: Task 1. Exploratory data analysis"
+title: "Exercise 1.1 Exploratory data analysis"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 

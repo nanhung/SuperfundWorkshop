@@ -1058,7 +1058,7 @@ class:middle, center
 # Hands on Exercise
 
 Task 1. **Exploratory analysis of PK data** (`code`: https://rpubs.com/Nanhung/SRP19_1)
-- Learn how to use R to conduct basic analyis for PK data
+- Learn how to use R to conduct basic analysis for PK data
 
 Task 2. **PK model development** (`code`: https://rpubs.com/Nanhung/SRP19_2)
 - Learn how to use R and MCSim to build a model 
@@ -1090,7 +1090,7 @@ head(Theoph)
 
 # Hands on Exercise
 
-## Task 2: **Model development**
+## Task 2: **PK model development**
 
 - Develop the non compartment model and compartment model in R and MCSim
 
