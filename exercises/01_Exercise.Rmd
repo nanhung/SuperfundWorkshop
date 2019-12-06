@@ -423,8 +423,8 @@ ffpk <- function(D, Fa, ka, ke, V, t){
     MW <- 180.167
     A <- (D * Fa * ka)/(V * (ka - ke))
     C <- A * exp(-ke * t) - A * exp(-ka * t)
-    C_uM <- C/MW*1000
-    return(C_uM)
+    #C_uM <- C/MW*1000
+    return(C)
 }
 ```
 
@@ -434,7 +434,7 @@ ffpk <- function(D, Fa, ka, ke, V, t){
 Outputs = {
   A,
   Conc,
-  Ccompartment
+  C_rest_uM
 }
 
 ## ingested input (mg)
@@ -453,7 +453,7 @@ Vdist = 1.0;
 CalcOutputs { 
   A = (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim));
   Conc = A * exp(-kelim * t) - A * exp(-kgutabs * t);
-  Ccompartment = Conc / MW * 1000;
+  Conc_uM = Conc / MW * 1000;
 }
 
 End.
@@ -490,8 +490,9 @@ Inputs = {
   Oral_input
 }; # Drug input (mg)
 
-Outputs = { 
-  Ccompartment
+Outputs = {
+  C_rest, (mg/l)
+  C_rest_uM, (uM)
 };  # Concentration in central compartment (uM)
 
 # Oral input modeling
@@ -518,7 +519,8 @@ Dynamics {
 }
 
 CalcOutputs { 
-  Ccompartment  = A_rest  / Vdist / MW * 1000; 
+  C_rest = A_rest  / Vdist;
+  C_rest_uM  = C_rest / MW * 1000; 
 }
 
 End.
@@ -529,7 +531,6 @@ End.
 - Extract the chemical information from httk package
 
 ```{r}
-library(httk)
 parms <- httk::parameterize_1comp(chem.name = "theophylline")
 parms
 ```
@@ -558,8 +559,9 @@ out1
 
 ```{r}
 conc1 <- subset(Theoph, Subject == 1) %>% select(conc)
-plot(t1$Time, out1, type = "l")
-points(t1$Time, conc1$conc)
+plot(t1$Time, conc1$conc)
+lines(t1$Time, out1)
+
 ```
 
 
@@ -584,7 +586,7 @@ kelim      = 0.2654;   # elimination rate constant (/h)
 Vdist      = 0.7802;   # volumes (L)
 
 Simulation {
-  Print (Ccompartment 0.00   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
+  Print (C_rest 0.00   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
 }
 End.
 ```
@@ -609,8 +611,8 @@ out
 ```
 
 ```{r}
-plot(out$Time, out$Ccompartment, type = "l")
-points(t1$Time, conc1$conc)
+plot(t1$Time, conc1$conc)
+lines(out$Time, out$Conc)
 ```
 
 ## Task 4: Developing the PBPK model

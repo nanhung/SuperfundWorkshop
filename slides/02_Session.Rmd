@@ -1294,11 +1294,11 @@ abline(1,0)
 # Summary
 
 .font200[
-- In the real-word study, we need to consider the uncertainty (from different sources) and variability (inter or intra-individual data) to consider all possible scenarios.
+- In the real-word study, we need to consider the **uncertainty** (from different sources) and **variability** (inter or intra-individual data) to include all possible scenarios.
 
-- Bayesian statistics is a powerful tool to quantify the uncertainty and variability in pharmacokinetic modeling.
+- **Bayesian statistics** is a powerful tool to quantify the uncertainty and variability in pharmacokinetic modeling.
 
-- The sensitivity analysis approch can provide the useful information of parameter impact on PBPK model.
+- The **sensitivity analysis** approch can provide the useful information of parameter impact on PBPK model.
 ]
 
 ---
