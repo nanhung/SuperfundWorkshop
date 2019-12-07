@@ -5,7 +5,6 @@
 #-------------------------------------------------------------------------------
 Integrate (Lsodes, 1e-8, 1e-8, 1);
 
-MW         = 180.167;  # moleculor mass (g/mol)
 IngDose    = 4.02;     # ingested dose (mg)
 Period     = 48;       # period of the exposure/no exposure cycle (h)
 Fgutabs    = 0.9142;   # bioavailability (-) 
