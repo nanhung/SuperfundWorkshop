@@ -1,25 +1,29 @@
 ---
-title: "Exercise 1.5 PBPK Model Application"
+title: "Exercise 1.5: PBPK Model Application"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
   html_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     number_sections: false
   fig_caption: yes  
 ---
 
-## Task
+# TASK
 
 Based on the OSHA permissible exposure limit (PEL), the time-weighted average is 1 ppm. If a worker is under the exposure for a long time, what is the estimated blood concentration.
 
-## Solution
+# SOLUTION
 
+### Packages
 ```{R message=FALSE, warning=FALSE}
 library(deSolve)
 ```
 
+### Parameters, Variables, and Model
+
+**Parameters**
 
 ```{r}
 parameters <- c("BDM" = 73,            # Body mass (kg)
@@ -39,6 +43,8 @@ parameters <- c("BDM" = 73,            # Body mass (kg)
                 "Kmetwp" = 0.25)       # Rate constant for metabolism
 ```
 
+**Variable**
+
 ```{r}
 y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
        "Q_wp" = 0,  # ~ in well-perfused (mg)
@@ -46,6 +52,7 @@ y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
        "Q_met" = 0) # ~ metabolized (mg)
 ```
 
+**Model**
 
 ```{r}
 # Define the model equations
@@ -135,6 +142,8 @@ bd.model = function(t, y, parameters) {
 ```
 
 
+### Exposure setting
+
 ```{r}
 t_exposure <- 43200 # 30 days
 C_inh <- approxfun(x = c(0, t_exposure), y=c(10,0), method = "constant", f = 0, rule = 2) 
@@ -144,17 +153,16 @@ C_inh <- approxfun(x = c(0, t_exposure), y=c(10,0), method = "constant", f = 0, 
 plot(C_inh(1:t_exposure), type="l", xlab = "Time (min)", ylab = "Butadiene inhaled concentration (ppm)")
 ```
 
+### Simulation
 
 ```{r}
 t <- seq(from=0, to=t_exposure, by=100)
 out <- ode(times=t, func=bd.model, y=y, parms=parameters)
 ```
 
-
 ```{r}
 tail(out, 10)
 ```
-
 
 ```{r}
 plot(out)
