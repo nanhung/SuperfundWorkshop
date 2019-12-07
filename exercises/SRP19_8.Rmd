@@ -1,5 +1,5 @@
 ---
-title: "Exercise 1.4 Developing the PBPK model"
+title: "Exercise 2.3: Monte Carlo Simulation for PBPK model"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
@@ -10,29 +10,26 @@ output:
   fig_caption: yes  
 ---
 
-# Task
+# Task 
 
-- Instead of simple PK model, in this exercise we want to apply the well developed PBPK model for 1,3 butadiene.
-- First, reproduce the simulation result from the published paper*.
-- Exposure: Continuous exposure of the 10 ppm 1,3-butadiene for 2 hour.
+- Reproduce the published Monte Carlo analysis result in Bois and Brochot (2016)
+  - Examine the butadiene concentration in fat after the exposure of 1 day.
+  - Testing parameter include body mass (`BDM`), pulmonary flow (`Flow_pul`), partition coefficient of arterial blood (`PC_art`) and metabolism rate (`Kmetwp`)
+- Construct the relationship between body mass and quantity in fat
 
 # Solution
 
-```{R message=FALSE, warning=FALSE}
+```{r}
 library(deSolve)
 ```
 
-## Inputs
+### Inputs
 
 ```{r}
 C_inh <- approxfun(x = c(0, 120), y=c(10,0), method = "constant", f = 0, rule = 2) 
 ```
 
-```{r}
-plot(C_inh(1:300), type="l", xlab = "Time (min)", ylab = "Butadiene inhaled concentration (ppm)")
-```
-
-## Parameters and outputs 
+### Parameters and outputs 
 
 ```{r}
 parameters <- c("BDM" = 73,            # Body mass (kg)
@@ -59,127 +56,7 @@ y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
        "Q_met" = 0) # ~ metabolized (mg)
 ```
 
-
-
-## Model structure
-
-```r
-# Define the model equations
-bd.model <- function(t, y, parameters) {
-  with (as.list(y), {
-    with (as.list(parameters), {
-      
-      # Define constants
-
-      # Calculate flow and volumes
-      
-      # Calculate the tissue, blood, and air
-
-      # Differentials for quantities
-
-      # The function bd.model must return at least the derivatives
-      list(c(dQ_fat, dQ_wp, dQ_pp, dQ_met), # derivatives
-           c("C_ven" = C_ven, "C_art" = C_art)) # extra outputs
-           
-    }) # end with parameters
-  }) # end with y
-} # end bd.model
-```
-
-## Constants
-
-```r
-# Known constants
-Height = 1.6                            # use to calculate fraction of body fat
-Age = 40                                # use to calculate fraction of body fat
-Sex = 1                                 # use to calculate fraction of body fat
-MW_bu = 54.0914                         # butadiene molecular weight (in grams)
-ppm_per_mM = 24450                       # ppm to mM under normal conditions
-ppm_per_mg_per_l = ppm_per_mM / MW_bu
-mg_per_l_per_ppm = 1 / ppm_per_mg_per_l
-
-```
-
-## Air and blood flow
-
-```r
-# Calculate Flow_alv from total pulmonary flow
-Flow_alv = Flow_pul * (1 - Pct_Deadspace)
-      
-# Calculate total blood flow from Flow_alv and the V/P ratio
-Flow_tot = Flow_alv / Vent_Perf
-      
-# Calculate fraction of body fat
-Pct_BDM_fat = (1.2 * BDM / (Height * Height) - 10.8 *(2 - Sex) + 0.23 * Age - 5.4) * 0.01
-      
-# Calculate actual blood flows from total flow and percent flows
-Flow_fat = Pct_Flow_fat * Flow_tot
-Flow_pp = Pct_Flow_pp * Flow_tot
-Flow_wp = Flow_tot * (1 - Pct_Flow_pp - Pct_Flow_fat)
-```
-
-## Volumes
-
-```r
-# Actual volumes, 10% of body mass (bones…) get no butadiene
-Eff_V_fat = Pct_BDM_fat * BDM
-Eff_V_wp = Pct_LBDM_wp * BDM * (1 - Pct_BDM_fat)
-Eff_V_pp = 0.9 * BDM - Eff_V_fat - Eff_V_wp
-```
-
-## Concentrations - tissues & blood
-
-```r
-# Calculate the concentrations
-C_fat = Q_fat / Eff_V_fat
-C_wp = Q_wp / Eff_V_wp
-C_pp = Q_pp / Eff_V_pp
-      
-# Venous blood concentrations at the organ exit
-Cout_fat = C_fat / PC_fat
-Cout_wp = C_wp / PC_wp
-Cout_pp = C_pp / PC_pp
-      
-# Sum of Flow * Concentration for all compartments
-dQ_ven = Flow_fat * Cout_fat + Flow_wp * Cout_wp + Flow_pp * Cout_pp
-C_inh.current = C_inh(t)     # to avoid calling C_inh() twice
-      
-# Arterial blood concentration
-# Convert input given in ppm to mg/l to match other units
-C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flow_alv / PC_art)
-      
-# Venous blood concentration (mg/L)
-C_ven = dQ_ven / Flow_tot
-```
-
-## Concentrations - air
-
-```r
-# Alveolar air concentration (mg/L)
-C_alv = C_art / PC_art
-      
-# Exhaled air concentration (ppm)
-if (C_alv <= 0) {
-  C_exh = 10E-30    # avoid round off errors
-} else {
-  C_exh = (1 - Pct_Deadspace) * C_alv * ppm_per_mg_per_l + Pct_Deadspace * C_inh.current
-}
-```
-
-## Differentials for quantities
-
-```r
-# Quantity metabolized in liver (included in well-perfused)
-dQmet_wp = Kmetwp * Q_wp
-      
-# Differentials for quantities
-dQ_fat = Flow_fat * (C_art - Cout_fat)
-dQ_wp = Flow_wp * (C_art - Cout_wp) - dQmet_wp
-dQ_pp = Flow_pp * (C_art - Cout_pp)
-dQ_met = dQmet_wp
-```
-
-## `bd.model`
+### Model
 ```{r}
 # Define the model equations
 bd.model = function(t, y, parameters) {
@@ -267,19 +144,77 @@ bd.model = function(t, y, parameters) {
 
 ```
 
+### Monte Carlo simulation
 
-## Simulation
+Sample randonly some parameters
 ```{r}
-# Define the computation output times
-t <- seq(from=0, to=1440, by=10)
+start_time <- Sys.time()
+set.seed(1)
+for (iteration in 1:1000){
+  parameters["BDM"] <- rnorm(1, 73, 7.3)
+  parameters["Flow_pul"] <- rnorm(1, 5, 0.5)
+  parameters["PC_art"] <- rnorm(1, 2, 0.2)
+  parameters["Kmetwp"] <- rnorm(1, 0.25, 0.025)
+  
+  # We focus on time at 24 hour
+  times <- c(0, 1440)
 
-# Solve ODE
-out <- ode(times=t, func=bd.model, y=y, parms=parameters)
-head(out)
+  # Integrate
+  tmp <- ode(times = times, func = bd.model, y=y, parms=parameters)
+
+  if (iteration == 1){ # initialize
+      results <- tmp[2,-1]
+       sampled.parms <- c(parameters["BDM"],
+                          parameters["Flow_pul"],
+                          parameters["PC_art"],
+                          parameters["Kmetwp"])
+  } else { # accumulate
+    results <- rbind(results, tmp[2,-1])
+       sampled.parms <- rbind(sampled.parms, 
+                              c(parameters["BDM"],
+                                parameters["Flow_pul"],
+                                parameters["PC_art"],
+                                parameters["Kmetwp"]))
+  }
+}
+end_time <- Sys.time()
+    ```
+
+
+### Output analysis
+
+```{r}
+end_time - start_time
 ```
 
-## Plot
+
 ```{r}
-plot(out)
+head(sampled.parms)
 ```
 
+```{r}
+head(results)
+```
+
+```{r}
+BDM <- sampled.parms[,1]
+hist(BDM)
+```
+
+```{r}
+Q_fat <- results[,1]
+hist(Q_fat)
+```
+
+
+
+```{r}
+plot(BDM, Q_fat, xlab="Body mass (kg)", ylab="Quantity in Fat (mg)")
+```
+
+
+
+
+# Reference
+
+Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY  
