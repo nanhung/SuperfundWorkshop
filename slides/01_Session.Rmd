@@ -95,7 +95,7 @@ in Toxicology?
 
 **M**etabolism - How is it broken down and transformation?
 
-**E**limination - How it leave the body?
+**E**xcretion - How it leave the body?
 ]
 
 - Kinetics: rates of change
@@ -121,22 +121,77 @@ Pharmacokinetics is the study of the fate of chemical in a living organism throu
 
 ---
 
-# Absorption
+# Pharmacokinetics profile
 
-## Exposure routes
+.pull-left[![](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Linear_PK_Example.png/1280px-Linear_PK_Example.png)]
 
-- Inhalation – alveolar gas exchange
-- Oral – gut absorption
-- Dermal –permeation through skin
 
-## Movement of chemical into the body
-- **Rate of absorption** (how quickly does it absorb?)
-- **Fraction of absorption** (how percentage does it absorb?)
+.pull-right[
+
+$t$: Time
+
+$C$: Concentration
+
+$C_{max}$: The peak concentration	
+
+$t_{max}$: Time to reach $C_{max}$
+
+$t_{1/2}$: Elimination half-
+life
+
+$AUC$: Area under the curve
 
 </br>
 
+During the continous dose administered
+
+$C_{ss}$: The averaged concentration	
+
+$C_{min}$: The lowest concentration that a drug
+reaches 
+
+]
+
+
+.footnote[https://en.wikipedia.org/wiki/Pharmacokinetics]
+
+---
+
+# Absorption
+
+### Movement of chemical into the body
+
+.font125[
+- **Rate of absorption** (how quickly does it absorb?)
+- **Fraction of absorption** (how percentage does it absorb?)
+]
+
 .bolder[Bioavailability] ia a key factor for substance becomes available to the target tissue after administration.
 
+<hr/>
+
+### Exposure routes
+
+.font125[
+- Inhalation – alveolar gas exchange
+- Oral – gut absorption
+- Dermal – permeation through skin
+- Intravenous
+]
+
+.bolder[Different exposure route can related to different PK profile]  
+
+
+---
+
+# Absorption & Distribution
+
+.center[
+![:scale 70%](https://erj.ersjournals.com/content/erj/28/5/1042/F1.large.jpg)
+]
+
+.footnote[https://doi.org/10.1183/09031936.00074905]
+ 
 ---
 
 # Distribution
@@ -166,7 +221,7 @@ background-position: 95% 95%
 # Metabolism/transformation
 
 - Enzyme systems, etc. covered in separate class.  
-  - Phase I – conversion to more polar metabolite, e.g., oxidation by P450
+  - Phase I – conversion to more polar metabolite, e.g., oxidation by cytochrome P450
   - Phase II – conjugation with an endogenous substrate to increase solubility, e.g., GSH conjugation, glucuronidation
 
 - Key issues relevant to risk assessment
@@ -175,9 +230,22 @@ background-position: 95% 95%
   - What are the rates of metabolism?  
   - What is known about interspecies and intraspecies differences?
 
-- Metabolism process
-  - First order kinetics (linear; constant)
-  - Michaelis-Menten Kinetics (Non-linear; concentration dependent)
+- **Metabolism process**
+  - **First order kinetics** (linear; constant)
+  - **Michaelis-Menten Kinetics** (Non-linear; concentration dependent)
+
+---
+
+# Metabolism - Acetaminophen
+
+.center[![](https://image.ibb.co/e7eccz/JjqgWwg.gif)]
+
+.font125[
+- Acetaminophen (APAP) is a widely used pain reliver and fever reducer.
+- The therapeutic index (ratio of toxic to therapeutic doses) is unusually small.
+- .bolder[Phase I] (APAP to NAPQI) is toxicity pathway at high dose.
+- .bolder[Phase II] (APAP to APAP-Glucuronidation & APAP to APAP-Sulfation) is major pathways at therapeutic dose.
+]
 
 ---
 
@@ -221,15 +289,43 @@ Lash, L.H., et al. 2014. [Trichloroethylene biotransformation and its role in mu
 
 ---
 
+# Elimination kinetics
+
+.pull-left[
+### Zero-order kinetics 
+
+The elimination is **independent** with internal chemical dose
+
+</br>
+
+### First-order kinetics
+
+The elimination is **dependent** with internal chemical dose
+
+]
+
+
+
+.pull-right[
+![](https://i.ibb.co/dBqNkC4/6364e7765a1b6c1f0083edea2c5283ed.png)
+]
+
+
+.footnote[
+https://forum.facmedicine.com/threads/elimination-kinetics-first-and-zero-order-kinetics.25353/
+]
+
+---
+
 # Impact of TK on risk assessment
 
 .font150[
 
-- Concentration prediction
+- Concentration **prediction**
 
 - Identifying the toxicologically active agent(s)
 
-- Providing a basis for extrapolating from experimental studies to humans
+- Providing a basis for **extrapolating** from experimental studies to humans
 
 - Characterizing how humans may vary in their response to exposure due to differences in internal dose
 
@@ -343,8 +439,11 @@ $$A(t) = A_0 \cdot e^{-k_{e} \cdot t}$$
 .footnote[
 $A$: Amount in body (mass); $D_0$ initial amount (mass); $t$: time; $k_e$: Elimination rate constant (/time)
 
-
 ]
+
+???
+
+The basic meaning of elimination rate is that the decreasing speed is the propotion of current concentration.
 
 ---
 
