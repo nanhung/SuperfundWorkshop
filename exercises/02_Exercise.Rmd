@@ -1,9 +1,12 @@
 ---
-title: "Workflow of pharmacokinetic modeling (model construction + data manipulation + visualization)"
+title: "Advancing applications (physiologically based pharmacokinetic modeling)"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
   html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: false
   fig_caption: yes  
 ---
 
@@ -14,17 +17,19 @@ wd <- getwd()
 knitr::opts_knit$set(root.dir =  wd)
 ```
 
+## 0 Prerequisites
+
+Import the R packages
+
 ```{R message=FALSE, warning=FALSE}
 library(simuloR)
-library(ggplot2)
+library(tidyverse)
 library(pksensi)
 library(httk)
 theme_set(theme_bw())
 ```
 
-
-
-
+## 0 Basic MOnte Carlo practice
 
 ```{r}
 x <- rnorm(n = 28, mean = 10, sd =  2)
@@ -36,12 +41,11 @@ mean(x)
 sd(x)
 ```
 
-```{r fig.height=3.2, dev='svg'}
+```{r}
 hist(x)
 ```
 
-
-# Generating random number
+**Generating random number**
 
 ```{r}
 runif(n=5, min=0, max=1)
@@ -53,70 +57,230 @@ runif(n=5, min=0, max=1)
 ```
 
 
-
-```{r fig.height=4.5, dev='svg'}
+```{r}
 x <- runif(10)
 plot(x)
 hist(x)
 ```
-.pull-right[
-```{r fig.height=4.5, dev='svg'}
+
+```{r}
 x <- runif(100)
 plot(x)
 hist(x)
 ```
 
-```{r fig.height=4.5, dev='svg'}
+```{r}
 x <- runif(1000)
 plot(x)
 hist(x)
 ```
 
-```{r fig.height=4.5, dev='svg'}
+```{r}
 x <- runif(10000)
 plot(x)
 hist(x)
 ```
 
 
-```{r, eval=F}
-View(Theoph)
+## Task 1: Uncertainty analysis & Model calibration for simple PK model
+
+- In the previous exercise, we find that the predcited result can not used to describe the real cases. Therefore, we need to conduct the uncertainty analysis to figure out how to reset the model parameter.
+
+- Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model calibration.
+
+
+### [`MonteCarlo()` specification](https://www.gnu.org/software/mcsim/mcsim.html#MonteCarlo_0028_0029-specification)
+
+MonteCarlo specification gives general information required for the runs: the output file name, the number of runs to perform, and a starting seed for the random number generator. Its syntax is:
+
+```r
+MonteCarlo("<OutputFilename>", <nRuns>, <RandomSeed>);
+```
+
+The character string <OutputFilename>, enclosed in double quotes, should be a valid filename for your operating system. If a null-string "" is given, the default name simmc.out will be used. The number of runs <nRuns> should be an integer, and is only limited by either your storage space for the output file or the largest (long) integer available on your machine. When using the GNU Scientific Library, the seed <RandomSeed> of the pseudo-random number generator can be any positive integer (including zero). When using the native code, it can be any positive real number (seeds between 1.0 and 2147483646.0 are used as is, the others are rescaled silently within those bounds). Here is an example of use:
+
+```r
+MonteCarlo("percsimmc.out", 50000, 9386);
+```
+
+### [`Distrib()` specification](https://www.gnu.org/software/mcsim/mcsim.html#Distrib_0028_0029-specification)
+
+`Distrib()` specifies the name of the parameter to sample, and its sampling distribution. Its syntax is:
+
+```r
+Distrib(<parameter identifier>, <distribution-name>, [<shape parameters>]);
+```
+
+For example
+`Normal`, takes two reals numbers as parameters: the mean and the standard deviation, the latter being strictly positive.
+`LogNormal`, takes two reals numbers as parameters: the geometric mean (exponential of the mean in log-space) and the geometric standard deviation (exponential, strictly superior to 1, of the standard deviation in log-space).
+
+
+**R**
+
+```{r}
+parms <- httk::parameterize_1comp(chem.name = "theophylline")
 ```
 
 
 ```{r}
-Theoph.MW <- 180.164 #g/mol
-Theoph$conc.uM<-Theoph$conc * 1000 / Theoph.MW #uM
+Fgutabs <- parms$Fgutabs * parms$hepatic.bioavailability
+kgutabs <- parms$kgutabs
+kelim <- parms$kelim
+Vdist <- parms$Vdist
 ```
 
 
 ```{r}
-plot(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+LL <- 0.5
+Fgutabs_LL <- 0.8
+kgutabs_LL <- kgutabs * LL
+kelim_LL <- kelim * LL
+Vdist_LL <- Vdist * LL
+c(Fgutabs_LL, kgutabs_LL, kelim_LL, Vdist_LL)
+```
+
+
+```{r}
+UL <- 2
+Fgutabs_UL <- 1
+kgutabs_UL <- kgutabs * UL
+kelim_UL <- kelim * UL
+Vdist_UL <- Vdist * UL
+c(Fgutabs_UL, kgutabs_UL, kelim_UL, Vdist_UL)
+```
+
+
+```{r}
+set.seed(1)
+dist_Fgutabs <- runif(1000, Fgutabs_LL, Fgutabs_UL)
+set.seed(1)
+dist_kgutabs <- runif(1000, kgutabs_LL, kgutabs_UL)
+set.seed(1)
+dist_kelim <- runif(1000, kelim_LL, kelim_UL)
+set.seed(1)
+dist_Vdist <- runif(1000, Vdist_LL, Vdist_UL)
+```
+
+
+```{r}
+df <- data.frame(dist_Fgutabs, dist_kgutabs, dist_kelim, dist_Vdist)
+head(df)
+```
+
+
+```{r}
+names(df) <- c("Fgutabs", "kgutabs", "kelim", "Vdist")
+names(df)
+```
+
+
+```{r}
+par(mfrow=c(1,4))
+hist(df$Fgutabs)
+hist(df$kgutabs)
+hist(df$kelim)
+hist(df$Vdist)
+```
+
+
+```{r}
+ffpk <- function(D, Fa, ka, ke, V, t){
+    MW <- 180.167
+    A <- (D * Fa * ka)/(V * (ka - ke))
+    C <- A * exp(-ke * t) - A * exp(-ka * t)
+    C_uM <- C/MW*1000
+    return(C_uM)
+}
 ```
 
 ```{r}
-ggplot(Theoph, aes(x = Time, y =conc.uM, color = Subject)) + 
-  geom_point() + geom_line() + labs(x = "Time (hr)", y = "Concentration (mg/L)")
+S1 <- subset(Theoph, Subject==1)
+t1 <- S1$Time
+ffpk(D = 4.02, Fa = df$Fgutabs[1],ka = df$kgutabs[1], 
+     ke = df$kelim[1], V = df$Vdist[1], t = t1)
+```
+
+
+```{r}
+m.Conc <- matrix(nrow=1000, ncol=11)
+colnames(m.Conc) <- t1
 ```
 
 ```{r}
-unique(Theoph$Dose)
+m.Conc[1,] <- ffpk(D = 4.02, Fa = df$Fgutabs[1],ka = df$kgutabs[1], 
+                   ke = df$kelim[1], V = df$Vdist[1], t = t1)
+head(m.Conc)
 ```
 
+
 ```{r}
-params <- parameterize_1comp(chem.name='Theophylline', species='Human')
-out_httk <- solve_1comp(parameters=params, daily.dose = 5)
+for(i in 2:1000){
+  m.Conc[i,] <- ffpk(D = 4.02, Fa = df$Fgutabs[i],ka = df$kgutabs[i], 
+                     ke = df$kelim[i], V = df$Vdist[i], t = t1)
+}
+tail(m.Conc)
 ```
 
+
 ```{r}
-out_df<- as.data.frame(out_httk)
-plot(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
-lines(out_df$time*24, out_df$Ccompartment)
+plot(t1, m.Conc[1,], type="l")
 ```
 
-# Uncertainty analysis
 
 ```{r}
+plot(t1, m.Conc[1,], type="l", col="grey")
+for(i in 2:1000){
+  lines(t1, m.Conc[i,], col="grey")
+}
+```
+
+
+```{r}
+max.conc <- max(m.Conc)
+plot(t1, m.Conc[1,], type="l", col="grey", ylim = c(0, max.conc))
+for(i in 2:1000){
+  lines(t1, m.Conc[i,], col="grey")
+}
+```
+
+
+```{r}
+max.conc <- max(m.Conc)
+plot(t1, m.Conc[1,], type="l", col="grey", ylim = c(0, max.conc))
+for(i in 2:1000){
+  lines(t1, m.Conc[i,], col="grey")
+}
+Conc1 <- S1$conc
+points(t1, Conc1)
+```
+
+MCSim
+
+**Input file**
+
+```r
+MonteCarlo ("simmc.out", 
+            1000, 
+            10101010);
+
+MW       = 180.164; # Molecular weight (g/mole)
+IngDose  = 4.02;    # ingested dose (mg)
+
+Distrib (Fgutabs, Uniform, 0.8, 1);
+Distrib (kgutabs, Uniform, 1.09, 4.36);
+Distrib (kelim, LogNormal, 0.2653932, 2); 
+Distrib (Vdist, Uniform, 0.39, 1.56); 
+
+Simulation {
+  Print (Ccompartment 0.00   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
+}
+End.
+```
+
+
+```{r}
+set.seed(2222)
 ffpk.mtc.out <- mcsim("models/ffpk.model", "inputs/ffpk.mtc.in")
 ```
 
@@ -124,6 +288,7 @@ ffpk.mtc.out <- mcsim("models/ffpk.model", "inputs/ffpk.mtc.in")
 ```{r}
 head(ffpk.mtc.out)
 ```
+
 
 ```{r}
 par(mfrow = c(1,4))
@@ -133,58 +298,47 @@ hist(ffpk.mtc.out$kelim, main = "kelim", xlab = "", ylab = "")
 hist(ffpk.mtc.out$Vdist, main = "Vdist", xlab = "", ylab = "")
 ```
 
+
 ```{r}
-# Find location of the first and last time points by which()
-index <- which(names(ffpk.mtc.out)=="Ccompartment_1.1" | names(ffpk.mtc.out)=="Ccompartment_1.11")
-# Use apply() to find the quantile of each time point
-X <- apply(ffpk.mtc.out[,index[1]:index[2]], 2, quantile, c(0.5, 0.01,0.99))
-dat <- t(X)
-# Set column names
-colnames(dat) <- c("median", "LCL", "UCL")
-df <- as.data.frame(dat)
-# Set corresponding time
-df$time <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
-df
+Conc.str <- which(names(ffpk.mtc.out)=="Conc_1.1")
+Conc.end <- which(names(ffpk.mtc.out)=="Conc_1.10")
+df.Conc <- ffpk.mtc.out[,Conc.str:Conc.end]
+head(df.Conc)
 ```
 
 ```{r}
-t <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
-str.pt <- which(names(ffpk.mtc.out)=="Ccompartment_1.1") 
-end.pt <- which(names(ffpk.mtc.out)=="Ccompartment_1.11") 
-par(mfrow = c(1,1))
-plot(Theoph$Time, Theoph$conc.uM, pch = "")
-for(i in 1:1000){
-  lines(t, ffpk.mtc.out[i,str.pt:end.pt], col="grey")
+max.Conc <- max(df.Conc)
+plot(t1[-1], df.Conc[1,], type="l", col="grey", ylim=c(0,max.Conc))
+for(i in 2:1000){
+  lines(t1[-1], df.Conc[i,], col="grey")
 }
-points(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+points(t1, Conc1)
 ```
 
 
-# pksensi
+
+
+**pksensi**
 
 1. Set parameter distributions (assign parms, dist, q.qarg)
 ```{r}
 parameters <- c("Fgutabs",  "kgutabs", "kelim", "Vdist")  
-dist <- c("Uniform", "LogNormal", "LogNormal", "LogNormal") # MCSim definition
+dist <- c("Uniform", "Uniform", "LogNormal", "Uniform") # MCSim definition
 q.arg <- list(list(0.8, 1.0),
-            list(2.18, 3),
-            list(0.02183918, 2),
-            list(5.012049, 3))
+            list(1.09, 4.36),
+            list(0.2653932, 2),
+            list(0.39, 1.56))
 ```
 
 2. Set experiment time-points, output variables, and conditions
 
 ```{r}
-outputs <- c("Ccompartment")
-times <- c(0, 0.25, 0.5, 1, 2, 4, 6, 8, 10, 12, 24)
-conditions <- c("MW = 180.164", "Period = 48", "IngDose = 5.0")
+outputs <- c("Conc")
+times <- c(0.00, 0.25, 0.57, 1.12, 2.02, 3.82, 5.10, 7.03, 9.05, 12.12, 24.37)
+conditions <- c("MW = 180.164", "Period = 48", "IngDose = 4.02")
 ```
 
 3. Modeling
-
-```{r}
-mcmc_out <- makemcsim("models/pbtk1cpt.model")
-```
 
 ```{r}
 set.seed(2222)
@@ -194,12 +348,12 @@ y<-solve_mcsim(mName = "models/pbtk1cpt.model", params = parameters, vars = outp
 
 ```{r}
 pksim(y)
-points(Theoph$Time, Theoph$conc.uM, col = Theoph$Subject)
+points(t1, Conc1)
 ```
 
 
 
-# Calibration
+### Calibration
 
 ```{r}
 set.seed(1)
@@ -219,7 +373,7 @@ plot(ffpk.mcmc.out$Vdist.1., type = "l")
 
 ```{r}
 check.out <- read.delim("MCMC.check.out") 
-plot(check.out$Data, check.out$Prediction, xlim=c(0,60), ylim=c(0,60))
+plot(check.out$Data, check.out$Prediction, xlim=c(0,10), ylim=c(0,10))
 abline(0,1)
 ```
 
@@ -234,50 +388,33 @@ Vdist <- ffpk.mcmc.out$Vdist.1.
 MW <- 180.164
 
 t <- Theoph$Time[1:11]
-obs<- Theoph$conc.uM[1:11]
+obs<- Theoph$con[1:11]
 A <- (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim))
 
 Conc.matrix <- matrix(nrow = length(Fgutabs), ncol = length(t))
 for(i in 1:11){
   Conc.matrix[,i] <- A * exp(-kelim * t[i]) - A * exp(-kgutabs * t[i])
 }
-Ccompartment <- Conc.matrix / MW * 1000
 plot(t, obs, pch = "")
 for(i in 501:1000){
-  lines(t, Ccompartment[i,], col="grey")
+  lines(t, Conc.matrix[i,], col="grey")
 }
 points(t, obs)
 ```
 
 
-```{r}
-plot(obs, obs, pch = "")
-for(i in 501:1000){
-  points(obs, Ccompartment[i,], pch = "+")
-}
-abline(0,1)
-```
-
-```{r}
-plot(obs, obs, ylim = c(0.1, 10), pch = "", log="y")
-for(i in 501:1000){
-  points(obs, obs/Ccompartment[i,], pch = "+")
-}
-abline(0,0)
-abline(log(2,10), 0, lty=2)
-abline(log(0.5,10), 0, lty=2)
-```
 
 Use setpoints
 ```{r}
 ffpk.setpts.out <- mcsim("models/ffpk.model", input = "inputs/ffpk.setpts.in")
+names(ffpk.setpts.out)
 ```
 
 ```{r}
 t <- Theoph$Time[1:11]
-obs<- Theoph$conc.uM[1:11]
-str.pt <- which(names(ffpk.setpts.out)=="Ccompartment_1.1") 
-end.pt <- which(names(ffpk.setpts.out)=="Ccompartment_1.11") 
+obs<- Theoph$conc[1:11]
+str.pt <- which(names(ffpk.setpts.out)=="Conc_1.1") 
+end.pt <- which(names(ffpk.setpts.out)=="Conc_1.11") 
 par(mfrow = c(1,1))
 plot(t, obs, pch = "")
 for(i in 501:1000){
@@ -289,24 +426,6 @@ points(t, obs)
 Use setpoints - Global evaluation
 
 
-
-Compare the CSS
-
-```{r}
-library(httk)
-calc_analytic_css(chem.name = "theophylline", model = "1compartment")
-```
-
-
-```{r}
-parameters <- parameterize_1comp(chem.name = "theophylline")
-parameters$Fgutabs <- median(ffpk.mcmc.out$Fgutabs.1.) / parameters$hepatic.bioavailability
-parameters$kgutabs <- median(ffpk.mcmc.out$kgutabs.1.)
-parameters$kelim <- median(ffpk.mcmc.out$kelim.1.)
-parameters$Vdist <- median(ffpk.mcmc.out$Vdist.1.)
-unlist(parameters)
-calc_analytic_css(parameters = parameters, model = "1compartment")
-```
 
 
 

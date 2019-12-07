@@ -22,7 +22,8 @@ Inputs = { Oral_input }; # Drug input (mg)
 
 # Outputs -----------------------------------------------------------------
 Outputs = { 
-Ccompartment
+  Conc,
+  Conc_uM
 };  # Concentration in central compartment (uM)
 
 
@@ -69,7 +70,8 @@ Dynamics {
 
 # CalcOutputs -------------------------------------------------------------
 CalcOutputs { 
-  Ccompartment  = A_rest  / Vdist / MW * 1000; 
+  Conc = A_rest  / Vdist;
+  Conc_uM = Conc / MW * 1000; 
 }
 
 End.

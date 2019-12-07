@@ -3,7 +3,7 @@
 Outputs = {
   A,
   Conc,
-  Ccompartment
+  Conc_uM
 }
 
 # Model Parameters
@@ -25,7 +25,7 @@ Vdist = 1.0;
 CalcOutputs { 
   A = (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim));
   Conc = A * exp(-kelim * t) - A * exp(-kgutabs * t);
-  Ccompartment = Conc / MW * 1000;
+  Conc_uM = Conc / MW * 1000;
 }
 
 End.
