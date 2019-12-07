@@ -1,5 +1,5 @@
 ---
-title: "Exercise 1.4 Developing the PBPK model"
+title: "Exercise 1.4: Developing the PBPK model"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
@@ -10,58 +10,28 @@ output:
   fig_caption: yes  
 ---
 
-# Task
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = T)
+```
+
+# TASK
 
 - Instead of simple PK model, in this exercise we want to apply the well developed PBPK model for 1,3 butadiene.
 - First, reproduce the simulation result from the published paper*.
 - Exposure: Continuous exposure of the 10 ppm 1,3-butadiene for 2 hour.
 
-# Solution
+## Reference
+[*] Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY
+
+# SOLUTION
+
+## Packages
 
 ```{R message=FALSE, warning=FALSE}
 library(deSolve)
 ```
 
-## Inputs
-
-```{r}
-C_inh <- approxfun(x = c(0, 120), y=c(10,0), method = "constant", f = 0, rule = 2) 
-```
-
-```{r}
-plot(C_inh(1:300), type="l", xlab = "Time (min)", ylab = "Butadiene inhaled concentration (ppm)")
-```
-
-## Parameters and outputs 
-
-```{r}
-parameters <- c("BDM" = 73,            # Body mass (kg)
-                "Height" = 1.6,        # Body height (m)
-                "Age" = 40,            # in years
-                "Sex" = 1,             # code 1 is male, 2 is female
-                "Flow_pul" = 5,        # Pulmonary ventilation rate (L/min)
-                "Pct_Deadspace" = 0.7, # Fraction of pulmonary deadspace
-                "Vent_Perf" = 1.14,    # Ventilation over perfusion ratio
-                "Pct_LBDM_wp" = 0.2,   # wp tissue as fraction of lean mass
-                "Pct_Flow_fat" = 0.1,  # Fraction of cardiac output to fat
-                "Pct_Flow_pp" = 0.35,  # ~ to pp
-                "PC_art" = 2,          # Blood/air partition coefficient
-                "PC_fat" = 22,         # Fat/blood ~
-                "PC_wp" = 0.8,         # wp/blood ~
-                "PC_pp" = 0.8,         # pp/blood ~
-                "Kmetwp" = 0.25)       # Rate constant for metabolism
-```
-
-```{r}
-y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
-       "Q_wp" = 0,  # ~ in well-perfused (mg)
-       "Q_pp" = 0,  # ~ in poorly-perfused (mg)
-       "Q_met" = 0) # ~ metabolized (mg)
-```
-
-
-
-## Model structure
+## Model
 
 ```r
 # Define the model equations
@@ -86,7 +56,7 @@ bd.model <- function(t, y, parameters) {
 } # end bd.model
 ```
 
-## Constants
+### Constants
 
 ```r
 # Known constants
@@ -100,7 +70,7 @@ mg_per_l_per_ppm = 1 / ppm_per_mg_per_l
 
 ```
 
-## Air and blood flow
+### Air and blood flow
 
 ```r
 # Calculate Flow_alv from total pulmonary flow
@@ -118,7 +88,7 @@ Flow_pp = Pct_Flow_pp * Flow_tot
 Flow_wp = Flow_tot * (1 - Pct_Flow_pp - Pct_Flow_fat)
 ```
 
-## Volumes
+### Volumes
 
 ```r
 # Actual volumes, 10% of body mass (bones…) get no butadiene
@@ -127,7 +97,7 @@ Eff_V_wp = Pct_LBDM_wp * BDM * (1 - Pct_BDM_fat)
 Eff_V_pp = 0.9 * BDM - Eff_V_fat - Eff_V_wp
 ```
 
-## Concentrations - tissues & blood
+### Concentrations - tissues & blood
 
 ```r
 # Calculate the concentrations
@@ -152,7 +122,7 @@ C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flo
 C_ven = dQ_ven / Flow_tot
 ```
 
-## Concentrations - air
+### Concentrations - air
 
 ```r
 # Alveolar air concentration (mg/L)
@@ -166,7 +136,7 @@ if (C_alv <= 0) {
 }
 ```
 
-## Differentials for quantities
+### Differentials for quantities
 
 ```r
 # Quantity metabolized in liver (included in well-perfused)
@@ -179,7 +149,7 @@ dQ_pp = Flow_pp * (C_art - Cout_pp)
 dQ_met = dQmet_wp
 ```
 
-## `bd.model`
+### `bd.model`
 ```{r}
 # Define the model equations
 bd.model = function(t, y, parameters) {
@@ -204,8 +174,7 @@ bd.model = function(t, y, parameters) {
       Flow_tot = Flow_alv / Vent_Perf
       
       # Calculate fraction of body fat
-      Pct_BDM_fat = (1.2 * BDM / (Height * Height) - 10.8
-                     *(2 - Sex) + 0.23 * Age - 5.4) * 0.01
+      Pct_BDM_fat = (1.2 * BDM / (Height * Height) - 10.8 * (2 - Sex) + 0.23 * Age - 5.4) * 0.01
       
       # Actual volumes, 10% of body mass (bones…) get no butadiene
       Eff_V_fat = Pct_BDM_fat * BDM
@@ -268,11 +237,55 @@ bd.model = function(t, y, parameters) {
 ```
 
 
+## Inputs
+
+```{r}
+C_inh <- approxfun(x = c(0, 120), y=c(10,0), method = "constant", f = 0, rule = 2) 
+```
+
+```{r}
+plot(C_inh(1:300), type="l", xlab = "Time (min)", ylab = "Butadiene inhaled concentration (ppm)")
+```
+
+## Parameters and outputs 
+
+```{r}
+parameters <- c("BDM" = 73,            # Body mass (kg)
+                "Height" = 1.6,        # Body height (m)
+                "Age" = 40,            # in years
+                "Sex" = 1,             # code 1 is male, 2 is female
+                "Flow_pul" = 5,        # Pulmonary ventilation rate (L/min)
+                "Pct_Deadspace" = 0.7, # Fraction of pulmonary deadspace
+                "Vent_Perf" = 1.14,    # Ventilation over perfusion ratio
+                "Pct_LBDM_wp" = 0.2,   # wp tissue as fraction of lean mass
+                "Pct_Flow_fat" = 0.1,  # Fraction of cardiac output to fat
+                "Pct_Flow_pp" = 0.35,  # ~ to pp
+                "PC_art" = 2,          # Blood/air partition coefficient
+                "PC_fat" = 22,         # Fat/blood ~
+                "PC_wp" = 0.8,         # wp/blood ~
+                "PC_pp" = 0.8,         # pp/blood ~
+                "Kmetwp" = 0.25)       # Rate constant for metabolism
+```
+
+```{r}
+y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
+       "Q_wp" = 0,  # ~ in well-perfused (mg)
+       "Q_pp" = 0,  # ~ in poorly-perfused (mg)
+       "Q_met" = 0) # ~ metabolized (mg)
+```
+
+
+
+
 ## Simulation
 ```{r}
 # Define the computation output times
 t <- seq(from=0, to=1440, by=10)
+t
+```
 
+
+```{r}
 # Solve ODE
 out <- ode(times=t, func=bd.model, y=y, parms=parameters)
 head(out)
