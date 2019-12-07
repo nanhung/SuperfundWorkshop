@@ -30,7 +30,7 @@ theme_set(theme_bw())
 - Extract the chemical information from httk package
 
 ```{r}
-parms <- httk::parameterize_1comp(chem.name = "theophylline")
+parms <- parameterize_1comp(chem.name = "theophylline")
 parms
 ```
 

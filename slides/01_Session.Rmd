@@ -1192,17 +1192,40 @@ head(Theoph)
 
 - Develop the non compartment model and compartment model in R and MCSim
 
-
+.pull-left[
+.font75[
 - Non compartment model
-
-$$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
-
+$$C(t) = \frac{F\cdot D \cdot ka}{V \cdot BW  \cdot (k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
 - Compartment model
-
 $$\frac{dA_{gut}}{dt}=-k_aA_{gut}$$
+$$\frac{dA_{cpt}}{dt}=k_aA_{gut}-k_eA_{cpt}$$
+$$C_{cpt}=\frac{A_{cpt}}{V \cdot BW}$$
+]
+]
 
-$$\frac{dA}{dt}=k_aA_{gut}-k_eA_e$$
-$$C=A/V$$
+.pull-right[
+.font75[
+$t$: Time (hr)  
+
+$C$: Concentration (mg/L)  
+
+$F$: Absorption fraction (-)    
+
+$D$: Ingestion dose (mg)  
+
+$k_a$: Absorption rate (/hr)  
+
+$k_e$: Elimination rate (/hr)  
+
+$V$: Distribution volume (L/kg BW)  
+
+$BW$: Body weight (kg)  
+
+$A_{gut}$: Amount in gut lumen (mg)  
+
+$A_{cpt}$: Amount in central compartment (mg)
+]
+]
 
 ---
 

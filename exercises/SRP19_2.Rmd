@@ -1,35 +1,55 @@
 ---
-title: "Exercise 1.2 PK Model Development"
+title: "Exercise 1.2: PK Model Development"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
   html_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     number_sections: false
   fig_caption: yes  
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(eval = F)
 ```
 
-## Exercise
+# Task 
 
 Develop the non compartment model and compartment model in R and MCSim
 
-- Non compartment model
+**Non compartment model**
 
-$$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
+$$C(t) = \frac{F\cdot D \cdot ka}{V \cdot BW  \cdot (k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
 
-- Compartment model
+**Compartment model**
 
 $$\frac{dA_{gut}}{dt}=-k_aA_{gut}$$
 
-$$\frac{dA}{dt}=k_aA_{gut}-k_eA_e$$
-$$C=A/V$$
+$$\frac{dA_{cpt}}{dt}=k_aA_{gut}-k_eA_{cpt}$$
+$$C_{cpt}=\frac{A_{cpt}}{V \cdot BW}$$
 
-## Introduction
+**Parameters**
+
+$t$: Time (hr)  
+
+$C$: Concentration (mg/L)  
+
+$F$: Absorption fraction (-)    
+
+$D$: Ingestion dose (mg)  
+
+$k_a$: Absorption rate (/hr)  
+
+$k_e$: Elimination rate (/hr)  
+
+$V$: Distribution volume (L/kg BW)  
+
+$BW$: Body weight (kg)  
+
+$A_{gut}$: Amount in gut lumen (mg)  
+
+# Introduction of model development in MCSim 
 
 ```r
 # Model description file (this is a comment)
@@ -226,17 +246,19 @@ After the global specifications, we can define the local parameters. In addition
 
 **Note:** The output variables cannot receive assignments in simulation input files.
 
+
+
+# Solution 
+
 ## Non compartment model
 
 - Non compartment model (R)
 
 ```{r}
-ffpk <- function(D, Fa, ka, ke, V, t){
-    MW <- 180.167
-    A <- (D * Fa * ka)/(V * (ka - ke))
-    C <- A * exp(-ke * t) - A * exp(-ka * t)
-    #C_uM <- C/MW*1000
-    return(C)
+ffpk <- function(IngDose, Fgutabs, kgutabs, kelim, Vdist, BW, t){
+    A <- (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim))
+    Conc <- A * exp(-kelim * t) - A * exp(-kgutabs * t)
+    return(Conc)
 }
 ```
 
@@ -246,26 +268,29 @@ ffpk <- function(D, Fa, ka, ke, V, t){
 Outputs = {
   A,
   Conc,
-  C_rest_uM
 }
 
-## ingested input (mg)
+# ingested input             (mg)
 IngDose = 1.0; 
-## Molecular weight (g/mole)
-MW = 100;
-## Absorption fraction (-)
+
+# Absorption fraction        (-)
 Fgutabs = 1.0; #
-## Absorption rate constant (/h)
+
+# Absorption rate constant   (/h)
 kgutabs = 1.0; #
-## Elimination rate constants (/h)
+
+# Elimination rate constants (/h)
 kelim = 1.0;
-## Distribution volumes (L)
+
+# Distribution volumes       (L/kg BW)
 Vdist = 1.0;
 
+# Body weight                (kg)
+BW = 70;
+
 CalcOutputs { 
-  A = (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim));
+  A = (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim));
   Conc = A * exp(-kelim * t) - A * exp(-kgutabs * t);
-  Conc_uM = Conc / MW * 1000;
 }
 
 End.
@@ -279,35 +304,30 @@ End.
 pbtk1cpt <- function(t, state, parameters) {
   with(as.list(c(state, parameters)), {
     
-    dAgutlument = - kgutabs * Agutlument
-    dAcompartment = kgutabs * Agutlument - ke * Acompartment
-    dAmetabolized = ke * Acompartment
+    dAgut = - kgutabs * Agut
+    dAcpt = kgutabs * Agut - ke * Acpt
+
+    Ccpt = Acpt / Vdist * BW
     
-    Ccompartment = Acompartment / vdist * BW;
-    
-    list(c(dAgutlument, dAcompartment, dAmetabolized), 
-         "Ccompartment" = Ccompartment) 
+    list(c(dAgut, dAcpt), "Ccpt" = Ccpt) 
   })
 }
 ```
 
 - Compartment model (MCSim)
 
-
 ```
 States  = { 
-  A_rest, 
-  A_elim
-};  # Quantity in central compartment (mg)
+  Acpt      # Quantity in central compartment (mg)
+};  
 
 Inputs = { 
-  Oral_input
-}; # Drug input (mg)
+  Oral_input  # Drug input (mg)
+}; 
 
 Outputs = {
-  C_rest, (mg/l)
-  C_rest_uM, (uM)
-};  # Concentration in central compartment (uM)
+  Ccpt,     # Concentration in central compartment (mg/l)
+};
 
 # Oral input modeling
 Absdose;
@@ -318,23 +338,23 @@ Tlag       = 0.0; # Absorption lagtime (h)
 kgutabs    = 0.1; # Intestinal absortion rate (/h)
 Oral_input = PerExp (Absdose, Period, Tlag, kgutabs);
 
-# Molecular weight (g/mole)
-MW = 100;
-# Distribution volumes (L)
-Vdist  = 1;
+# Distribution volumes (L/kg BW)
+Vdist = 1;
+
+# Body weight (kg)
+BW = 70;
+
 # Elimination rate constants (/h)
 kelim = 1;
 
 Initialize{ Absdose = IngDose * Fgutabs; }
 
 Dynamics { 
-  dt (A_rest) = kgutabs * Oral_input - kelim * A_rest;
-  dt (A_elim) = kelim * A_rest;
+  dt (Acpt) = kgutabs * Oral_input - kelim * Acpt;
 }
 
 CalcOutputs { 
-  C_rest = A_rest  / Vdist;
-  C_rest_uM  = C_rest / MW * 1000; 
+  Ccpt = Acpt  / Vdist * BW;
 }
 
 End.

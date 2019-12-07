@@ -10,6 +10,11 @@ output:
   fig_caption: yes  
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = F)
+```
+
+
 # Task 
 
 Learn how to use R to conduct basic analysis for PK data. Now, we have a theophylline PK dataset. The purpose of this exercise is to develop the simple PK model and use it to describe the PK of theophylline. First, look into the theophylline dataset. The Theoph data frame has 132 rows and 5 columns of data from an experiment on the pharmacokinetics of theophylline.
