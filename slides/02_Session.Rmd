@@ -575,7 +575,7 @@ plot(out$A.1.[j], out$B.1.[j], type = "b",
 
 ---
 
-## Example - Posterior check
+## Example - Posterior Predictive Checks
 
 .pull-left[
 .code50[

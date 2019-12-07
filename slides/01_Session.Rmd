@@ -437,8 +437,7 @@ $$A(t) = A_0 \cdot e^{-k_{e} \cdot t}$$
 ]
 
 .footnote[
-$A$: Amount in body (mass); $D_0$ initial amount (mass); $t$: time; $k_e$: Elimination rate constant (/time)
-
+$A$: Amount in body (mass); $A_0$ initial amount (mass); $t$: time; $k_e$: Elimination rate constant (/time)
 ]
 
 ???
