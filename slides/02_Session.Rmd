@@ -786,7 +786,7 @@ background-position: 99% 80%
 
 # Hands on Exercise
 
-## Task 4: **Monte Carlo Simulation for PBPK model by MCSim**
+## Task 4: **Monte Carlo Simulation for PBPK model (MCSim)**
 
 - The Monte Carlo Simulation take a little bit longer with `ode` function in **deSolve** package. 
 - Therefore we want to improve the computational speed. Now, rewrite the R model code to **MCSim** and conduct Monte Carlo Simulation with the same parameter setting. 
