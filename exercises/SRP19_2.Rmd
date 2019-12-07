@@ -354,7 +354,7 @@ Dynamics {
 }
 
 CalcOutputs { 
-  Ccpt = Acpt  / Vdist * BW;
+  Ccpt = Acpt  / Vdist / BW;
 }
 
 End.

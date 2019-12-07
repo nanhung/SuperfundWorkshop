@@ -5,55 +5,52 @@ date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
   html_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     number_sections: false
   fig_caption: yes  
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(eval = TRUE)
 setwd('..')
 wd <- getwd()
 knitr::opts_knit$set(root.dir =  wd)
 ```
 
-```{R message=FALSE, warning=FALSE}
-library(tidyverse)
-library(httk)
-library(simuloR)
-theme_set(theme_bw())
-```
-
-
-## Exercise
+# Task
 
 - Extract the chemical information from httk package
+
+- Use the parameters in the developed model and conduct the simulation 
+
+- Compare the difference between data and the model simulation result (Cmax, Tmax)
+
+# Solution
+
+## Packages
+
+```{R message=FALSE, warning=FALSE}
+library(httk)
+library(tidyverse)
+library(simuloR)
+```
+
+## Simulation by R
 
 ```{r}
 parms <- parameterize_1comp(chem.name = "theophylline")
 parms
 ```
 
-- Use the parameters in the developed model and conduct the simulation 
-- Compare the difference between data and the model simulation result (Cmax, Tmax)
-
-## Simulation by R
-
-R
-
 ```{r}
-ffpk <- function(D, Fa, ka, ke, V, t){
-    MW <- 180.167
-    A <- (D * Fa * ka)/(V * (ka - ke))
-    C <- A * exp(-ke * t) - A * exp(-ka * t)
-    #C_uM <- C/MW*1000
-    return(C)
+ffpk <- function(IngDose, Fgutabs, kgutabs, kelim, Vdist, BW, t){
+    A <- (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim))
+    Conc <- A * exp(-kelim * t) - A * exp(-kgutabs * t)
+    return(Conc)
 }
 ```
 
-
 ```{r}
-MW <- parms$MW
 Fgutabs <- parms$Fgutabs * parms$hepatic.bioavailability
 kgutabs <- parms$kgutabs
 kelim <- parms$kelim
@@ -62,64 +59,109 @@ Vdist <- parms$Vdist
 
 
 ```{r}
-dose1 <- subset(Theoph, Subject == 1) %>% summarise(dose = mean(Dose))
-t1 <- subset(Theoph, Subject == 1) %>% select(Time)
-out1 <- ffpk(D = dose1$dose, Fa = Fgutabs, ka = kgutabs, ke = kelim, V = Vdist, t=t1$Time)
+S1 <- subset(Theoph, Subject == 1)
+mean(S1$Dose)
+mean(S1$Wt)
+```
+
+```{r}
+IngDose <- mean(S1$Dose)*mean(S1$Wt)
+IngDose
+```
+
+
+```{r}
+out1 <- ffpk(IngDose = IngDose, 
+             Fgutabs = Fgutabs,
+             kgutabs = kgutabs, kelim = kelim,
+             Vdist = Vdist, 
+             BW = 79.6,
+             t = S1$Time)
 out1
 ```
 
 
 ```{r}
 conc1 <- subset(Theoph, Subject == 1) %>% select(conc)
-plot(t1$Time, conc1$conc)
-lines(t1$Time, out1)
 
+plot(S1$Time, conc1$conc)
+lines(S1$Time, out1)
 ```
-
-```{r}
-data.frame(t1, out1)
-```
-
 
 ## Simulation by MCSim
 
-```
-Integrate (Lsodes, 1e-8, 1e-8, 1);
+### Non-Compartment model
 
-MW         = 180.167;  # moleculor mass (g/mol)
-IngDose    = 4.02;     # ingested dose (mg)
-Period     = 48;       # period of the exposure/no exposure cycle (h)
-Fgutabs    = 0.9142;   # bioavailability (-) 
-kgutabs    = 2.18;     # absortion rate (/h)
-kelim      = 0.2654;   # elimination rate constant (/h)
-Vdist      = 0.7802;   # volumes (L)
+```r
+IngDose    = 319.992;     # ingested dose (mg)
+BW         = 79.6;        # body weight (kg)
+Fgutabs    = 0.9142;      # bioavailability (-) 
+kgutabs    = 2.18;        # absortion rate (/h)
+kelim      = 0.2654;      # elimination rate constant (/h)
+Vdist      = 0.7802;      # volumes (L/kg BW)
 
 Simulation {
-  Print (C_rest 0.00   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
+  Print (Conc 0.00   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
+}
+End.
+```
+
+**Use linux command**
+
+- Create exectuable program (`makemcsim`)
+```bash
+makemcsim models/ffpk.model mcsim.ffpk
+```
+- Conduct simulation
+```bash
+models/mcsim.ffpk inputs/ffpk.in
+```
+
+**Use simuloR function**
+
+- Create exectuable program 
+```{r}
+ffpk.model <- "models/ffpk.model"
+makemcsim(model = ffpk.model)
+```
+
+- Create exectuable program and conduct simulation
+```{r}
+mcsim(model = "models/ffpk.model", input = "inputs/ffpk.in")
+```
+
+- Load file
+```{r}
+read.delim(file = "sim.out")
+```
+
+```{r}
+read.delim(file = "sim.out", skip = 1)
+```
+
+### Compartment model
+
+```
+IngDose    = 319.992;     # ingested dose (mg)
+BW         = 79.6;        # body weight (kg)
+Period     = 48;          # period of the exposure/no exposure cycle (h)
+Fgutabs    = 0.9142;      # bioavailability (-) 
+kgutabs    = 2.18;        # absortion rate (/h)
+kelim      = 0.2654;      # elimination rate constant (/h)
+Vdist      = 0.7802;      # volumes (L/kg BW)
+
+Simulation {
+  Print (Ccpt 0.00   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
 }
 End.
 ```
 
 ```{r}
-mcsim(model = "models/pbtk1cpt.model", input = "inputs/pbtk1cpt.in")
-```
-
-
-```{r}
-read.delim("sim.out")
+out1 <- mcsim(model = "models/ffpk.model", input = "inputs/ffpk.in")
+out1
 ```
 
 ```{r}
-read.delim("sim.out", skip = 1)
-```
-
-
-```{r}
-out <- mcsim(model = "models/pbtk1cpt.model", input = "inputs/pbtk1cpt.in")
-out
-```
-
-```{r}
-plot(t1$Time, conc1$conc)
-lines(out$Time, out$Conc)
+plot(x = S1$Time, y = conc1$conc)
+lines(x = out1$Time, y = out1$Conc)
 ```

@@ -3,29 +3,29 @@
 Outputs = {
   A,
   Conc,
-  Conc_uM
 }
 
-# Model Parameters
-
-## ingested input (mg)
+# ingested input             (mg)
 IngDose = 1.0; 
-## Molecular weight (g/mole)
-MW = 100;
-## Absorption fraction (-)
+
+# Absorption fraction        (-)
 Fgutabs = 1.0; #
-## Absorption rate constant (/h)
+
+# Absorption rate constant   (/h)
 kgutabs = 1.0; #
-## Elimination rate constants (/h)
+
+# Elimination rate constants (/h)
 kelim = 1.0;
-## Distribution volumes (L)
+
+# Distribution volumes       (L/kg BW)
 Vdist = 1.0;
 
+# Body weight                (kg)
+BW = 70;
 
 CalcOutputs { 
-  A = (IngDose * Fgutabs * kgutabs)/(Vdist * (kgutabs - kelim));
+  A = (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim));
   Conc = A * exp(-kelim * t) - A * exp(-kgutabs * t);
-  Conc_uM = Conc / MW * 1000;
 }
 
 End.
