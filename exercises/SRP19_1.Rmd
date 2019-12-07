@@ -1,22 +1,57 @@
 ---
-title: "Exercise 1.1 Exploratory data analysis"
+title: "Exercise 1.1: Exploratory data analysis"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
   html_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     number_sections: false
   fig_caption: yes  
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+# Task 
+
+Learn how to use R to conduct basic analysis for PK data. Now, we have a theophylline PK dataset. The purpose of this exercise is to develop the simple PK model and use it to describe the PK of theophylline. First, look into the theophylline dataset. The Theoph data frame has 132 rows and 5 columns of data from an experiment on the pharmacokinetics of theophylline.
+
+Questions
+- Where can I get help?  
+- How do I read data into R?  
+- What is a data frame?  
+- How do I assign variables?  
+- How do I access subsets of a data frame?  
+- How do I calculate simple statistics like mean and median?  
+- How can I plot my data?  
+
+Objectives
+- Read tabular data from a file into a program.  
+- Assign values to variables.  
+- Select individual values and subsections from data.  
+- Perform operations on a data frame of data.  
+- Display simple graphs (base and ggplot).  
+- Find the Cmax and Tmax for each individual.  
+
+
+# Solution
+
+## Basic data analysis
+
+```r
+?Theoph
+```
+
+```r
+getwd()
 ```
 
 
-```{R message=FALSE, warning=FALSE}
-library(tidyverse)
-theme_set(theme_bw())
+```r
+dat <- read.csv(file = "Theoph.csv")
+dat
+```
+
+```r
+write.csv(x = Theoph, file = "Theoph.csv", row.names = F)
 ```
 
 ```{r}
@@ -30,52 +65,58 @@ tail(Theoph)
 
 
 ```{r}
-subset(Theoph, Subject == 1)
+class(Theoph)
 ```
 
 
 ```{r}
-subset(Theoph, Subject == 1) %>% summary()
+subset(x = Theoph, Subject == 1)
 ```
 
 
 ```{r}
-s1 <- subset(Theoph, Subject == 1) 
-plot(s1$Time, s1$conc)
+S1 <- subset(x = Theoph, Subject == 1)
+S1$conc
 ```
 
 
 ```{r}
-plot(Theoph$Time, Theoph$conc, col=Theoph$Subject)
+mean(S1$conc)
+```
+
+```{r}
+C_max <- max(S1$conc)
+C_max
+```
+
+```{r}
+plot(x = S1$Time, y = S1$conc)
+```
+
+```{r}
+plot(x = Theoph$Time, y = Theoph$conc, col=Theoph$Subject)
 ```
 
 
 ```{r}
-par(mfrow=c(3,4))
+par(mfrow=c(m=3,n=4))
 for(i in 1:12){
-  dat <- subset(Theoph, Subject == i)  
-  plot(dat$Time, dat$conc, main = i)
+  Si <- subset(x = Theoph, Subject == i)  # Select subject
+  plot(x = Si$Time, y = Si$conc, main = i)   # plot PK profile
 }
+```
+
+
+## Tidyverse package
+
+```{R}
+library(tidyverse)
 ```
 
 ```{r}
 Theoph %>% ggplot(aes(x = Time, y =conc, color = Subject)) + 
   geom_point()
 ```
-
-```{r}
-Theoph %>% ggplot(aes(x = Time, y =conc, color = Subject)) + 
-  geom_point() + geom_line() + 
-  labs(x = "Time (hr)", y = "Concentration (mg/L)")
-```
-
-```{r}
-Theoph %>% ggplot(aes(x = Time, y =conc)) + 
-  geom_point() + geom_line() + 
-  facet_wrap(~Subject) + 
-  labs(x = "Time (hr)", y = "Concentration (mg/L)")
-```
-
 
 ```{r}
 class(Theoph$Subject)
@@ -91,11 +132,15 @@ Theoph$Subject <- factor(Theoph$Subject,
                                       "7", "8", "9", "10", "11","12"))
 ```
 
-
 ```{r}
 Theoph$Subject
 ```
 
+```{r}
+Theoph %>% ggplot(aes(x = Time, y =conc, color = Subject)) + 
+  geom_point() + geom_line() + 
+  labs(x = "Time (hr)", y = "Concentration (mg/L)")
+```
 
 ```{r}
 Theoph %>% ggplot(aes(x = Time, y =conc)) + 
@@ -104,42 +149,33 @@ Theoph %>% ggplot(aes(x = Time, y =conc)) +
   labs(x = "Time (hr)", y = "Concentration (mg/L)")
 ```
 
-
 ```{r}
-s1.Cmax <- max(s1$conc)
-s1.Cmax
+S1.Cmax <- max(S1$conc)
+S1.Cmax
 ```
 
-
 ```{r}
-which(s1$conc == s1.Cmax)
+which(S1$conc == S1.Cmax)
 ```
 
-
 ```{r}
-t.pt <- which(s1$conc == s1.Cmax)
-T_max <- s1$Time[t.pt]
+Cmax.pt <- which(S1$conc == S1.Cmax)
+T_max <- S1$Time[Cmax.pt]
+T_max
 ```
-
-
-
-
 
 ```{r}
 Cmax_pop <- Theoph %>% group_by(Subject) %>% summarise(C_max = max(conc))
 Cmax_pop
 ```
 
-
 ```{r}
 hist(Cmax_pop$C_max)
 ```
 
-
 ```{r}
 boxplot(Cmax_pop$C_max)
 ```
-
 
 ```{r}
 Theoph %>% group_by(Subject) %>% summarise(C_max = max(conc), Wt=mean(Wt))
@@ -151,13 +187,11 @@ Theoph %>% group_by(Subject) %>%
   ggplot(aes(x=Wt, y=C_max)) + geom_point()
 ```
 
-
 ```{r}
 Theoph %>% group_by(Subject) %>% 
   summarise(C_max = max(conc), Wt=mean(Wt)) %>% 
   ggplot(aes(x=Wt, y=C_max)) + geom_point() + geom_smooth(method = "lm")
 ```
-
 
 ```{r}
 df <- Theoph %>% group_by(Subject) %>% summarize(C_max = max(conc))
@@ -165,14 +199,12 @@ df$T_max <- NA
 df
 ```
 
-
 ```{r}
 dat <- subset(Theoph, Subject==1)
 C_max.pt <- which(dat$conc == df$C_max[1])
 df$T_max[1] <- dat$Time[C_max.pt]
 df
 ```
-
 
 ```{r}
 for(i in 2:12){
@@ -182,3 +214,4 @@ for(i in 2:12){
 }
 df
 ```
+
