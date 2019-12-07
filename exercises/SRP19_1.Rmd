@@ -8,7 +8,6 @@ output:
     toc_depth: 2
     number_sections: false
   fig_caption: yes  
-
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

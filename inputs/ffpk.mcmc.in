@@ -1,20 +1,17 @@
-# pbtk1cpt.mtc.in ---------------------------------------------------------------
-#Integrate (Lsodes, 1e-8, 1e-8, 1);
+# ffpk.mcmc.in ---------------------------------------------------------------
 
 MCMC ("MCMC.default.out","", # name of output file
       "",         # name of data file
-      1000,0,     # iterations, print predictions flag
-      1,1000,     # printing frequency, iters to print
+      2000,0,     # iterations, print predictions flag
+      1,2000,     # printing frequency, iters to print
       10101010);  # random seed (default)
   
 Level {
   
-  MW = 180.164; # Molecular weight (g/mole)  
-  
   Distrib (Fgutabs, Uniform, 0.8, 1);
-  Distrib (kgutabs, Uniform, 1, 10);
-  Distrib (kelim, Uniform, 0.01, 0.1); 
-  Distrib (Vdist, LogUniform, 0.1, 10); 
+  Distrib (kgutabs, LogUniform, 0.218, 21.8);
+  Distrib (kelim, Uniform, 0.05307864, 1.326966); 
+  Distrib (Vdist, Uniform, 0.15603994, 3.900998); 
   
   Likelihood(Conc, LogNormal, Prediction(Conc) , 1.1);
   
