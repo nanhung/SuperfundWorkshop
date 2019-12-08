@@ -1,29 +1,29 @@
 ---
-title: "Exercise 2.1 Uncertainty analysis on PK model"
+title: "Exercise 2.1: Uncertainty analysis on PK model"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
   html_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     number_sections: false
   fig_caption: yes  
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(eval = TRUE)
 setwd('..')
 wd <- getwd()
 knitr::opts_knit$set(root.dir =  wd)
 ```
 
-## Task
+# TASK
 
 - In the previous exercise, we find that the predcited result can not used to describe the real cases. Therefore, we need to conduct the uncertainty analysis to figure out how to reset the model parameter.
 
 - Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model calibration.
 
-## Basic MOnte Carlo practice
+# Basic MOnte Carlo practice
 
 ```{r}
 x <- rnorm(n = 28, mean = 10, sd =  2)
@@ -75,6 +75,7 @@ plot(x)
 hist(x)
 ```
 
+# Monte Carlo method in GNU MCSim
 
 ## [`MonteCarlo()` specification](https://www.gnu.org/software/mcsim/mcsim.html#MonteCarlo_0028_0029-specification)
 
@@ -103,22 +104,34 @@ For example
 `LogNormal`, takes two reals numbers as parameters: the geometric mean (exponential of the mean in log-space) and the geometric standard deviation (exponential, strictly superior to 1, of the standard deviation in log-space).
 
 
-## Solution
+# SOLUTION
+
+## Packages
 
 ```{R message=FALSE, warning=FALSE}
 library(simuloR)
 library(tidyverse)
 library(pksensi)
 library(httk)
-theme_set(theme_bw())
 ```
 
-### R
+## Uncertainty analysis of PK model in R
+
+### Model
+
+```{r}
+ffpk <- function(IngDose, Fgutabs, kgutabs, kelim, Vdist, BW, t){
+    A <- (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim))
+    Conc <- A * exp(-kelim * t) - A * exp(-kgutabs * t)
+    return(Conc)
+}
+```
+
+### Parameters
 
 ```{r}
 parms <- httk::parameterize_1comp(chem.name = "theophylline")
 ```
-
 
 ```{r}
 Fgutabs <- parms$Fgutabs * parms$hepatic.bioavailability
@@ -127,6 +140,7 @@ kelim <- parms$kelim
 Vdist <- parms$Vdist
 ```
 
+### Monte Carlo simulation
 
 ```{r}
 LL <- 0.2
@@ -181,50 +195,57 @@ hist(df$kelim)
 hist(df$Vdist)
 ```
 
-
-```{r}
-ffpk <- function(D, Fa, ka, ke, V, t){
-    MW <- 180.167
-    A <- (D * Fa * ka)/(V * (ka - ke))
-    Conc <- A * exp(-ke * t) - A * exp(-ka * t)
-    return(Conc)
-}
-```
-
 ```{r}
 S1 <- subset(Theoph, Subject==1)
 t1 <- S1$Time
-ffpk(D = 4.02, Fa = df$Fgutabs[1],ka = df$kgutabs[1], 
-     ke = df$kelim[1], V = df$Vdist[1], t = t1)
+Dose1 <- mean(S1$Dose)
+BW1 <- mean(S1$Wt)
 ```
-
 
 ```{r}
 m.Conc <- matrix(nrow=n, ncol=11)
-colnames(m.Conc) <- t1
+head(m.Conc)
 ```
 
 ```{r}
-m.Conc[1,] <- ffpk(D = 4.02, Fa = df$Fgutabs[1],ka = df$kgutabs[1], 
-                   ke = df$kelim[1], V = df$Vdist[1], t = t1)
+colnames(m.Conc) <- t1
+head(m.Conc)
+```
+
+```{r}
+dim(m.Conc)
+```
+
+
+```{r}
+m.Conc[1,] <- ffpk(IngDose = Dose1*BW1, 
+     Fgutabs = df$Fgutabs[1], kgutabs = df$kgutabs[1], 
+     kelim = df$kelim[1], 
+     Vdist =  df$Vdist[1],
+     BW = BW1,
+     t = t1)
 head(m.Conc)
 ```
 
 
 ```{r}
 for(i in 2:n){
-  m.Conc[i,] <- ffpk(D = 4.02, Fa = df$Fgutabs[i],ka = df$kgutabs[i], 
-                     ke = df$kelim[i], V = df$Vdist[i], t = t1)
+  m.Conc[i,] <- ffpk(IngDose = Dose1*BW1, 
+                     Fgutabs = df$Fgutabs[i], kgutabs = df$kgutabs[i], 
+                     kelim = df$kelim[i], 
+                     Vdist =  df$Vdist[i],
+                     BW = BW1,
+                     t = t1)
 }
 tail(m.Conc)
 ```
 
 
+### Visualization
+
 ```{r}
 plot(t1, m.Conc[1,], type="l")
 ```
-
-
 
 ```{r}
 max.conc <- max(m.Conc)
@@ -233,7 +254,6 @@ for(i in 2:n){
   lines(t1, m.Conc[i,], col="grey")
 }
 ```
-
 
 ```{r}
 Conc1 <- S1$conc
@@ -246,7 +266,9 @@ for(i in 2:n){
 points(t1, Conc1)
 ```
 
-### MCSim
+## Uncertainty analysis of PK model in GNU MCSim
+
+### simuloR
 
 **Input file**
 
@@ -255,23 +277,21 @@ MonteCarlo ("simmc.out",
             1000, 
             10101010);
 
-MW       = 180.164; # Molecular weight (g/mole)
-IngDose  = 4.02;     # ingested dose (mg)
+# Constant
+IngDose    = 319.992;     # ingested dose (mg)
+BW         = 79.6;        # body weight (kg)
 
-Distrib (Fgutabs, Uniform, 0.8, 1);
-Distrib (kgutabs, LogUniform, 0.218, 21.8);
-Distrib (kelim, Uniform, 0.05307864, 1.326966); 
-Distrib (Vdist, Uniform, 0.15603994, 3.900998); 
-
+# Distribution
+Distrib (Fgutabs, Uniform, 0.8, 1);              # bioavailability (-) 
+Distrib (kgutabs, LogUniform, 0.218, 21.8);      # absortion rate (/h)
+Distrib (kelim, Uniform, 0.05307864, 1.326966);  # elimination rate constant (/h)
+Distrib (Vdist, Uniform, 0.15603994, 3.900998);  # volumes (L/kg BW)
 
 Simulation {
   Print (Conc 0.0   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
 }
 End.
 ```
-
-
-
 
 ```{r}
 set.seed(2222)
@@ -282,7 +302,6 @@ ffpk.mtc.out <- mcsim("models/ffpk.model", "inputs/ffpk.mtc.in")
 ```{r}
 head(ffpk.mtc.out)
 ```
-
 
 ```{r}
 par(mfrow = c(1,4))
@@ -314,7 +333,6 @@ for(i in 2:1000){
 points(t1, Conc1)
 ```
 
-
 ### pksensi
 
 1. Set parameter distributions (assign parms, dist, q.qarg)
@@ -330,9 +348,9 @@ q.arg <- list(list(0.8, 1.0),
 2. Set experiment time-points, output variables, and conditions
 
 ```{r}
-outputs <- c("Conc")
+outputs <- c("Ccpt")
 times <- c(0.00, 0.25, 0.57, 1.12, 2.02, 3.82, 5.10, 7.03, 9.05, 12.12, 24.37)
-conditions <- c("MW = 180.164", "Period = 48", "IngDose = 4.02")
+conditions <- c("BW = 79.6", "Period = 48", "IngDose = 319.992")
 ```
 
 3. Modeling
