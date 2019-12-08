@@ -11,7 +11,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = T)
+knitr::opts_chunk$set(eval = F)
 ```
 
 # TASK

@@ -10,6 +10,10 @@ output:
   fig_caption: yes  
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = F)
+```
+
 # TASK
 
 Based on the OSHA permissible exposure limit (PEL), the time-weighted average is 1 ppm. If a worker is under the exposure for a long time, what is the estimated blood concentration.
