@@ -2,7 +2,7 @@
 title: "<strong>Session 1:</strong> </br> Overview of Pharmacokinetic Models and Computational Toolkits"
 subtitle: "<html><div style='float:left'></div><hr color='#500000' size=1px width=796px></html>"
 author: ".font125[Nan-Hung Hsieh, PhD] </br> Postdoc @ Texas A&M Superfund Decision Science Core"
-institute: ""
+institute: "Slides: [http://bit.ly/srp1912a](http://bit.ly/srp1912a)"
 date: "12/09/2019"
 output:
   xaringan::moon_reader:
