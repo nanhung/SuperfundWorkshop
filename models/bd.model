@@ -48,14 +48,14 @@ mg_per_l_per_ppm = 1 / ppm_per_mg_per_l;
 # Physiological and pharmacokinetic parameters
 # --------------------------------------------
 # Bodyweight (kg)
-BDW    = 73;  # standard value
+BDM    = 73;  # standard value
 height = 1.6; # meters
 Age    = 40;
 Sex    = 1;
 N_BR   = 12; # nbr of breathes per minute
 
-# Tissue volumes as % of BDW (density 1 assumed)
-Pct_BDW_wp  = 0.2;  # well perfused tissue, % of lean mass
+# Tissue volumes as % of BDM (density 1 assumed)
+Pct_BDM_wp  = 0.2;  # well perfused tissue, % of lean mass
 
 # Pulmonary ventilation rate (minute volume) (L/min)
 Flow_pul = 5;
@@ -107,12 +107,12 @@ Initialize {
   # V/P ratio.
   Flow_tot = Flow_alv / Vent_Perf;
   
-  Pct_BDW_fat = (1.2 * BDW / (height * height) - 10.8 *(2 - Sex) + 
+  Pct_BDM_fat = (1.2 * BDM / (height * height) - 10.8 *(2 - Sex) + 
                    0.23 * Age - 5.4) * 0.01;
   # 1 male, 2 female
-  Eff_V_fat = Pct_BDW_fat * BDW;
-  Eff_V_wp  = Pct_BDW_wp  * BDW * (1 - Pct_BDW_fat);
-  Eff_V_pp  = 0.9 * BDW - Eff_V_fat - Eff_V_wp;
+  Eff_V_fat = Pct_BDM_fat * BDM;
+  Eff_V_wp  = Pct_BDM_wp  * BDM * (1 - Pct_BDM_fat);
+  Eff_V_pp  = 0.9 * BDM - Eff_V_fat - Eff_V_wp;
   
   # Calculate actual blood flows from total flow and percent flows
   Flow_fat = Pct_Flow_fat * Flow_tot;
@@ -159,7 +159,7 @@ CalcOutputs {
              (1 - Pct_Deadspace) * C_alv * ppm_per_mg_per_l + 
              Pct_Deadspace * C_inh);
   
-  Flow_pul_obs = Flow_pul / pow(BDW, 0.7);
+  Flow_pul_obs = Flow_pul / pow(BDM, 0.7);
   PC_art_obs   = PC_art;
   
 } # End of CalcOutputs
