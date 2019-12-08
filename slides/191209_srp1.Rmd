@@ -1,0 +1,1539 @@
+---
+title: "<strong>Session 1:</strong> </br> Overview of Pharmacokinetic Models and Computational Toolkits"
+subtitle: "<html><div style='float:left'></div><hr color='#500000' size=1px width=796px></html>"
+author: ".font125[Nan-Hung Hsieh, PhD] </br> Postdoc @ Texas A&M Superfund Decision Science Core"
+institute: ""
+date: "12/09/2019"
+output:
+  xaringan::moon_reader:
+    includes:
+      after_body: insert-logo.html
+    css: [default, "tamu_srp.css"]
+    nature:
+      ratio: '16:9'
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+library(ggplot2)
+```
+
+background-image: url(https://github.com/nanhung/pksensi/raw/master/man/figures/logo.png)
+background-size: 150px
+background-position: 95% 95%
+
+# About Me 
+
+### MS in Safety, Health and Environmental Engineering @ National United University
+
+### PhD in Bioenvironmental Systems Engineering @ National Taiwan University
+
+.font125[
+- Research Associate @ Institute of Labor, Occupational Safety And Health, Ministry of Labor
+
+- Postdoctoral Research Associate @ Texas A&M University
+
+- <font color="#778899"> Associate Toxicologist @ California Environmental Protection Agency </font color>
+
+</br>
+**My Research:** .bolder[Computational Toxicology] & .bolder[Risk Assessment]  
+**Interest:** .bolder[Software Development]
+]
+
+---
+
+# Content
+
+## 1 Basic Pharmacokinetics Concepts
+
+## 2 Pharmacokinetic Models
+ 
+## 3 Computational Toolkits
+
+## 4 Hands-on Exercise
+
+---
+
+class:middle, center
+
+.font300[
+# Basic Pharmacokinetics Concepts
+]
+
+---
+
+class:middle, center
+
+.font300[
+Why We Need to Do  
+**Computational Modeling**  
+in Toxicology?
+]
+
+--
+
+.font300[.bolder["Prediction"]]
+
+---
+
+# Pharmacokinetics (PK) / Toxiccokinetics (TK)
+
+.font125[
+- The study of the movement of chemicals in and out of the body (“what the body does to the chemical”)
+
+- **ADME** process
+
+.center[
+
+**A**bsorption - How will it get in?
+
+**D**istribution - Which tissue organ it will go?
+
+**M**etabolism - How is it broken down and transformation?
+
+**E**xcretion - How it leave the body?
+]
+
+- Kinetics: rates of change
+
+- <font color="red">PK is focus on .bolder[TIME (t)] and .bolder[CONCENTRATION (C)]</font color>
+
+]
+
+---
+
+# Pharmacokinetics / Pharmacodynamics
+
+.large[
+Pharmacokinetics is the study of the fate of chemical in a living organism through .bolder[ADME] process (**absorption**, **distribution**, **metabolism**, and **elimination**).
+]
+
+.center[![](https://media.springernature.com/original/springer-static/image/art%3A10.1007%2Fs00535-015-1061-4/MediaObjects/535_2015_1061_Fig1_HTML.gif)
+
+.font125[
+**"PK"** focus on .bolder[DOSE] to .bolder[CONCENTRATION] / **"PD"** focus on .bolder[Concentration] to .bolder[Response]
+]
+]
+
+---
+
+# Pharmacokinetics profile
+
+.pull-left[![](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Linear_PK_Example.png/1280px-Linear_PK_Example.png)]
+
+
+.pull-right[
+
+$t$: Time
+
+$C$: Concentration
+
+$C_{max}$: The peak concentration	
+
+$t_{max}$: Time to reach $C_{max}$
+
+$t_{1/2}$: Elimination half-
+life
+
+$AUC$: Area under the curve
+
+</br>
+
+During the continous dose administered
+
+$C_{ss}$: The averaged concentration	
+
+$C_{min}$: The lowest concentration that a drug
+reaches 
+
+]
+
+
+.footnote[https://en.wikipedia.org/wiki/Pharmacokinetics]
+
+---
+
+# Absorption
+
+### Movement of chemical into the body
+
+.font125[
+- **Rate of absorption** (how quickly does it absorb?)
+- **Fraction of absorption** (how percentage does it absorb?)
+]
+
+.bolder[Bioavailability] ia a key factor for substance becomes available to the target tissue after administration.
+
+<hr/>
+
+### Exposure routes
+
+.font125[
+- Inhalation – alveolar gas exchange
+- Oral – gut absorption
+- Dermal – permeation through skin
+- Intravenous
+]
+
+.bolder[Different exposure route can related to different PK profile]  
+
+
+---
+
+# Absorption & Distribution
+
+.center[
+![:scale 70%](https://erj.ersjournals.com/content/erj/28/5/1042/F1.large.jpg)
+]
+
+.footnote[https://doi.org/10.1183/09031936.00074905]
+ 
+---
+
+# Distribution
+
+.font125[
+- Transfer of the chemical between general circulation and tissues
+
+- Important toxicologically because tissue concentration drives toxicity
+
+- Factors affecting tissue distribution
+  - **Blood flow** to tissues
+  
+- Tissue distribution (For chemicals that rapidly diffuse through membranes) 
+  - Assume rapid equilibrium between blood and tissue   
+  - Ratio is the tissue:blood **partition coefficient**   
+    (Partition coefficient = Concentration in tissue / Concentration in blood)
+  - Delivery to tissue limited by blood flow (“flow-limited”).  
+]
+
+    
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Michaelis_Menten_curve_2.svg/1920px-Michaelis_Menten_curve_2.svg.png)
+background-size: 400px
+background-position: 95% 95%
+
+# Metabolism/transformation
+
+- Enzyme systems, etc. covered in separate class.  
+  - Phase I – conversion to more polar metabolite, e.g., oxidation by cytochrome P450
+  - Phase II – conjugation with an endogenous substrate to increase solubility, e.g., GSH conjugation, glucuronidation
+
+- Key issues relevant to risk assessment
+  - What are the metabolites?  
+  - In what tissues does metabolism occur?
+  - What are the rates of metabolism?  
+  - What is known about interspecies and intraspecies differences?
+
+- **Metabolism process**
+  - **First order kinetics** (linear; constant)
+  - **Michaelis-Menten Kinetics** (Non-linear; concentration dependent)
+
+---
+
+# Metabolism - Acetaminophen
+
+.center[![](https://image.ibb.co/e7eccz/JjqgWwg.gif)]
+
+.font125[
+- Acetaminophen (APAP) is a widely used pain reliver and fever reducer.
+- The therapeutic index (ratio of toxic to therapeutic doses) is unusually small.
+- .bolder[Phase I] (APAP to NAPQI) is toxicity pathway at high dose.
+- .bolder[Phase II] (APAP to APAP-Glucuronidation & APAP to APAP-Sulfation) is major pathways at therapeutic dose.
+]
+
+---
+
+# Trichloroethylene GSH conjugation pathway
+
+.pull-left[
+- Initial conjugation with GSH
+
+- Subsequent biotransformation occurs in multiple tissues via both Phase I and Phase II metabolism
+
+![](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4254735/bin/nihms-593254-f0003.jpg)
+]
+
+.pull-right[
+![:scale 60%](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4254735/bin/nihms-593254-f0002.jpg)
+]
+
+
+.footnote[
+Lash, L.H., et al. 2014. [Trichloroethylene biotransformation and its role in mutagenicity](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4254735/).
+]
+
+---
+
+# Excretion
+
+## Excretion is the removal from the body
+
+.font125[
+- Urine
+- Exhalation
+- Feces
+- Minor pathways: sweat, saliva, milk
+]
+
+</br>
+
+.bolder[Excretion and elimination are often confused]
+- Excretion is reserved for exiting the body
+- Elimination is the disappearance of a chemical, including both excretion and metabolism
+
+---
+
+# Elimination kinetics
+
+.pull-left[
+### Zero-order kinetics 
+
+The elimination is **independent** with internal chemical dose
+
+</br>
+
+### First-order kinetics
+
+The elimination is **dependent** with internal chemical dose
+
+]
+
+
+
+.pull-right[
+![](https://i.ibb.co/dBqNkC4/6364e7765a1b6c1f0083edea2c5283ed.png)
+]
+
+
+.footnote[
+https://forum.facmedicine.com/threads/elimination-kinetics-first-and-zero-order-kinetics.25353/
+]
+
+---
+
+# Impact of TK on risk assessment
+
+.font150[
+
+- Concentration **prediction**
+
+- Identifying the toxicologically active agent(s)
+
+- Providing a basis for **extrapolating** from experimental studies to humans
+
+- Characterizing how humans may vary in their response to exposure due to differences in internal dose
+
+]
+
+---
+
+class:middle, center
+
+.font300[
+# Pharmacokinetic Models
+]
+
+---
+
+background-image: url(https://wol-prod-cdn.literatumonline.com/cms/attachment/87cce77b-8dd4-4928-869f-b230e0cffcc4/psp412134-fig-0003-m.jpg)
+background-size: 700px
+background-position: 90% 90%
+
+# Why Pharmacokinetic Modeling
+
+- **Pharmaceutical research**
+
+- **Drug development**
+
+- **Health risk assessment**
+
+        .  
+        .  
+        .  
+
+---
+
+# High Throughput Risk Prioritization
+
+According to Toxic Substances Control Act (TSCA), to address thousands of chemicals, we need to use **new approach methodologies (NAMs)** to prioritize the existing and new chemicals for testing.
+
+.pull-left[
+
+## Main components 
+
+### 1. High throughput hazard characterization
+
+### 2. High throughput exposure forecasts
+
+### 3. High throughput **toxicokinetics**
+
+]
+
+.pull-right[
+
+![:scale 75%](https://i.ibb.co/ZW5Nq1S/Screenshot-from-2019-12-04-11-30-13.png)
+
+]
+
+.footnote[source: [USEPA](https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=NCCT&dirEntryId=340966)]
+
+---
+
+# Pharmacokinetic Model
+
+### What information we want to know through .bolder["prediction"]?
+
+
+.pull-left[
+# Time
+.font150[
+- When the chemical can reach the peak concentration in the body?
+- How long it stay in the body?
+]
+]
+
+.pull-right[
+# Concentration
+.font150[
+- What is the peak concentration?
+- What is the average concentration?
+]
+]
+
+---
+
+# Mathematical method
+
+## How to conduct simulation?
+
+.font125[
+.pull-left[
+**Numerical**
+
+- Use the differential equation containing one or more functions of one independent variable and the derivatives of those functions.
+
+.font150[
+$$\frac{dA}{dt}=-k_{e} \cdot A$$
+]
+]
+
+.pull-right[
+**Analytical**
+
+- The simple equation with a independent variable of time 
+
+</br>
+
+.font150[
+$$A(t) = A_0 \cdot e^{-k_{e} \cdot t}$$
+]
+]
+]
+
+.footnote[
+$A$: Amount in body (mass); $A_0$ initial amount (mass); $t$: time; $k_e$: Elimination rate constant (/time)
+]
+
+???
+
+The basic meaning of elimination rate is that the decreasing speed is the propotion of current concentration.
+
+---
+
+background-image: url(https://i.ibb.co/t2hLp0m/pk1cpt.jpghttps://i.ibb.co/t2hLp0m/pk1cpt.jpg)
+background-size: 200px
+background-position: 40% 80%
+
+# Intravenous administration
+
+.pull-left[
+.font150[
+**Numerical**
+
+$\frac{dA}{dt}=-k_{e} \cdot A$
+
+**Analytical**
+
+$A_t = A_0 \cdot e^{-k_{e} \cdot t}$
+]
+
+]
+
+.pull-right[
+
+.code75[
+```{r fig.height=4.5, dev='svg'}
+A_0 <- 10
+t <- c(0,1,2,4,8,10)
+k_e <- 0.5
+A_t <- A_0*exp(-k_e*t) 
+plot(t, A_t, type = "b")
+```
+]
+]
+
+---
+
+# Oral administration
+
+.pull-left[
+```{r, echo=F}
+D <- 1            # Intake Dose (mass)
+Fgutabs <- 0.9    # Absorption fraction (-)
+k_e <- 0.2        # Elimination rate (1/time)
+k_a <- 2.0        # Absorption rate (1/time)
+V <- 0.5          # Distribution volume (vol.)
+t <- seq(0, 24, 0.1)
+A <- (D * Fgutabs * k_a)/(V * (k_a - k_e))
+Conc <- A * exp(-k_e * t) - A * exp(-k_a * t)
+```
+
+</br>
+
+![](https://i.ibb.co/zQ4t9Wn/pk1cpt.jpg)
+
+$$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
+
+$D$: Dose (mass)  
+$F$: Bioavailability (-)  
+$K_a$ Absorption rate constant (/time)  
+$k_e$ Elimination rate constant (/time)  
+$V$: Distribution Volume (Vol)
+
+]
+
+.pull-right[
+```{r fig.height=6.0, dev='svg', eval=T, echo=F}
+plot(t, Conc, type = "b")
+```
+]
+
+---
+
+# Empirical compartmental models
+
+.pull-left[
+
+## Advantages
+
+- Can continue adding compartments to fit more complex concentration-time profiles.
+
+- Can provide useful descriptions of the data.
+
+]
+
+.pull-right[
+
+## Disadvantages
+
+- Cannot interpret compartments biologically.
+- Many A,D,M, and E processes are interconnected.
+- Cannot make predictions beyond the experiment being described.
+  - Different tissues
+  - Different exposure routes or conditions
+  - Different species
+  - Different individuals
+- Cannot incorporate everything else we know about biology!
+
+]
+
+---
+
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr2_lrg.jpg)
+background-size: 400px
+background-position: 95% 80%
+
+## Example pf empirical compartmental models
+
+Luo, Y.S., Hsieh, N.H., Soldatow, V.Y., Chiu, W.A. and Rusyn, I., 2018. [Comparative Analysis of Metabolism of Trichloroethylene and Tetrachloroethylene among Mouse Tissues and Strains](https://doi.org/10.1016/j.tox.2018.07.012). Toxicology, 409, pp.33-43.
+
+<hr/>
+
+![:scale 62%](https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr1.jpg)
+
+---
+
+# Physiological-Based Pharmacokinetic (PBPK)
+
+Mathematically transcribing .bolder[anatomical, physiological, physical, and chemical] descriptions of the phenomena involved in the complex .bolder[ADME] processes.
+
+.center[![:scale 60%](http://pharmguse.net/pkdm/pbpm.jpg)]
+
+---
+
+# Why PBPK models?
+
+- There are some processes that empirical models have difficulty simulating – such as inhalation exposures.
+
+- We know a lot about the physiology/anatomy of the organisms we study and want to protect.
+  - Organ/tissue sizes
+  - Connections between organs/tissues
+  - Blood flow rates
+  - Ventilation rates
+  - Metabolizing enzymes
+  - Etc…
+
+By developing a model, we can incorporate that information to help us make inferences beyond the experimental data at hand.
+
+---
+
+# Building a PBPK model
+
+- Decide on what compartments are needed
+  - Target vs. non-target tissues
+  - Tissues with in vivo vs. in vitro vs. no data
+  - Exposure routes
+
+- Specify the (interrelated) equations for each compartment
+
+- Specify parameter values
+  - Physiological/anatomical parameters
+  - Chemical-specific parameters
+
+- Set up the inputs (doses, exposure concentrations, etc.) and outputs (blood, tissue, exhaled breath concentrations).
+
+- Solve using numerical differential equation solver and compare with data
+
+</br>
+.bolder[Iteration may be needed for refining model and/or conducting additional experiments]
+
+---
+
+background-image: url(https://i.ibb.co/5FfRyqT/IJN-86785-F01.png)
+background-size: 550px
+background-position: 88% 50%
+
+class: hide-logo
+
+.pull-left[
+
+## PBPK Workflow
+
+**Model Construction**
+-  What type of data we have?
+  - .bolder[A]: Input routes
+  - .bolder[D]: Blood and other tissues
+  - .bolder[M]: Metabolism
+  - .bolder[E]: Urine or feces
+
+**Parameter Estimates**
+- Do we have any prior information?
+  - Physiological parameter
+  - Chemical-specific parameter
+
+**PBPK modeling**
+
+]
+
+.footnote[
+Chen et al. (2015) [Physiologically based pharmacokinetic modeling of zinc oxide nanoparticles and zinc nitrate in mice.](https://doi.org/10.2147/IJN.S86785)
+]
+
+---
+
+# Compartmental equations
+
+- Flow in and out of “storage” compartments involve only blood flow
+
+- Key parameters/variables
+    
+    $Q_i$ = tissue blood flow
+
+    $P_i$ = tissue-blood partition coefficient
+
+    $V_i$ = volume of tissue
+
+    $C_a$ = arterial blood concentration
+
+    $CV_i$ = venous blood concentration leaving tissue
+
+    $A_i$ = amount in tissue
+
+    $C_i$ = concentration in tissue
+
+---
+
+class: hide-logo
+
+.pull-left[
+![:scale 75%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-F02.png)
+]
+.pull-right[
+![:scale 95%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T02.png)
+]
+
+---
+
+# Basic transport equations
+
+The model equations follow the principles of mass transport, fluid dynamics, and biochemistry in order to simulate the fate of a substance in the body.
+
+rate in $= Q_iC_{art}$  &  rate out $= Q_iC_{VT} = Q_i \cdot C_i/P_i$ (Unit: mass/time)
+
+Change in amount = rate in – rate out
+
+.font125[
+$$\frac{d A_{i}}{d t}=Q_{i}\left(C_{a r t}-\frac{A_{i}}{P_{i} V_{i}}\right)$$
+
+or
+
+$$\frac{d C{i}}{d t}=\frac{Q_{i}}{V_i}\left(C_{a r t}-\frac{C_{i}}{P_{i} V_{i}}\right)$$
+]
+
+$A_i$ is amount of chemical, $Q_i$ is blood flow, $C_{art}$ incoming arterial blood concentration, $P_i$ the tissue over blood partition coefficient, and $V_i$ the volume of compartment $i$.
+
+---
+
+background-image: url(https://i.ibb.co/bFtvTjp/IJN-86785-F02.png)
+background-size: 400px
+background-position: 95% 90%
+
+class: clear
+
+![:scale 60%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T01.png)
+
+---
+
+background-image: url(https://i.ibb.co/5FFXtJS/Screenshot-from-2019-12-03-10-50-20.png)
+background-size: 350px
+background-position: 90% 80%
+
+# Different exposure routes
+
+.pull-left[
+
+## Inhalation 
+
+$$C_{\mathrm{art}}=\frac{Q_{\mathrm{pul}}\left(1-r_{\mathrm{ds}}\right) C_{\mathrm{inh}}+Q_{\mathrm{tot}} C_{\mathrm{ven}}}{Q_{\mathrm{pul}}\left(1-r_{\mathrm{ds}}\right) / P_{\mathrm{air}}+Q_{\mathrm{tot}}}$$
+
+
+## Ingestion
+
+$$\frac{dA_{\mathrm{iv}}}{d t}=Q_{\mathrm{liv}}\left(C_{\mathrm{art}}-\frac{A_{\mathrm{liv}}}{P_{\mathrm{liv}} V_{\mathrm{liv}}}\right)-k_{\mathrm{met}} A_{\mathrm{liv}}+R_{\mathrm{ing}}$$
+
+</br>
+
+</br>
+
+]
+
+.footnote[
+$A$: quantity; $Q$: flow rate; $r_{ds}$: deadspace ratio; $C$: concentration; $R_{ing}$: administration rate; $P$ partition coefficient; $k$ rate constant
+
+Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology
+
+]
+
+---
+
+class:middle, center
+
+.font300[
+# Computational toolkits
+]
+
+---
+
+# Computational toolkits
+
+### Multiple software packages available to solve differential equations
+
+.font150[
+- ASCL – “traditionally” used by many established PBPK modelers (but now discontinued!)
+- Berkeley Madonna – used in some PBPK modeling courses
+- MatLab – flexible interactive interface (more expensive, but more powerful)
+- GNU MCSim – specialized software for Bayesian uncertainty and population variability analyses
+]
+
+
+### All of them incorporate methods for “optimizing” the model fit by adjusting parameter values.
+
+---
+
+# Computational toolkits
+
+.pull-left[
+
+## GNU MCSim
+
+**Simulation package, which allows you to:**
+
+- design and run simulation models (using algebraic or differential equations)
+
+- perform Monte Carlo stochastic simulations
+
+- do Bayesian inference through Markov Chain Monte Carlo simulations
+
+- has faster computing speed than other simulation software/packages (e.g., Asclx, Berkeley Madonna, RStan)
+
+]
+
+.pull-left[
+
+## R
+
+**Programming language that allows you to:**
+
+- conduct statistical analysis (summarization, estimation)
+
+- visualize simulation results
+
+- use various packages to analyze results (e.g., CODA, BOA, rstan)
+
+- perform sensitivity analysis (e.g., sensitivity, pksensi)
+
+- access community support (e.g., Stack Overflow, R User groups)
+
+]
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/93/GPLv3_Logo.svg)
+background-size: 200px
+background-position: 50% 80% 
+
+# Advantages of MCSim and R
+
+.center[.font125[*"Free and Open Source Software"* under GNU General Public License]]
+
+> - The freedom to run the program as you wish, for any purpose (freedom 0).  
+> - The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.  
+> - The freedom to redistribute copies so you can help others (freedom 2).  
+> - The freedom to distribute copies of your modified versions to others (freedom 3). By doing this you can give the whole community a chance to benefit from your changes. Access to the source code is a precondition for this.  
+
+---
+
+background-image: url(http://lcolladotor.github.io/figs/2016-03-07-BiocParallel/parallel.gif)
+background-size: 750px
+background-position: 90% 40% 
+
+# Advantages
+
+.font125[*"Parallel computing"*]  
+<img src="http://lcolladotor.github.io/figs/2016-03-07-BiocParallel/cloud.jpg" height="300px" />
+
+### - Run multiple MCMC chains with multiple CPUs  
+
+### - High performance (cloud) computing
+
+.footnote[[*source*](http://lcolladotor.github.io/2016/03/07/BiocParallel/#)] 
+
+---
+
+# Advantages - Reproducible research
+
+.center[
+![:scale 84%](https://i.ibb.co/nBPdYgW/Screenshot-from-2019-12-03-17-24-16.png)
+]
+
+.footnote[Reproducibility and Replicability in Science (2019) http://nap.edu/25303]
+
+---
+
+background-image: url(https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/tidyverse.png)
+background-size: 500px
+background-position: 90% 90% 
+
+# Conducting data analysis through R
+
+- Implement a wide variety of statistical and graphical techniques
+
+- Comprehensive research workflow and toolkits (e.g., RMarkdown)
+
+- Integration with low-level language (e.g., C, C++, Fortran)
+
+- Highly extensible through the use of user-submitted packages
+
+- Webapp development .font75[(e.g., http://webpopix.org/shiny/ShinyExamples.html)]
+
+.footnote[[Image source](https://aberdeenstudygroup.github.io/studyGroup/lessons/SG-T2-JointWorkshop/PopulationChangeSpeciesOccurrence/)]
+
+---
+
+
+background-image: url(https://www.rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-Flat.png)
+background-size: 300px
+background-position: 95% 95% 
+
+# RStudio
+
+### Free and open-source integrated development environment
+
+### Powerful and user friendly programming interface
+
+### Designed to make it easy to write scripts
+
+### Easy to view and interact with the objects 
+
+### R project with version control (e.g., git) 
+
+### Support cloud computing https://rstudio.cloud/
+
+---
+
+</br>
+
+![](https://i.ibb.co/6vWf06v/Screenshot-from-2019-11-28-15-31-26.png)
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/5a/Mcsimlogo.png)
+background-size: 100px
+background-position: 95% 90% 
+
+# GNU MCSim
+
+.font75[
+
+- The project started by Don Maszle and [Frederic Y. Bois](https://en.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Y._Bois) in UC Berkeley, 1991. It is written in standard C language as a model preprocessor. 
+- First public release in 1993 (straight simulations with Monte Carlo modeling).
+
+> GNU MCSim is a general purpose modeling and simulation program which can performs "standard" or "Markov chain" Monte Carlo simulations. It allows you to specify a set of **linear or nonlinear algebraic equations** or **ordinary differential equations**. They are solved numerically using parameter values you choose or parameter values sampled from statistical distributions. Simulation outputs can be compared to experimental data for Bayesian parameter estimation (model calibration). 
+]
+
+.pull-left[
+.font50[
+- 6.1.0 (19 February 2019)
+- 6.0.1 (05 May 2018)
+- 6.0.0 (24 February 2018)
+- 5.6.6 (21 January 2017)
+- 5.6.5 (27 February 2016)
+- 5.6.4 (30 January 2016)
+- 5.6.3 (1 January 2016)
+- 5.6.2 (24 December 2015)
+- 5.6.1 (21 December 2015)
+- 5.6.0 (16 December 2015)
+- 5.5.0 (17 March 2013)
+- 5.4.0 (18 January 2011)
+- 5.3.1 (3 March 2009)
+- 5.3.0 (12 January 2009)
+- 5.2 beta (29 January 2008)
+- 5.1 beta (18 September 2006)
+- 5.0.0 (4 January 2005)
+- 4.2.0 (15 October 2001)
+- 4.1.0 (1 August 1997)
+- 4.0.0 (24 March 1997)
+
+https://www.gnu.org/software/mcsim/mcsim.html
+
+]
+]
+
+.pull-right[
+
+.font140[Founder: *Frédéric Y. Bois*]  
+
+Staff Toxicologist (Specialist),  
+Reproductive and Cancer Hazard Assessment Section,  
+CalEPA, Berkeley, USA, 1991-96
+]
+???
+
+This project mainly focus on using GNU MCSim
+
+This founder of this project is Dr. Frédéric Y. Bois. He had been worked in CalEPA as Staff Toxicologist for 5 years.
+
+---
+
+# GNU MCSim Overview
+
+The *GNU MCSim* consists in two pieces, a **model generator** and a **simulation engine**:
+
+<hr>
+
+The model generator, **"mod"**
+
+- Created to facilitate structural model definition and maintenance, while keeping execution time short. You can code your model using a simplified syntax and use mod to translate it to `C` (`model.c`).
+
+
+The simulation engine, **"sim"**
+
+- A set of routines which are linked to your model during compilation to produce executable program (`mcsim.model`). After that, you can run simulations of your model under a variety of conditions, specify an associated statistical model, and perform simulations.
+
+---
+
+# GNU MCSim Workflow
+.center[
+![:scale 90%](https://i.ibb.co/RNxBfN5/GNU-MCSIm-Workflow.png)
+]
+
+---
+
+# Types of Simulation
+
+**Simple simulation**  
+- Straight simulations (set parameter values and initial conditions).
+
+**Used to:** *Model testing when building the model (e.g., mass balance)*
+
+<hr>
+
+**Monte Carlo simulations**  
+- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
+
+**Used to:** *Check possible simulation (under given parameter distributions) results before model calibration*
+
+<hr>
+
+**SetPoints simulation**   
+- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
+
+**Used to:** *Posterior analysis, Local/global sensitivity analysis*
+
+---
+
+background-image: url(https://i.ibb.co/Gx6xKrq/mcmc-diagram.png)
+background-size: 600px
+background-position: 50% 90% 
+
+# Types of Simulation
+
+### Markov-chain Monte Carlo (MCMC) simulation
+- Performs a series of simulations along a Markov chain in the model parameter space. 
+- They can be used to obtain the Bayesian <font color="red">**posterior**</font> distribution of the model parameters, given a statistical model, <font color="blue">**prior**</font> parameter distributions and data for which a **likelihood function** can be computed. 
+- *GNU MCSim* can handle hierarchical statistical models as well.
+
+.footnote[
+[Source](http://sbml.org/images/1/17/StatMeeting_F_Bois.pdf)
+]
+
+---
+
+background-image: url(https://i.ibb.co/0c8rQ4p/httk.png)
+background-size: 540px
+background-position: 50% 98% 
+
+# MCSim-related R packages 
+
+**httk: R Package for High-Throughput Toxicokinetics**
+
+.font75[
+Robert G. Pearce, R. Woodrow Setzer, Cory L. Strope, Nisha S. Sipes, John F. Wambaugh
+]
+
+> *MCSim* (Bois and Maszle 1997) was used for converting the model equations into C code, which is used with **deSolve** (Soetaert et al. 2016) in solving each system of equations.
+
+.right[
+.font75[
+*Journal of Statistical Software*; http://dx.doi.org/10.18637/jss.v079.i04
+]
+]
+
+*GNU MCSim* model code
+<i class="fa fa-arrow-right"></i>
+C code
+<i class="fa fa-arrow-right"></i>
+**deSolve** package
+<i class="fa fa-arrow-right"></i>
+Prediction
+
+---
+
+# MCSim-related R packages 
+
+**pksensi:  R Package for Global Sensitivity Analysis in Pharmacokinetic Modeling**
+
+.font80[ Nan-Hung Hsieh, Brad Reisfeld, Weihsueh A. Chiu]
+
+> **pksensi** implements the global sensitivity analysis workflow to investigate the parameter uncertainty and sensitivity in pharmacokinetic (PK) models, especially the physiologically based pharmacokinetic (PBPK) model with multivariate outputs.
+
+.right[[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-last-release/pksensi)](https://cran.r-project.org/package=pksensi)]
+
+**Two types of model solver**
+
+`solve_fun()`  
+*GNU MCSim* model code
+<i class="fa fa-arrow-right"></i>
+C code
+<i class="fa fa-arrow-right"></i>
+**deSolve** package
+<i class="fa fa-arrow-right"></i>
+Prediction
+
+`solve_mcsim()`  
+*GNU MCSim* model code
+<i class="fa fa-arrow-right"></i>
+Prediction
+ 
+**Note:** `solve_mcsim()`  is faster than `solve_fun()`
+
+---
+
+background-image: url(http://devhumor.com/content/uploads/images/November2017/step-by-step-debugging.png) 
+background-size: 450px 
+background-position: 95% 90% 
+
+# Disadvantages in MCSim and R
+
+### Difficult learning curve (command line interface-based)
+
+### Requires coding/programming skill
+
+### Requires installation of extra program or package
+
+### Requires **"debugging"**
+
+---
+
+background-image: url(https://files.explosm.net/comics/comicsavegamenew.png)
+background-size: 400px
+background-position: 60% 90% 
+
+# Git
+
+### - Manage your code (models, inputs, R script)
+
+### - Transfer your file (through GitHub or GitLab)
+
+### - Collaboration work
+
+<img src="https://imgs.xkcd.com/comics/git_2x.png" height="300px" />
+
+.font60[.footnote[
+https://xkcd.com/1597/
+]]
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/58/Octocat_GitHub_Mascot.png)
+background-size: 200px
+background-position: 95% 90%
+
+# GitHub
+
+![:scale 80%](https://www.linode.com/docs/development/version-control/how-to-install-git-and-clone-a-github-repository/git-github-workflow-1000w.png)
+
+---
+
+class: hide-logo
+
+.center[![:scale 78%](https://i.ibb.co/LQ4Y6Bb/Screenshot-from-2019-11-28-15-00-44.png)]
+
+.footnote[https://github.com/USEPA]
+
+---
+
+# High Performance Research Computing
+
+**The efficient way to conduct parallel computing**
+
+.center[![:scale 60%](https://i.ibb.co/c6ht46y/Screenshot-from-2019-11-28-15-10-21.png)]
+
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/150px-Tux.svg.png)
+background-size: 200px
+background-position: 90% 80%
+
+# Linux
+
+**The open source Unix-like operating systems for high performance research computing**
+
+![:scale 55%](https://i.ibb.co/y592vn2/Screenshot-from-2019-11-28-15-17-34.png)
+
+---
+
+# Summary
+
+- Basic pharmacokinetics  
+  - **A,D,M,E** each may affect internal dose, and differences between species or among individuals.
+
+- Role of pharmacokinetics in risk assessment 
+  - Exposure / concentration **prediction**
+
+- Pharmacokinetic modelling  
+  - Information from **physiology** and **chemistry** are common ways to characterize the concentration-time relationship.
+
+- Computational toolkits  
+  - The **open soure** computational tools (e.g., R & GNU MCSim) are powerful and can help us conduct the model simulation and data analysis
+
+---
+
+class:middle, center
+
+.font300[
+# Hands on Exercise
+]
+
+---
+
+# Hands on Exercise
+
+Task 1. **Exploratory analysis of PK data** (`code`: https://rpubs.com/Nanhung/SRP19_1)
+- Learn how to use R to conduct basic analysis for PK data
+
+Task 2. **PK model development** (`code`: https://rpubs.com/Nanhung/SRP19_2)
+- Learn how to use R and MCSim to build a model 
+
+Task 3. **Parameter setting and model simulation** (`code` https://rpubs.com/Nanhung/SRP19_3)
+- Understand the parameter seting in PK model and conduct the simulation 
+
+Task 4. **PBPK model development** (`code` https://rpubs.com/Nanhung/SRP19_4)
+- Instead of PK model, we need to know how to build a PBPK model
+
+Task 5. **Application of PBPK model** (`code` https://rpubs.com/Nanhung/SRP19_5)
+- Here, we have a well-built PBPK model and its parameters, let's apply the model in the exposure assessment
+
+---
+
+# Hands on Exercise
+
+## Task 1: **Exploratory analysis of PK data**
+
+- Now, we have a theophylline PK dataset. The purpose of this exercise is to develop the simple PK model and use it to describe the PK of theophylline. First, look into the theophylline dataset. The `Theoph` data frame has 132 rows and 5 columns of data from an experiment on the pharmacokinetics of theophylline. Then, find the Cmax and Tmax for each individual. 
+
+```{R}
+head(Theoph)
+```
+
+- Plot the pharmacokinetic diagram for each individual.
+
+---
+
+# Hands on Exercise
+
+## Task 2: **PK model development**
+
+- Develop the non compartment model and compartment model in R and MCSim
+
+
+- Non compartment model
+
+$$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
+
+- Compartment model
+
+$$\frac{dA_{gut}}{dt}=-k_aA_{gut}$$
+
+$$\frac{dA}{dt}=k_aA_{gut}-k_eA_e$$
+$$C=A/V$$
+
+---
+
+# Hands on Exercise
+
+## Task 3: **Parameter setting and simulation**
+
+- Extract the chemical information from httk package
+```r
+library(httk)
+parms <- httk::parameterize_1comp(chem.name = "theophylline")
+```
+
+- Use the parameters in the developed model and conduct the simulation 
+- Compare the difference between data and the model simulation result (Cmax, Tmax)
+
+---
+
+# Hands on Exercise
+
+## Task 4: **PBPK model development**
+
+- Instead of simple PK model, in this exercise we want to apply the well developed PBPK model for 1,3 butadiene.
+
+- First, reproduce the simulation result from the published paper*.
+
+.footnote[
+[*] Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY
+]
+
+---
+
+# Inputs
+
+```{r}
+C_inh <- approxfun(x = c(0, 120), y=c(10,0), method = "constant", f = 0, rule = 2) 
+```
+
+```{r fig.height=4, dev='svg'}
+plot(C_inh(1:300), type="l", xlab = "Time (min)", ylab = "Butadiene inhaled concentration (ppm)")
+```
+
+---
+
+# Parameters and outputs 
+
+```{r}
+parameters <- c("BDM" = 73,            # Body mass (kg)
+                "Height" = 1.6,        # Body height (m)
+                "Age" = 40,            # in years
+                "Sex" = 1,             # code 1 is male, 2 is female
+                "Flow_pul" = 5,        # Pulmonary ventilation rate (L/min)
+                "Pct_Deadspace" = 0.7, # Fraction of pulmonary deadspace
+                "Vent_Perf" = 1.14,    # Ventilation over perfusion ratio
+                "Pct_LBDM_wp" = 0.2,   # wp tissue as fraction of lean mass
+                "Pct_Flow_fat" = 0.1,  # Fraction of cardiac output to fat
+                "Pct_Flow_pp" = 0.35,  # ~ to pp
+                "PC_art" = 2,          # Blood/air partition coefficient
+                "PC_fat" = 22,         # Fat/blood ~
+                "PC_wp" = 0.8,         # wp/blood ~
+                "PC_pp" = 0.8,         # pp/blood ~
+                "Kmetwp" = 0.25)       # Rate constant for metabolism
+```
+
+```{r}
+y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
+       "Q_wp" = 0,  # ~ in well-perfused (mg)
+       "Q_pp" = 0,  # ~ in poorly-perfused (mg)
+       "Q_met" = 0) # ~ metabolized (mg)
+```
+
+---
+
+# Model structure
+
+```r
+# Define the model equations
+bd.model <- function(t, y, parameters) {
+  with (as.list(y), {
+    with (as.list(parameters), {
+      
+      # Define constants
+
+      # Calculate flow and volumes
+      
+      # Calculate the tissue, blood, and air
+
+      # Differentials for quantities
+
+      # The function bd.model must return at least the derivatives
+      list(c(dQ_fat, dQ_wp, dQ_pp, dQ_met), # derivatives
+           c("C_ven" = C_ven, "C_art" = C_art)) # extra outputs
+           
+    }) # end with parameters
+  }) # end with y
+} # end bd.model
+```
+---
+
+## Constants
+
+**Known constants**
+```r
+# Known constants
+Height = 1.6                            # use to calculate fraction of body fat
+Age = 40                                # use to calculate fraction of body fat
+Sex = 1                                 # use to calculate fraction of body fat
+MW_bu = 54.0914                         # butadiene molecular weight (in grams)
+```
+
+**Conversions from/to ppm**
+```r
+ppm_per_mM = 24450                       # ppm to mM under normal conditions
+ppm_per_mg_per_l = ppm_per_mM / MW_bu
+mg_per_l_per_ppm = 1 / ppm_per_mg_per_l
+
+```
+
+---
+
+## Flows and volumes
+
+**Air and blood flow**
+```r
+# Calculate Flow_alv from total pulmonary flow
+Flow_alv = Flow_pul * (1 - Pct_Deadspace)
+      
+# Calculate total blood flow from Flow_alv and the V/P ratio
+Flow_tot = Flow_alv / Vent_Perf
+      
+# Calculate fraction of body fat
+Pct_BDM_fat = (1.2 * BDM / (Height * Height) - 10.8 *(2 - Sex) + 0.23 * Age - 5.4) * 0.01
+      
+# Calculate actual blood flows from total flow and percent flows
+Flow_fat = Pct_Flow_fat * Flow_tot
+Flow_pp = Pct_Flow_pp * Flow_tot
+Flow_wp = Flow_tot * (1 - Pct_Flow_pp - Pct_Flow_fat)
+```
+
+**Volumes**
+```r
+# Actual volumes, 10% of body mass (bones…) get no butadiene
+Eff_V_fat = Pct_BDM_fat * BDM
+Eff_V_wp = Pct_LBDM_wp * BDM * (1 - Pct_BDM_fat)
+Eff_V_pp = 0.9 * BDM - Eff_V_fat - Eff_V_wp
+```
+---
+
+## Concentrations - tissues & blood
+
+```r
+# Calculate the concentrations
+C_fat = Q_fat / Eff_V_fat
+C_wp = Q_wp / Eff_V_wp
+C_pp = Q_pp / Eff_V_pp
+      
+# Venous blood concentrations at the organ exit
+Cout_fat = C_fat / PC_fat
+Cout_wp = C_wp / PC_wp
+Cout_pp = C_pp / PC_pp
+      
+# Sum of Flow * Concentration for all compartments
+dQ_ven = Flow_fat * Cout_fat + Flow_wp * Cout_wp + Flow_pp * Cout_pp
+C_inh.current = C_inh(t)     # to avoid calling C_inh() twice
+      
+# Arterial blood concentration
+# Convert input given in ppm to mg/l to match other units
+C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flow_alv / PC_art)
+      
+# Venous blood concentration (mg/L)
+C_ven = dQ_ven / Flow_tot
+```
+---
+
+## Concentrations - air
+
+```r
+# Alveolar air concentration (mg/L)
+C_alv = C_art / PC_art
+      
+# Exhaled air concentration (ppm)
+if (C_alv <= 0) {
+  C_exh = 10E-30    # avoid round off errors
+} else {
+  C_exh = (1 - Pct_Deadspace) * C_alv * ppm_per_mg_per_l + Pct_Deadspace * C_inh.current
+}
+```
+
+---
+
+## Differentials for quantities
+
+```r
+# Quantity metabolized in liver (included in well-perfused)
+dQmet_wp = Kmetwp * Q_wp
+      
+# Differentials for quantities
+dQ_fat = Flow_fat * (C_art - Cout_fat)
+dQ_wp = Flow_wp * (C_art - Cout_wp) - dQmet_wp
+dQ_pp = Flow_pp * (C_art - Cout_pp)
+dQ_met = dQmet_wp
+```
+
+```{r, echo=F}
+# Define the model equations
+bd.model = function(t, y, parameters) {
+  with (as.list(y), {
+    with (as.list(parameters), {
+      
+      # Define some known constants
+      Height = 1.6       # use to calculate fraction of body fat
+      Age = 40           # use to calculate fraction of body fat
+      Sex = 1            # use to calculate fraction of body fat
+      MW_bu = 54.0914    # butadiene molecular weight (in grams)
+
+      # Conversions from/to ppm
+      ppm_per_mM = 24450 # ppm to mM under normal conditions
+      ppm_per_mg_per_l = ppm_per_mM / MW_bu
+      mg_per_l_per_ppm = 1 / ppm_per_mg_per_l
+      
+      # Calculate Flow_alv from total pulmonary flow
+      Flow_alv = Flow_pul * (1 - Pct_Deadspace)
+      
+      # Calculate total blood flow from Flow_alv and the V/P ratio
+      Flow_tot = Flow_alv / Vent_Perf
+      
+      # Calculate fraction of body fat
+      Pct_BDM_fat = (1.2 * BDM / (Height * Height) - 10.8
+                     *(2 - Sex) + 0.23 * Age - 5.4) * 0.01
+      
+      # Actual volumes, 10% of body mass (bones…) get no butadiene
+      Eff_V_fat = Pct_BDM_fat * BDM
+      Eff_V_wp = Pct_LBDM_wp * BDM * (1 - Pct_BDM_fat)
+      Eff_V_pp = 0.9 * BDM - Eff_V_fat - Eff_V_wp
+      
+      # Calculate actual blood flows from total flow and percent flows
+      Flow_fat = Pct_Flow_fat * Flow_tot
+      Flow_pp = Pct_Flow_pp * Flow_tot
+      Flow_wp = Flow_tot * (1 - Pct_Flow_pp - Pct_Flow_fat)
+      
+      # Calculate the concentrations
+      C_fat = Q_fat / Eff_V_fat
+      C_wp = Q_wp / Eff_V_wp
+      C_pp = Q_pp / Eff_V_pp
+      
+      # Venous blood concentrations at the organ exit
+      Cout_fat = C_fat / PC_fat
+      Cout_wp = C_wp / PC_wp
+      Cout_pp = C_pp / PC_pp
+      
+      # Sum of Flow * Concentration for all compartments
+      dQ_ven = Flow_fat * Cout_fat + Flow_wp * Cout_wp + Flow_pp * Cout_pp
+      C_inh.current = C_inh(t) # to avoid calling C_inh() twice
+      
+      # Arterial blood concentration
+      # Convert input given in ppm to mg/l to match other units
+        C_art = (Flow_alv * C_inh.current * mg_per_l_per_ppm + dQ_ven) / (Flow_tot + Flow_alv / PC_art)
+      
+      # Venous blood concentration (mg/L)
+      C_ven = dQ_ven / Flow_tot
+      
+      # Alveolar air concentration (mg/L)
+      C_alv = C_art / PC_art
+      
+      # Exhaled air concentration (ppm)
+      if (C_alv <= 0) {
+        C_exh = 10E-30 # avoid round off errors
+      } else {
+        C_exh = (1 - Pct_Deadspace) * C_alv * ppm_per_mg_per_l + Pct_Deadspace * C_inh.current
+      }
+      
+      # Quantity metabolized in liver (included in well-perfused)
+      dQmet_wp = Kmetwp * Q_wp
+      
+      # Differentials for quantities
+      dQ_fat = Flow_fat * (C_art - Cout_fat)
+      dQ_wp = Flow_wp * (C_art - Cout_wp) - dQmet_wp
+      dQ_pp = Flow_pp * (C_art - Cout_pp)
+      dQ_met = dQmet_wp
+
+      # The function bd.model must return at least the derivatives
+      list(c(dQ_fat, dQ_wp, dQ_pp, dQ_met), # derivatives
+           c("C_ven" = C_ven, "C_art" = C_art)) # extra outputs
+
+    }) # end with parameters
+  }) # end with y
+} # end bd.model
+
+```
+
+---
+
+## Outputs
+
+```{r}
+# Define the computation output times
+t <- seq(from=0, to=1440, by=10)
+
+# Solve ODE
+library(deSolve)
+out <- ode(times=t, func=bd.model, 
+           y=y, parms=parameters)
+head(out)
+```
+
+---
+
+```{r fig.height=5, fig.width=9, dev='svg', eval=T}
+plot(out)
+```
+
+---
+
+# Hands on Exercise
+
+## Task 5: Apply the PBPK model
+
+- Based on the OSHA permissible exposure limit (PEL), the time-weighted average is 1 ppm. If a worker is under the exposure for a long time, what is the estimated blood concentration.
+
+.footnote[
+https://www.cdc.gov/niosh/npg/npgd0067.html
+]
+
+

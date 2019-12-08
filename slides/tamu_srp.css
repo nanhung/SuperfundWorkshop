@@ -1,0 +1,130 @@
+@import url(https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i);
+@import url(https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css);
+
+body {
+  font-family: 'Fira Sans','Droid Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, 'Microsoft YaHei', 'Songti SC', serif;
+}
+
+.remark-code, .remark-inline-code {
+  font-family: 'Fira Code', 'Lucida Console', Monaco, monospace;
+  font-size: 80%;
+  background: #F5F5F5;
+}
+
+.bolder { font-weight: bold; color: #e4002b; }
+
+.font125 { font-size: 125%; }
+.font150 { font-size: 150%; }
+.font200 { font-size: 200%; }
+.font300 { font-size: 300%; }
+.font75 { font-size: 75%; }
+.font50 { font-size: 50%; }
+.code75 .remark-code { font-size: 75%;}
+.code50 .remark-code { font-size: 50%;}
+
+.footnote {
+  position: absolute;
+  bottom: 3em;
+  padding-right: 4em;
+  font-size: 50%;
+}
+
+.inverse {
+  background-color: #fff;
+}
+
+.inverse h1, .inverse h2{
+  color: #500000;
+  text-shadow: none;
+}
+
+.inverse h3 {
+  color: #000;
+  text-shadow: none;
+}
+
+
+.title-slide {
+  background-color: #FFFFFF;
+  background-image: url(tamu_srp_logo.gif);
+  background-size: 320px;
+  background-position: 50% 98%;
+}
+
+/* turns off slide numbers for title page: https://github.com/gnab/remark/issues/298 */
+.title-slide .remark-slide-number {
+  display: none;
+}
+
+a, a > code {
+  color: #448ac9;
+  font-weight: bold;
+}
+
+.highlight {
+    background-color: rgba(252,227,0,.2);
+}
+
+.remark-slide-number { font-size: 0.6em; }
+
+.remark-code-line-highlighted { background-color: #fce300 ; }
+
+.remark-slide-content {
+  font-size: 20px;
+  border-right: 11px solid #500000;
+  border-left: 11px solid #500000;
+  font-weight: 300;
+  line-height: 1.5;
+  padding: 1em 2em 1em 2em
+}
+
+.remark-slide-content > h1 {
+  font-size: 45px;
+}
+.remark-slide-content > h2, .pull-left > h2, .pull-right > h2 {
+  font-size: 35px;
+}
+.remark-slide-content > h3, .pull-left > h3, .pull-right > h3 {
+  font-size: 25px;
+}
+
+h1, h2, h3 {
+  font-weight: normal;
+  color: #500000;
+}
+
+
+table {
+  margin: auto;
+  font-size: 90%;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+
+.center {
+  align-content: center;  
+}
+
+.right {
+  align-content: right;  
+}
+
+.left {
+  align-content: left;  
+}
+
+ /* Two-column layout */
+.left-column {
+  color: #777;
+  width: 20%;
+  height: 92%;
+  float: left;
+}
+.left-column h2:last-of-type, .left-column h3:last-child {
+  color: #e4002b;
+}
+.right-column {
+  width: 75%;
+  float: right;
+  padding-top: 1em;
+}

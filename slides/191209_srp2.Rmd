@@ -1,0 +1,800 @@
+---
+title: "<strong>Session 2:</strong> </br> Application of Monte Carlo simulation and Markov Chain Monte Carlo in PBPK modeling"
+subtitle: "<html><div style='float:left'></div><hr color='#500000' size=1px width=796px></html>"
+author: ".font125[Nan-Hung Hsieh, PhD] </br> Postdoc @ Texas A&M Superfund Decision Science Core"
+institute: ""
+date: "12/09/2019"
+output:
+  xaringan::moon_reader:
+    includes:
+      after_body: insert-logo.html
+    css: [default, "tamu_srp.css"]
+    nature:
+      ratio: '16:9'
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('..')
+wd <- getwd()
+knitr::opts_knit$set(root.dir =  wd)
+```
+
+```{r, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+library(sensitivity)
+library(simuloR)
+library(dplyr)
+```
+
+
+# Content
+
+## 1 Uncertainty and Variability
+
+## 2 Monte Carlo simulation - Prediction
+ 
+## 3 Markov Chain Monte Carlo - Calibration
+
+## 4 Hands-on Exercise
+
+---
+
+class:middle, center
+
+.font300[
+# Uncertainty and Variability
+]
+
+---
+
+# Deterministic vs Probabilistic
+
+## Traditional - Deterministic
+
+.font200[
+**Choose the "specific" value (or the most conservative scenario) in the risk assessment**
+
+.right[.bolder[Is it good enough?]]
+]
+
+---
+
+# Deterministic vs Probabilistic
+
+.pull-left[
+## Traditional - Deterministic
+
+.font200[
+Choose the "specific" value (or the most conservative scenario) in the risk assessment
+]
+]
+
+.pull-right[
+
+## Modern - Probabilistic
+
+.font200[
+Combine "all" information and characterize the **uncertainty**
+]
+]
+
+
+---
+
+background-image: url(https://i.ibb.co/JB7s1bK/Screenshot-from-2019-09-24-11-49-47.png)
+background-size: 700px
+background-position: 50% 80% 
+
+# Modeling in Risk Assessment  
+
+.footnote[https://www.epa.gov/risk/about-risk-assessment#whatisrisk]
+
+---
+
+background-image: url(https://i.ibb.co/SmNTtv2/WHO.png)
+background-size: 260px
+background-position: 80% 90% 
+
+# Uncertainty vs. Variability
+
+.font150[
+
+> **Uncertainty** relates to "lack of knowledge"" that, in theory, could be reduced by better data, whereas **variability** relates to an existing aspect of the real world that is outside our control.
+
+> [*World Health Organization (2017)*](https://www.who.int/ipcs/methods/harmonization/areas/hazard_assessment/en/)
+
+]
+
+???
+
+There is a clear definition to differentiate the uncertainty and variability in WHO document.
+
+---
+
+background-image: url()
+background-size: 200px
+background-position: 80% 80% 
+
+# Variability in Risk Assessment
+
+- Reduce chances using a strain that is a "poor" model of humans 
+- Obtaining information about "potential range" to inform risk assessment 
+
+.center[
+![:scale 60%](https://i.ibb.co/ykYp8BY/variability.png)
+]
+
+.font75[
+Chiu WA and Rusyn I, 2018. Advancing chemical risk assessment decision-making with population variability data: challenges and opportunities. https://doi.org/10.1007/s00335-017-9731-6
+]
+
+---
+
+### Variability & Uncertainty
+
+.center[
+![:scale 70%](https://i.ibb.co/Kq4nStY/Screen-Shot-2019-05-08-at-7-25-22-AM.png)
+]
+
+.footnote[
+https://cran.r-project.org/web/packages/mc2d/index.html
+]
+
+---
+
+class: middle, center
+
+--- Application ---
+# If you have *known* "parameters"
+# ------------------------------------>
+# <font color="red"> Parameters / Model / Data</font>
+# <------------------------------------
+# If you have *known* "data" 
+--- Calibration ---
+
+---
+
+class:middle, center
+
+.font300[
+# Monte Carlo Simulation
+]
+
+---
+
+# Monte Carlo Simulation
+
+.font125[
+- A method of estimating the value of unknown quantity using the principle of inferential statistics
+- Inferential statistics
+  - **Population**: Universal information
+  - **Sample**: a proper subset of population
+- .bolder[Repeatedly Random Sampling]
+]
+
+.pull-left[
+.pull-left[<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/STAN_ULAM_HOLDING_THE_FERMIAC.jpg/300px-STAN_ULAM_HOLDING_THE_FERMIAC.jpg" height="220px" />  
+Stanislaw Ulam  
+]
+.pull-right[<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/JohnvonNeumann-LosAlamos.gif/220px-JohnvonNeumann-LosAlamos.gif" height="220px" />  
+John von Neumann
+]
+]
+
+.pull-right[
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/ENIAC_Penn1.jpg/1280px-ENIAC_Penn1.jpg" height="220px" />  
+ENIAC (Electronic Numerical Integrator and Computer)
+]
+
+---
+
+
+# Uncertainty in Risk Analysis
+
+.font150[
+The objective of a **probabilistic risk analysis** is the quantification of risk from made man-made and natural activities ([Vesely and Rasmuson, 1984](https://onlinelibrary.wiley.com/doi/10.1111/j.1539-6924.1984.tb00950.x)).  
+]
+
+**Two major types of uncertainty need to be differentiated:**
+
+### (1) Uncertainty due to physical variability
+
+### (2) Uncertainty due to lack of knowledge in
+
+.font125[
+- Modeling uncertainty
+
+- Parameter uncertainty
+
+- Completeness uncertainty
+]
+
+---
+
+# Modeling uncertainty
+
+### Deterministic Simulation
+
+- Define exposure unit & calculate point estimate
+
+### 1-D Monte Carlo Simulation: Uncertainty
+
+- Identify probability distributions to simulate probabilistic outputs
+
+### 2-D Monte Carlo Simulation: Uncertainty & Variability
+
+- Bayesian statistics to characterize population uncertainty and variability
+
+---
+
+background-image: url(http://sci.tea-nifty.com/photos/uncategorized/2012/07/28/elephant.gif)
+background-size: 240px
+background-position: 50% 90% 
+
+# Uncertainty in parameter
+
+- **The parameter** is an element of a system that determine the model output. 
+
+- **Parameter uncertainty** comes from the model parameters that are inputs to the mathematical model but whose exact values are unknown and cannot be controlled in physical experiments. 
+
+$$y = f(x_i) $$
+
+</br></br>
+
+.pull-left[
+> With four parameters I can fit an elephant, and with five I can make him wiggle his trunk. 
+>
+> -John von Neumann
+]
+.pull-right[
+
+]
+
+.footnote[Mayer J, Khairy K, Howard J. Drawing an elephant with four complex parameters. Am. J. Phys. 78, 648 (2010) https://doi.org/10.1119/1.3254017]
+
+---
+
+# Uncertainty in PBPK model parameter
+
+</br>
+
+.pull-left[
+**Physiological parameters**
+
+Cardiac output
+
+Blood flow rate
+
+Tissue volume
+
+]
+
+.pull-right[
+
+**Absorption**
+
+Absorption fraction, absorption rate, ...
+
+**Distribution**
+
+Partition coefficient, distribution fraction, ... 
+
+**Metabolism**
+
+Michaelis–Menten kinetics, ...
+
+**Elimination**
+
+First order elimination rate, ...
+
+]
+
+---
+
+# Simulation in GNU MCSim
+
+## Monte Carlo simulations
+
+- Perform repeated (stochastic) simulations across a randomly sampled region of the model parameter space.
+
+**Used to:** Check possible simulation (under given parameter distributions) results before model calibration
+
+</br>
+
+## SetPoints simulation
+
+- Solves the model for a series of specified parameter sets. You can create these parameter sets yourself or use the output of a previous Monte Carlo or MCMC simulation.
+
+**Used to:** Posterior predictive check, Local/global sensitivity analysis
+
+---
+
+class:middle, center
+
+.font300[
+# Markov Chain Monte Carlo
+]
+
+---
+
+</br>
+</br>
+
+## Currently, the Bayesian Markov chain Monte Carlo (MCMC) algorithm is an effective way to do population PBPK model calibration.   
+## It is a powerful tool, Because...
+
+.font150[
+>It gives us the opportunity to understand and quantify the .font120["uncertainty"] and .font120["variability"] from individuals to .font150[population] through **data** and **model**.
+]
+
+---
+
+
+# Frequentist vs. Bayesian
+
+.pull-left[
+![](https://i.ibb.co/YPRVnd1/Screenshot-from-2019-12-03-13-50-13.png)
+]
+
+.pull-right[
+![](https://i.ibb.co/tPtbLmD/Screenshot-from-2019-12-03-13-49-53.png)
+]
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
+]
+---
+
+# Bayes' rule
+
+.font200[
+$$ p(\theta|y) = \frac{p(\theta) p(y|\theta) }{p(y)}$$
+]
+
+$y$: **Observed data**
+
+$\theta$: **Observed or unobserved parameter**
+
+</br>
+
+$p(\theta)$: *Prior distribution* of model parameter
+
+$p(y|\theta)$: *Likelihood* of the experiment data given by a parameter vector
+
+$p(\theta|y)$: *Posterior distribution*
+
+$p(y)$: *Likelihood* of data
+
+---
+
+# Frequentist vs. Bayesian
+
+![](https://i.ibb.co/920t4Nt/Screenshot-from-2019-12-03-13-51-43.png)
+
+.footnote[
+https://link.springer.com/article/10.3758/s13423-016-1221-4
+]
+
+---
+
+class: middle
+
+# Through Markov Chain Monte Carlo ...
+
+.font200[
+## The product of output is not ~~best-fit~~, but "prior" and "posterior".
+]
+
+---
+
+# Probabilistic Modeling
+
+.center[
+![:scale 72%](https://ars.els-cdn.com/content/image/1-s2.0-S1740675717300373-gr1_lrg.jpg)
+]
+
+.footnote[https://doi.org/10.1016/j.ddmod.2017.08.001]
+
+---
+
+# Markov Chain Monte Carlo
+
+.font120[
+- **Metropolis-Hastings sampling algorithm**
+]
+
+The algorithm was named for Nicholas Metropolis (physicist) and Wilfred Keith Hastings (statistician). The algorithm proceeds as follows.
+
+**Initialize**
+
+1. Pick an initial parameter sets $\theta_{t=0} = \{\theta_1, \theta_2, ... \theta_n\}$
+
+**Iterate**
+
+1. *Generate*: randomly generate a candidate parameter state $\theta^\prime$ for the next sample by picking from the conditional distribution  $J(\theta^\prime|\theta_t)$
+2. *Compute*:  compute the acceptance probability 
+$A\left(\theta^{\prime}, \theta_{t}\right)=\min \left(1, \frac{P\left(\theta^{\prime}\right)}{P\left(\theta_{t}\right)} \frac{J\left(\theta_{t} | \theta^{\prime}\right)}{J\left(\theta^{\prime} | \theta_{t}\right)}\right)$
+2. *Accept or Reject*:
+  1. generate a uniform random number $u \in[0,1]$
+  2. if $u \leq A\left(x^{\prime}, x_{t}\right)$ accept the new state and set $\theta_{t+1}=\theta^{\prime}$, otherwise reject the new state, and copy the old state forward $\theta_{t+1}=\theta_{t}$
+
+???
+
+Markov chain Monte Carlo is a general method based on drawing values of theta from approximate distributions and then correcting those draws to better approximate target posterior p(theta|y).
+
+---
+
+class:hide-logo
+.center[
+![:scale 90%](https://i.ibb.co/9hbLTb8/Screenshot-from-2019-12-04-06-21-26.png)
+]
+
+.footnote[https://chi-feng.github.io/mcmc-demo/app.html?algorithm=RandomWalkMH&target=standard]
+
+---
+
+background-image: url(https://i.ibb.co/Gx6xKrq/mcmc-diagram.png)
+background-size: 600px
+background-position: 50% 90% 
+
+# Simulation in GNU MCSim
+
+### Markov-chain Monte Carlo (MCMC) simulation
+- Performs a series of simulations along a Markov chain in the model parameter space. 
+- They can be used to obtain the Bayesian <font color="red">**posterior**</font> distribution of the model parameters, given a statistical model, <font color="blue">**prior**</font> parameter distributions and data for which a **likelihood function** can be computed. 
+**Used to** Model calibration
+
+.footnote[
+[Source](http://sbml.org/images/1/17/StatMeeting_F_Bois.pdf)
+]
+
+---
+
+# Calibration & evaluation
+
+###  Prepare model and input files 
+  - Need at least 4 chains in simulation
+
+### Check convergence & graph the output result
+  - **Parameter**, **log-likelihood of data**
+  - Trace plot, density plot, correlation matrix, auto-correlation, running mean, ...
+  - Gelman–Rubin convergence diagnostics
+
+### Evaluate the model fit
+  - Global evaluation
+  - Individual evaluation 
+
+---
+
+## Example - Linear model
+
+.pull-left[
+.code75[
+```r
+## linear.model.R ####
+Outputs = {y}
+
+# Model Parameters
+A = 0; # 
+B = 1;
+
+CalcOutputs { y = A + B * t); }
+
+End.
+```
+]
+]
+
+.pull-right[
+.code75[
+```r
+## linear_mcmc.in.R ####
+MCMC ("MCMC.default.out","", # name of output 
+     "",           # name of data file
+     2000,0,       # iterations, print predictions flag,
+     1,2000,       # printing frequency, iters to print
+     10101010);    # random seed (default )
+
+Level {
+  
+  Distrib(A, Normal, 0, 2); # prior of intercept 
+  Distrib(B, Normal, 1, 2); # prior of slope 
+  
+  Likelihood(y, Normal, Prediction(y), 0.05);
+  
+  Simulation {
+    PrintStep (y, 0, 10, 1); 
+    Data  (y, 0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+                7.89, 7.13, 7.27, 9.4, 10.0);
+  }
+}
+
+End.
+```
+]
+]
+
+---
+
+## Example - MCMC simulation
+
+.pull-left[
+.code75[
+```{r message=F}
+model <- "models/linear.model"
+input <- "inputs/linear.mcmc.in"
+set.seed(1111) 
+out <- mcsim(model, input) 
+head(out)
+tail(out, 4)
+```
+]
+]
+
+.pull-right[
+.code75[
+```{r, fig.height=5, dev='svg'}
+plot(out$A.1., type = "l", xlab = "Iteration", ylab = "")
+lines(out$B.1., col = 2)
+legend("topright", legend = c("Intercept", "Slope"), 
+       col = c(1,2), lty = 1)
+```
+]
+]
+
+---
+
+## Example - Posterior check
+
+.pull-left[
+.code75[
+```{r, fig.height=5, dev='svg'}
+plot(out$A.1., out$B.1., type = "b",
+     xlab = "Intercept", ylab = "Slope")
+
+```
+]
+]
+
+.pull-right[
+.code75[
+```{r fig.height=5, dev='svg'}
+str <- ceiling(nrow(out)/2) + 1
+end <- nrow(out)
+j <- c(str:end)
+plot(out$A.1.[j], out$B.1.[j], type = "b",
+     xlab = "Intercept", ylab = "Slope")
+```
+]
+]
+
+---
+
+## Example - Posterior Predictive Checks
+
+.pull-left[
+.code50[
+```{r fig.height=5, dev='svg'}
+out$A.1.[j] %>% density() %>% plot(main = "Intercept")
+plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
+prior.dens <- do.call("dnorm", c(list(x=plot.rng), c(0,2)))
+lines(plot.rng, prior.dens, lty="dashed")
+```
+]
+]
+
+.pull-right[
+.code50[
+```{r fig.height=5, dev='svg'}
+out$B.1.[j] %>% density() %>% plot(main = "Slope")
+plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
+prior.dens <- do.call("dnorm", c(list(x=plot.rng), c(1,2)))
+lines(plot.rng, prior.dens, lty="dashed")
+```
+]
+]
+
+---
+
+## Example - Evaluation of prediction
+
+.pull-left[
+.code75[
+```r
+# Observed
+x <- seq(0,10,1)
+y <- c(0.0, 0.15, 2.32, 4.33, 4.61, 6.68, 
+       7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Expected
+dim.x <- ncol(out)
+for(i in 1:11){
+  out[,ncol(out)+1] <- out$A.1. + out$B.1.*x[i]
+}
+
+# Plot
+plot(x, y, pch ="")
+for(i in 1901:2000){
+  lines(x, out[i,c((dim.x+1):ncol(out))],col="grey")
+}
+points(x, y)
+```
+]
+]
+
+.pull-right[
+```{r echo=FALSE, fig.height=6, dev='svg'}
+# Observed
+x <- seq(0,10,1)
+y <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+       7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Expected
+dim.x <- ncol(out)
+for(i in 1:11){
+  out[,ncol(out)+1] <- out$A.1. + out$B.1.*x[i]
+}
+
+# plot
+plot(x, y, pch ="")
+for(i in 1901:2000){
+  lines(x, out[i,c((dim.x+1):ncol(out))],col="grey")
+}
+points(x, y)
+```
+]
+
+---
+
+## Example - Evaluation of prediction
+
+.pull-left[
+.code75[
+```r
+# Use prediction from the last iteration
+i <- 2000
+Expected <- out[i, c((dim.x+1):ncol(out))] %>% 
+  as.numeric()
+Observed <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+              7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Plot
+plot(Expected, Observed/Expected, pch='x')
+abline(1,0)
+```
+]
+]
+
+.pull-right[
+```{r echo=FALSE, fig.height=6, dev='svg'}
+# Use prediction from the last iteration
+i <- 2000
+Expected <- out[i, c((dim.x+1):ncol(out))] %>% 
+  as.numeric()
+Observed <- c(0.01, 0.15, 2.32, 4.33, 4.61, 6.68, 
+              7.89, 7.13, 7.27, 9.4, 10.0)
+
+# Plot
+plot(Expected, Observed/Expected, pch='x')
+abline(1,0)
+```
+]
+
+---
+
+# General Bayesian-PBPK Workflow
+
+### 1 Model constructing or translating
+
+### 2 Verify modeling result
+
+- **Compare with published result**
+- **Mass balance** 
+
+### 3 Uncertainty (and sensitivity) analysis
+
+### 4 Model calibration and validation
+
+- **Markov chain Monte Carlo** 
+  - Diagnostics (Goodness-of-fit, convergence)
+
+---
+
+# Summary
+
+.font150[
+- In the real-word study, we need to consider the **uncertainty** (from different sources) and **variability** (inter or intra-individual data) to include all possible scenarios.
+
+- If we have parameter, we can apply **Monte Carlo technique** to qunatify the uncertainty and variability.
+
+- If we have data, we can calibrate the "unknown" parameter (prior) to "known" parameter (posterior) in our model through **Bayesian statistics**.
+]
+
+---
+
+class:middle, center
+
+.font300[
+# Hands on Exercise
+]
+
+---
+
+# Hands on Exercise
+
+Task 1. **Uncertainty analysis on PK model** (`code`: https://rpubs.com/Nanhung/SRP19_6)
+- Before model calibration, we need to learn how to conduct Monte Carlo simulation to set the proper parameter distribution
+
+Task 2. **Model calibration** (`code`: https://rpubs.com/Nanhung/SRP19_7)
+- After the uncertainty analysis, we can calibrate the model parameters by Markov chain Monte Carlo technique
+
+Task 3. **Monte Carlo Simulation for PBPK model** (`code`: https://rpubs.com/Nanhung/SRP19_8)
+- Learn how parameter effect on model variable in PBPK model
+
+Task 4. **PBPK model in MCSim** (`code`: https://rpubs.com/Nanhung/SRP19_9)
+- Sometimes, the simulation process in R is very computational expensive. We need to solve it.
+
+---
+
+# Hands on Exercise
+
+## Task 1: **Uncertainty analysis on PK model**
+
+.font150[
+- In the previous exercise, we find that the predcited result can not used to describe the real cases. 
+
+- Therefore, we need to conduct the uncertainty analysis to figure out how to reset the model parameter.
+
+]
+
+---
+
+# Hands on Exercise
+
+## Task 2: **Model calibration**
+
+.font150[
+- After the uncertainty analysis, we can calibrate the model parameters by Markov chain Monte Carlo technique
+
+- Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model calibration.
+]
+
+---
+
+background-image: url(https://i.ibb.co/yn7tD14/Screenshot-from-2019-12-04-15-32-34.png)
+background-size: 350px
+background-position: 99% 80% 
+
+# Hands on Exercise
+
+## Task 3: **Monte Carlo Simulation for PBPK model**
+
+- Reproduce the published Monte Carlo analysis result in Bois and Brochot (2016)*
+  - Testing parameter include body mass (`BDM`), pulmonary flow (`Flow_pul`), partition coefficient of arterial blood (`PC_art`) and metabolism rate (`Kmetwp`)
+- Construct the relationship between body mass and quantity in fat
+
+.footnote[
+[*] Bois F.Y., Brochot C. (2016) [Modeling Pharmacokinetics](https://link.springer.com/protocol/10.1007%2F978-1-4939-3609-0_3). In: Benfenati E. (eds) In Silico Methods for Predicting Drug Toxicity. Methods in Molecular Biology, vol 1425. Humana Press, New York, NY  
+]
+
+---
+
+# Hands on Exercise
+
+## Task 4: **Monte Carlo Simulation for PBPK model (MCSim)**
+
+- The Monte Carlo Simulation take a little bit longer with `ode` function in **deSolve** package. 
+- Therefore we want to improve the computational speed. Now, rewrite the R model code to **MCSim** and conduct Monte Carlo Simulation with the same parameter setting. 
+- The goal of this exercise is to compare the computational time and output (MCSim vs. R).
+
+```r
+Distrib (BDM, Normal, 73, 7.3);
+Distrib (Flow_pul, Normal, 5, 0.5);
+Distrib (PC_art, Normal, 2, 0.2);
+Distrib (Kmetwp, Normal, 0.25, 0.025);
+```
