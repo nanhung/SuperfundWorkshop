@@ -31,12 +31,14 @@ abline(a = 1, b = 2)
 
 # Monte Carlo
 input <- "inputs/linear.mtc.in"
-mcsim(model, input)
+mcsim(model, input, compile = F)
 
 # MCMC
 input <- "inputs/linear.mcmc.in"
-mcsim(model, input)
+mcsim(model, input, compile = F)
 
 # Setpoints
 input <- "inputs/linear.setpts.in"
-mcsim(model, input)
+mcsim(model, input, compile = F)
+
+file.remove(c("sim.out", "simmc.out", "MCMC.check.out", "MCMC.default.out", "MCMC.default.out.kernel"))
