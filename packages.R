@@ -13,7 +13,7 @@ pkgs <- c("devtools",
           "bayesplot", 
           "tidyverse",
           "rstan")
-install.packages(pkgs, dependencies = TRUE)
+install.packages(pkgs)
 devtools::install_github("nanhung/simuloR")
 devtools::install_github("nanhung/pksensi")
 

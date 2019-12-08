@@ -11,3 +11,18 @@
 |1:30 – 2:30|	   **Session 2:** Application of (1) Monte Carlo simulation and (2) Markov Chain Monte Carlo  |
 |2:30 – 2:45|	   Break  |
 |2:45 – 4:30|	   **Hands on-exercise 2:** Advancing applications |
+
+
+### Instruction
+After download all files in the repository, open `Packages.R` file, select all script and click “Run” to install (or update) the essential packages and conduct the basic check. Be sure there is NO error occur.
+
+```r
+pkgs <- c("devtools",
+          "httk",
+          "bayesplot", 
+          "tidyverse",
+          "rstan")
+install.packages(pkgs)
+devtools::install_github("nanhung/simuloR")
+devtools::install_github("nanhung/pksensi")
+```

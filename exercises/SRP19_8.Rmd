@@ -10,14 +10,16 @@ output:
   fig_caption: yes  
 ---
 
-# Task 
+# TASK
 
 - Reproduce the published Monte Carlo analysis result in Bois and Brochot (2016)
   - Examine the butadiene concentration in fat after the exposure of 1 day.
   - Testing parameter include body mass (`BDM`), pulmonary flow (`Flow_pul`), partition coefficient of arterial blood (`PC_art`) and metabolism rate (`Kmetwp`)
 - Construct the relationship between body mass and quantity in fat
 
-# Solution
+# SOLUTION
+
+## Package
 
 ```{r}
 library(deSolve)
