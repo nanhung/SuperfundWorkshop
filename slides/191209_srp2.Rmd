@@ -2,7 +2,7 @@
 title: "<strong>Session 2:</strong> </br> Application of Monte Carlo simulation and Markov Chain Monte Carlo in PBPK modeling"
 subtitle: "<html><div style='float:left'></div><hr color='#500000' size=1px width=796px></html>"
 author: ".font125[Nan-Hung Hsieh, PhD] </br> Postdoc @ Texas A&M Superfund Decision Science Core"
-institute: "Slides: [http://bit.ly/srp1912a](http://bit.ly/srp1912b)"
+institute: "Slides: [http://bit.ly/srp1912b](http://bit.ly/srp1912b)"
 date: "12/09/2019"
 output:
   xaringan::moon_reader:
