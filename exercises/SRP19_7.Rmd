@@ -1,5 +1,5 @@
 ---
-title: "Exercise 2.2 Model calibration"
+title: "Exercise 2.2: Model Calibration"
 author: "Nan-Hung Hsieh"
 date: "2019/12/09 (update: `r Sys.Date()`)"
 output: 
@@ -11,19 +11,21 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(eval = TRUE)
 setwd('..')
 wd <- getwd()
 knitr::opts_knit$set(root.dir =  wd)
 ```
 
-## Task
+# TASK
 
 - After the uncertainty analysis, we can calibrate the model parameters by Markov chain Monte Carlo technique
 
 - Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model
 
-## Solution
+# SOLUTION
+
+## Packages
 
 ```{R message=FALSE, warning=FALSE}
 library(simuloR)
@@ -37,26 +39,35 @@ color_scheme_set("mix-blue-red")
 ```
 
 
-```r
-# ffpk.mcmc.in ---------------------------------------------------------------
+## Single chain modeling
 
+### Input simulation
+
+```r
 MCMC ("MCMC.default.out","", # name of output file
       "",         # name of data file
       2000,0,     # iterations, print predictions flag
       1,2000,     # printing frequency, iters to print
       10101010);  # random seed (default)
-  
+
 Level {
   
+  # Prior
   Distrib (Fgutabs, Uniform, 0.8, 1);
   Distrib (kgutabs, LogUniform, 0.218, 21.8);
   Distrib (kelim, Uniform, 0.05307864, 1.326966); 
   Distrib (Vdist, Uniform, 0.15603994, 3.900998); 
   
+  # Likelihood
   Likelihood(Conc, LogNormal, Prediction(Conc) , 1.1);
   
   Simulation { # 1
-    IngDose  = 4.02;     # ingested dose (mg)
+    
+    # Constant
+    IngDose    = 319.992;     # ingested dose (mg)
+    BW         = 79.6;        # body weight (kg)
+    
+    # Data
     Print (Conc, 0.01  0.25  0.57  1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37 ); 
     Data (Conc, 0.74  2.84  6.57 10.50  9.66  8.58  8.36  7.47  6.89  5.94  3.28 );
   }
@@ -64,13 +75,12 @@ Level {
 End.
 ```
 
-### Single chain simulation
-
 ```{r}
 set.seed(1)
 ffpk.mcmc.1 <- mcsim(model = "models/ffpk.model", input = "inputs/ffpk.mcmc.in")
 ```
 
+### Posterior checks
 
 ```{r}
 par(mfrow = c(2,2))
@@ -136,48 +146,60 @@ ffpk.mcmc.1[i,c("Fgutabs.1.","kgutabs.1.","kelim.1.","Vdist.1.")] %>% cor()
 ffpk.mcmc.1[i,c("Fgutabs.1.","kgutabs.1.","kelim.1.","Vdist.1.")] %>% cor() %>% corrplot(method = "number")
 ```
 
+### Posterior predective checks
 
+**Single draws**
 
 ```{r}
 check.out <- read.delim("MCMC.check.out") 
-plot(check.out$Data, check.out$Prediction, xlim=c(0,10), ylim=c(0,10))
+Observed <- check.out$Data
+Expected <- check.out$Prediction
+plot(x=Observed, y=Expected, xlim=c(0,10), ylim=c(0,10))
 abline(0,1)
 ```
 
 
 
 ```{r}
-Observed <- check.out$Data
-Expected <- check.out$Prediction
 plot(Expected, Observed/Expected, pch='x')
 abline(1,0)
 ```
 
+**Multiple draws**
 
 ```{r}
-ffpk <- function(D, Fa, ka, ke, V, t){
-    MW <- 180.167
-    A <- (D * Fa * ka)/(V * (ka - ke))
-    Conc <- A * exp(-ke * t) - A * exp(-ka * t)
+ffpk <- function(IngDose, Fgutabs, kgutabs, kelim, Vdist, BW, t){
+    A <- (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim))
+    Conc <- A * exp(-kelim * t) - A * exp(-kgutabs * t)
     return(Conc)
 }
 ```
 
 
 ```{r}
-IngDose <- 4.02
 Fgutabs <- ffpk.mcmc.1$Fgutabs.1.
 kgutabs <- ffpk.mcmc.1$kgutabs.1.
 kelim <- ffpk.mcmc.1$kelim.1.	
 Vdist <- ffpk.mcmc.1$Vdist.1.
+df <- data.frame(Fgutabs, kgutabs, kelim, Vdist)
+```
 
-t <- Theoph$Time[1:11]
-obs<- Theoph$con[1:11]
+```{r}
+S1 <- subset(Theoph, Subject==1)
+t1 <- S1$Time
+Dose1 <- mean(S1$Dose)
+BW1 <- mean(S1$Wt)
+```
 
-
-Conc.matrix <- matrix(nrow = length(Fgutabs), ncol = length(t))
+```{r}
+Conc.matrix <- matrix(nrow = length(Fgutabs), ncol = length(t1))
 for(i in 1:11){
-  Conc.matrix[,i] <- ffpk(D = 4.02, Fa = Fgutabs,ka = kgutabs, ke = kelim, V = Vdist,t = t[i])
+  Conc.matrix[,i] <- ffpk(IngDose = Dose1*BW1, 
+                     Fgutabs = df$Fgutabs, kgutabs = df$kgutabs, 
+                     kelim = df$kelim, 
+                     Vdist =  df$Vdist,
+                     BW = BW1,
+                     t = t1[i])
 }
 ```
 
@@ -190,17 +212,46 @@ tail(Conc.matrix)
 
 
 ```{r}
-plot(t, obs, pch = "")
-for(i in 501:1000){
-  lines(t, Conc.matrix[i,], col="grey")
+plot(t1, Observed, pch = "")
+for(i in 1001:2000){
+  lines(t1, Conc.matrix[i,], col="grey")
 }
-points(t, obs)
+points(t1, Observed)
 ```
 
+### Use setpoints analysis
 
+```
+SetPoints ("", "MCMC.default.out", 0, Fgutabs, kgutabs, kelim, Vdist);
 
-### Multi-chains simulation
+Simulation { 
+  # Constant
+  IngDose    = 319.992;     # ingested dose (mg)
+  BW         = 79.6;        # body weight (kg)
+  
+  Print (Conc, 0.01  0.25  0.57  1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37 );
+} 
+END.
+```
 
+```{r}
+ffpk.setpts.out <- mcsim("models/ffpk.model", input = "inputs/ffpk.setpts.in")
+tail(ffpk.setpts.out)
+```
+
+```{r}
+str.pt <- which(names(ffpk.setpts.out)=="Conc_1.1") 
+end.pt <- which(names(ffpk.setpts.out)=="Conc_1.11") 
+plot(t1, Observed, pch = "")
+for(i in 501:1000){
+  lines(t1, ffpk.setpts.out[i,str.pt:end.pt], col="grey")
+}
+points(t1, Observed)
+```
+
+## Multi-chains simulation
+
+### Input simulation
 
 ```{r}
 set.seed(2)
@@ -211,7 +262,9 @@ set.seed(4)
 ffpk.mcmc.4 <- mcsim(model = "models/ffpk.model", input = "inputs/ffpk.mcmc.in")
 ```
 
-Use mcmc_array() to create the 3-D array (iterations * chains * [parameters+4]) to store all outputs.
+### Posterior checks
+
+Use `mcmc_array` to create the 3-D array (iterations * chains * [parameters+4]) to store all outputs.
 
 ```{r}
 sims <- mcmc_array(data = list(ffpk.mcmc.1, ffpk.mcmc.2, ffpk.mcmc.3, ffpk.mcmc.4))
@@ -240,25 +293,5 @@ mcmc_pairs(sims[1001:2000,,], pars = parms_name, off_diag_fun = "hex")
 
 ```{r}
 monitor(sims[,,parms_name], digit=4) 
-```
-
-
-Use setpoints
-```{r}
-ffpk.setpts.out <- mcsim("models/ffpk.model", input = "inputs/ffpk.setpts.in")
-tail(ffpk.setpts.out)
-```
-
-```{r}
-t <- Theoph$Time[1:11]
-obs<- Theoph$conc[1:11]
-str.pt <- which(names(ffpk.setpts.out)=="Conc_1.1") 
-end.pt <- which(names(ffpk.setpts.out)=="Conc_1.11") 
-par(mfrow = c(1,1))
-plot(t, obs, pch = "")
-for(i in 501:1000){
-  lines(t, ffpk.setpts.out[i,str.pt:end.pt], col="grey")
-}
-points(t, obs)
 ```
 
