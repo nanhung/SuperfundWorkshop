@@ -545,6 +545,20 @@ plot(t, Conc, type = "b")
 
 ---
 
+background-image: url(https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr2_lrg.jpg)
+background-size: 400px
+background-position: 95% 80%
+
+## Example pf empirical compartmental models
+
+Luo, Y.S., Hsieh, N.H., Soldatow, V.Y., Chiu, W.A. and Rusyn, I., 2018. [Comparative Analysis of Metabolism of Trichloroethylene and Tetrachloroethylene among Mouse Tissues and Strains](https://doi.org/10.1016/j.tox.2018.07.012). Toxicology, 409, pp.33-43.
+
+<hr/>
+
+![:scale 62%](https://ars.els-cdn.com/content/image/1-s2.0-S0300483X18301781-gr1.jpg)
+
+---
+
 # Physiological-Based Pharmacokinetic (PBPK)
 
 Mathematically transcribing .bolder[anatomical, physiological, physical, and chemical] descriptions of the phenomena involved in the complex .bolder[ADME] processes.
@@ -660,7 +674,7 @@ class: hide-logo
 
 The model equations follow the principles of mass transport, fluid dynamics, and biochemistry in order to simulate the fate of a substance in the body.
 
-rate in $= Q_iC_{art}$  &  rate out $= Q_iC_{VT} = Q_i \cdot C_i/P_i$
+rate in $= Q_iC_{art}$  &  rate out $= Q_iC_{VT} = Q_i \cdot C_i/P_i$ (Unit: mass/time)
 
 Change in amount = rate in – rate out
 
@@ -672,7 +686,7 @@ or
 $$\frac{d C{i}}{d t}=\frac{Q_{i}}{V_i}\left(C_{a r t}-\frac{C_{i}}{P_{i} V_{i}}\right)$$
 ]
 
-$A_i$ is amount of chemical, $Q_i$ is blood flow, $C_art$ incoming arterial blood concentration, $P_i$ the tissue over blood partition coefficient and $V_i$ the volume of compartment $i$.
+$A_i$ is amount of chemical, $Q_i$ is blood flow, $C_{art}$ incoming arterial blood concentration, $P_i$ the tissue over blood partition coefficient, and $V_i$ the volume of compartment $i$.
 
 ---
 
@@ -682,11 +696,7 @@ background-position: 95% 90%
 
 class: clear
 
-![:scale 56%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T01.png)
-
-.footnote[
-Chen et al. (2015) [Physiologically based pharmacokinetic modeling of zinc oxide nanoparticles and zinc nitrate in mice.](https://doi.org/10.2147/IJN.S86785)
-]
+![:scale 60%](https://www.dovepress.com/cr_data/article_fulltext/s86000/86785/img/IJN-86785-T01.png)
 
 ---
 
@@ -705,7 +715,7 @@ $$C_{\mathrm{art}}=\frac{Q_{\mathrm{pul}}\left(1-r_{\mathrm{ds}}\right) C_{\math
 
 ## Ingestion
 
-$$\frac{\partial A_{\mathrm{iv}}}{\partial t}=Q_{\mathrm{liv}}\left(C_{\mathrm{art}}-\frac{A_{\mathrm{liv}}}{P_{\mathrm{liv}} V_{\mathrm{liv}}}\right)-k_{\mathrm{met}} A_{\mathrm{liv}}+R_{\mathrm{ing}}$$
+$$\frac{dA_{\mathrm{iv}}}{d t}=Q_{\mathrm{liv}}\left(C_{\mathrm{art}}-\frac{A_{\mathrm{liv}}}{P_{\mathrm{liv}} V_{\mathrm{liv}}}\right)-k_{\mathrm{met}} A_{\mathrm{liv}}+R_{\mathrm{ing}}$$
 
 </br>
 
@@ -1131,11 +1141,11 @@ background-position: 90% 80%
 
 # Summary
 
-- Role of pharmacokinetics in risk assessment 
-  - toxicity is driven by concentration at the **target tissue site**.
-
 - Basic pharmacokinetics  
   - **A,D,M,E** each may affect internal dose, and differences between species or among individuals.
+
+- Role of pharmacokinetics in risk assessment 
+  - Exposure / concentration **prediction**
 
 - Pharmacokinetic modelling  
   - Information from **physiology** and **chemistry** are common ways to characterize the concentration-time relationship.
@@ -1192,40 +1202,17 @@ head(Theoph)
 
 - Develop the non compartment model and compartment model in R and MCSim
 
-.pull-left[
-.font75[
+
 - Non compartment model
-$$C(t) = \frac{F\cdot D \cdot ka}{V \cdot BW  \cdot (k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
+
+$$C(t) = \frac{F\cdot D \cdot ka}{V(k_a - k_e)}\cdot(\mathrm{e}^{-k_et}-\mathrm{e}^{-k_a{t}})$$
+
 - Compartment model
+
 $$\frac{dA_{gut}}{dt}=-k_aA_{gut}$$
-$$\frac{dA_{cpt}}{dt}=k_aA_{gut}-k_eA_{cpt}$$
-$$C_{cpt}=\frac{A_{cpt}}{V \cdot BW}$$
-]
-]
 
-.pull-right[
-.font75[
-$t$: Time (hr)  
-
-$C$: Concentration (mg/L)  
-
-$F$: Absorption fraction (-)    
-
-$D$: Ingestion dose (mg)  
-
-$k_a$: Absorption rate (/hr)  
-
-$k_e$: Elimination rate (/hr)  
-
-$V$: Distribution volume (L/kg BW)  
-
-$BW$: Body weight (kg)  
-
-$A_{gut}$: Amount in gut lumen (mg)  
-
-$A_{cpt}$: Amount in central compartment (mg)
-]
-]
+$$\frac{dA}{dt}=k_aA_{gut}-k_eA_e$$
+$$C=A/V$$
 
 ---
 
