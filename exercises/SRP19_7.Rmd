@@ -80,6 +80,11 @@ set.seed(1)
 ffpk.mcmc.1 <- mcsim(model = "models/ffpk.model", input = "inputs/ffpk.mcmc.in")
 ```
 
+```{r}
+ffpk.mcmc.1
+```
+
+
 ### Posterior checks
 
 ```{r}
@@ -106,8 +111,13 @@ i <- 1001:2000
 ffpk.mcmc.1$Fgutabs.1.[i] %>% density() %>% plot(main = "Fgutabs")
 plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
 prior.dens <- do.call("dunif", c(list(x=plot.rng), c(0.8,1)))
-lines(plot.rng, prior.dens, lty="dashed")
+lines(plot.rng, prior.dens, lty="dashed") # 0.9141961
 abline(v=Fgutabs, col="red")
+```
+
+```{r}
+mean(ffpk.mcmc.1$Fgutabs.1.[i])
+sd(ffpk.mcmc.1$Fgutabs.1.[i])
 ```
 
 
@@ -119,12 +129,24 @@ lines(plot.rng, prior.dens, lty="dashed")
 abline(v=kgutabs, col="red") # ka = 2.18 
 ```
 
+
+```{r}
+mean(ffpk.mcmc.1$kgutabs.1.[i])
+sd(ffpk.mcmc.1$kgutabs.1.[i])
+```
+
+
 ```{r}
 ffpk.mcmc.1$kelim.1.[i] %>% density() %>% plot(main = "kelim")
 plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
 prior.dens <- do.call("dunif", c(list(x=plot.rng), c(0.05307864, 1.326966)))
 lines(plot.rng, prior.dens, lty="dashed")
 abline(v=kelim, col="red") # ke = 0.2653932
+```
+
+```{r}
+mean(ffpk.mcmc.1$kelim.1.[i])
+sd(ffpk.mcmc.1$kelim.1.[i])
 ```
 
 
@@ -134,6 +156,11 @@ plot.rng <- seq(par("usr")[1], par("usr")[2], length.out = 1000)
 prior.dens <- do.call("dunif", c(list(x=plot.rng), c(0.15603994, 3.900998)))
 lines(plot.rng, prior.dens, lty="dashed")
 abline(v=Vdist, col="red") # 0.78
+```
+
+```{r}
+mean(ffpk.mcmc.1$Vdist.1.[i])
+sd(ffpk.mcmc.1$Vdist.1.[i])
 ```
 
 ```{r}
