@@ -23,10 +23,10 @@ knitr::opts_knit$set(root.dir =  wd)
 
 - Use the parameter distributions that we test in uncertainty analysis and conduct MCMC simulation to do model calibration.
 
-# Basic MOnte Carlo practice
+# Basic Monte Carlo practice
 
 ```{r}
-x <- rnorm(n = 28, mean = 10, sd =  2)
+x <- rnorm(n = , mean = , sd = )
 x
 ```
 
@@ -74,6 +74,7 @@ x <- runif(10000)
 plot(x)
 hist(x)
 ```
+
 
 # Monte Carlo method in GNU MCSim
 
@@ -142,22 +143,23 @@ Vdist <- parms$Vdist
 
 ### Monte Carlo simulation
 
+Setting up the boundary that equal to factor of 5 from nominal value for uniform distribution
 ```{r}
-LL <- 0.2
-Fgutabs_LL <- 0.8
-kgutabs_LL <- kgutabs * LL
-kelim_LL <- kelim * LL
-Vdist_LL <- Vdist * LL
+LL <- 
+Fgutabs_LL <- 
+kgutabs_LL <- 
+kelim_LL <- 
+Vdist_LL <- 
 c(Fgutabs_LL, kgutabs_LL, kelim_LL, Vdist_LL)
 ```
 
 
 ```{r}
-UL <- 5
-Fgutabs_UL <- 1
-kgutabs_UL <- kgutabs * UL
-kelim_UL <- kelim * UL
-Vdist_UL <- Vdist * UL
+UL <- 
+Fgutabs_UL <- 
+kgutabs_UL <- 
+kelim_UL <- 
+Vdist_UL <- 
 c(Fgutabs_UL, kgutabs_UL, kelim_UL, Vdist_UL)
 ```
 
@@ -165,13 +167,13 @@ c(Fgutabs_UL, kgutabs_UL, kelim_UL, Vdist_UL)
 ```{r}
 n <- 1000
 set.seed(1)
-dist_Fgutabs <- runif(n, Fgutabs_LL, Fgutabs_UL)
+dist_Fgutabs <- runif()
 set.seed(1)
-dist_kgutabs <- runif(n, kgutabs_LL, kgutabs_UL)
+dist_kgutabs <- runif()
 set.seed(1)
-dist_kelim <- runif(n, kelim_LL, kelim_UL)
+dist_kelim <- runif()
 set.seed(1)
-dist_Vdist <- runif(n, Vdist_LL, Vdist_UL)
+dist_Vdist <- runif()
 ```
 
 
@@ -195,6 +197,7 @@ hist(df$kelim)
 hist(df$Vdist)
 ```
 
+Apply the simulated parameter distributions in the model
 ```{r}
 S1 <- subset(Theoph, Subject==1)
 t1 <- S1$Time
@@ -216,26 +219,16 @@ head(m.Conc)
 dim(m.Conc)
 ```
 
-
+- Initialized
 ```{r}
-m.Conc[1,] <- ffpk(IngDose = Dose1*BW1, 
-     Fgutabs = df$Fgutabs[1], kgutabs = df$kgutabs[1], 
-     kelim = df$kelim[1], 
-     Vdist =  df$Vdist[1],
-     BW = BW1,
-     t = t1)
+m.Conc[1,] <- ffpk()
 head(m.Conc)
 ```
 
-
+- Complete the simulation
 ```{r}
 for(i in 2:n){
-  m.Conc[i,] <- ffpk(IngDose = Dose1*BW1, 
-                     Fgutabs = df$Fgutabs[i], kgutabs = df$kgutabs[i], 
-                     kelim = df$kelim[i], 
-                     Vdist =  df$Vdist[i],
-                     BW = BW1,
-                     t = t1)
+  m.Conc[i,] <- ffpk()
 }
 tail(m.Conc)
 ```
@@ -244,26 +237,23 @@ tail(m.Conc)
 ### Visualization
 
 ```{r}
-plot(t1, m.Conc[1,], type="l")
+plot(x = , y= )
 ```
+
 
 ```{r}
 max.conc <- max(m.Conc)
-plot(t1, m.Conc[1,], type="l", col="grey", ylim = c(0, max.conc))
+# Initialize
+plot(x = ,y =  , type="l", col="grey", ylim = c(0, max.conc))
+# Accumulate
 for(i in 2:n){
-  lines(t1, m.Conc[i,], col="grey")
+  lines()
 }
 ```
 
+Add experiment data
 ```{r}
-Conc1 <- S1$conc
-plot(t1, Conc1)
-max.conc <- max(m.Conc)
-plot(t1, m.Conc[1,], type="l", col="grey", ylim = c(0, max.conc))
-for(i in 2:n){
-  lines(t1, m.Conc[i,], col="grey")
-}
-points(t1, Conc1)
+
 ```
 
 ## Uncertainty analysis of PK model in GNU MCSim
@@ -273,31 +263,13 @@ points(t1, Conc1)
 **Input file**
 
 ```r
-MonteCarlo ("simmc.out", 
-            1000, 
-            10101010);
 
-# Constant
-IngDose    = 319.992;     # ingested dose (mg)
-BW         = 79.6;        # body weight (kg)
-
-# Distribution
-Distrib (Fgutabs, Uniform, 0.8, 1);              # bioavailability (-) 
-Distrib (kgutabs, LogUniform, 0.218, 21.8);      # absortion rate (/h)
-Distrib (kelim, Uniform, 0.05307864, 1.326966);  # elimination rate constant (/h)
-Distrib (Vdist, Uniform, 0.15603994, 3.900998);  # volumes (L/kg BW)
-
-Simulation {
-  Print (Conc 0.0   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
-}
-End.
 ```
 
 ```{r}
-set.seed(2222)
-ffpk.mtc.out <- mcsim("models/ffpk.model", "inputs/ffpk.mtc.in")
+set.seed()
+ffpk.mtc.out <- mcsim()
 ```
-
 
 ```{r}
 head(ffpk.mtc.out)
@@ -318,17 +290,17 @@ hist(log(ffpk.mtc.out$kgutabs), main = "kgutabs", xlab = "", ylab = "")
 
 
 ```{r}
-Conc.str <- which(names(ffpk.mtc.out)=="Conc_1.1")
-Conc.end <- which(names(ffpk.mtc.out)=="Conc_1.10")
-df.Conc <- ffpk.mtc.out[,Conc.str:Conc.end]
+Conc.str <- 
+Conc.end <- 
+df.Conc <- 
 head(df.Conc)
 ```
 
 ```{r}
 max.Conc <- max(df.Conc)
-plot(t1[-1], df.Conc[1,], type="l", col="grey", ylim=c(0,max.Conc))
+plot(x =  ,y =  , type="l", col="grey", ylim=c(0,max.Conc))
 for(i in 2:1000){
-  lines(t1[-1], df.Conc[i,], col="grey")
+  lines(x = , y = , col="grey")
 }
 points(t1, Conc1)
 ```
@@ -365,7 +337,10 @@ makemcsim(model)
 
 ```{r}
 set.seed(2222)
-y<-solve_mcsim(mName = model, params = parameters, vars = outputs, monte_carlo = 10000,
+y<-solve_mcsim(mName = model, 
+               params = parameters, 
+               vars = outputs, 
+               monte_carlo = 10000,
                dist = dist, q.arg = q.arg, time = times, condition = conditions)
 ```
 
@@ -375,4 +350,8 @@ points(t1, Conc1)
 ```
 
 
+## Supplemental reading
 
+[Exercise 1: Bayesian A testing for Swedish Fish Incorporated (B comes later)](http://www.sumsar.net/files/posts/2017-bayesian-tutorial-exercises/modeling_exercise1.html)
+
+[Exercise 2: Bayesian A/B testing for Swedish Fish Incorporated with Stan](http://www.sumsar.net/files/posts/2017-bayesian-tutorial-exercises/modeling_exercise2.html)
