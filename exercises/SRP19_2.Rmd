@@ -255,45 +255,13 @@ After the global specifications, we can define the local parameters. In addition
 - Non compartment model (R)
 
 ```{r}
-ffpk <- function(IngDose, Fgutabs, kgutabs, kelim, Vdist, BW, t){
-    A <- (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim))
-    Conc <- A * exp(-kelim * t) - A * exp(-kgutabs * t)
-    return(Conc)
-}
+
 ```
 
 - Non compartment model (MCSim)
 
 ```r
-Outputs = {
-  A,
-  Conc,
-}
 
-# ingested input             (mg)
-IngDose = 1.0; 
-
-# Absorption fraction        (-)
-Fgutabs = 1.0; #
-
-# Absorption rate constant   (/h)
-kgutabs = 1.0; #
-
-# Elimination rate constants (/h)
-kelim = 1.0;
-
-# Distribution volumes       (L/kg BW)
-Vdist = 1.0;
-
-# Body weight                (kg)
-BW = 70;
-
-CalcOutputs { 
-  A = (IngDose * Fgutabs * kgutabs)/(Vdist * BW * (kgutabs - kelim));
-  Conc = A * exp(-kelim * t) - A * exp(-kgutabs * t);
-}
-
-End.
 ```
 
 ## Compartment model
@@ -301,61 +269,11 @@ End.
 - Compartment model (R)
 
 ```r
-pbtk1cpt <- function(t, state, parameters) {
-  with(as.list(c(state, parameters)), {
-    
-    dAgut = - kgutabs * Agut
-    dAcpt = kgutabs * Agut - ke * Acpt
 
-    Ccpt = Acpt / Vdist * BW
-    
-    list(c(dAgut, dAcpt), "Ccpt" = Ccpt) 
-  })
-}
 ```
 
 - Compartment model (MCSim)
 
 ```
-States  = { 
-  Acpt      # Quantity in central compartment (mg)
-};  
 
-Inputs = { 
-  Oral_input  # Drug input (mg)
-}; 
-
-Outputs = {
-  Ccpt,     # Concentration in central compartment (mg/l)
-};
-
-# Oral input modeling
-Absdose;
-IngDose    = 1.0; # ingested input (mg)
-Fgutabs    = 1.0; #
-Period     = 0.0; # period of the exposure/no exposure cycle (h)
-Tlag       = 0.0; # Absorption lagtime (h)
-kgutabs    = 0.1; # Intestinal absortion rate (/h)
-Oral_input = PerExp (Absdose, Period, Tlag, kgutabs);
-
-# Distribution volumes (L/kg BW)
-Vdist = 1;
-
-# Body weight (kg)
-BW = 70;
-
-# Elimination rate constants (/h)
-kelim = 1;
-
-Initialize{ Absdose = IngDose * Fgutabs; }
-
-Dynamics { 
-  dt (Acpt) = kgutabs * Oral_input - kelim * Acpt;
-}
-
-CalcOutputs { 
-  Ccpt = Acpt  / Vdist / BW;
-}
-
-End.
 ```
