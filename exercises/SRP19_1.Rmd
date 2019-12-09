@@ -41,182 +41,170 @@ Objectives
 
 ## Basic data analysis
 
-```r
-?Theoph
-```
-
-```r
-getwd()
-```
-
-
-```r
-dat <- read.csv(file = "Theoph.csv")
-dat
-```
-
-```r
-write.csv(x = Theoph, file = "Theoph.csv", row.names = F)
-```
-
+use `getwd()` to find where you are.
 ```{r}
-head(Theoph)
+```
+
+Use `?` before function to get help and look into the `Theoph` dataset.
+```{r}
+
+```
+
+Use `head()` function to check the top row of theophylline PK data.
+```{r}
+
+```
+
+Use `tail()` function to check the top row of theophylline PK data.
+```{r}
+
+```
+
+Use `class()` to see the data type of Theophylline
+```{r}
+
+```
+
+Use `View()` function to overview the data 
+```{r}
+
+```
+
+Use  `write.csv()` to save your data to a csv file and named it "Theoph.csv"
+```{r}
+
 ```
 
 
+Now, there is a csv file called "Theoph.csv". Use `read.csv()` to load it to your wrok space. In addtion, assign the data and named it `dat`
 ```{r}
-tail(Theoph)
+
 ```
 
-
+Sometimes you might need to focus on specific subgroup (individual). Use `subset()` to select Subject 1.
 ```{r}
-class(Theoph)
+
 ```
 
-
+Assign the variable `S1` to store the information of Subject 1. Then, try using `$` and `[]` to select the blood concentraion
 ```{r}
-subset(x = Theoph, Subject == 1)
+
 ```
 
-
+How's the average concentration of Subject 1?
 ```{r}
-S1 <- subset(x = Theoph, Subject == 1)
-S1$conc
+
 ```
 
-
+How's the maximum concentration ($Cmax$) of Subject 1?
 ```{r}
-mean(S1$conc)
+
 ```
 
+Plot the PK profile for subject 1.
 ```{r}
-C_max <- max(S1$conc)
-C_max
+
 ```
 
+Plot the PK profile for all subjects.
 ```{r}
-plot(x = S1$Time, y = S1$conc)
+
 ```
 
+Try to seperate each individaul to different sub figures.
 ```{r}
-plot(x = Theoph$Time, y = Theoph$conc, col=Theoph$Subject)
-```
 
-
-```{r}
-par(mfrow=c(m=3,n=4))
-for(i in 1:12){
-  Si <- subset(x = Theoph, Subject == i)  # Select subject
-  plot(x = Si$Time, y = Si$conc, main = i)   # plot PK profile
-}
 ```
 
 
 ## Tidyverse package
 
-```{R}
-library(tidyverse)
+Use `library()` to load `tidyverse`
+```{r}
+
 ```
 
+Use `ggplot` to generate the PK profile for all subjects.
 ```{r}
-Theoph %>% ggplot(aes(x = Time, y =conc, color = Subject)) + 
-  geom_point()
+
 ```
 
+Look into the data tye of `Theoph$Subject`
 ```{r}
-class(Theoph$Subject)
+
 ```
 
+The currnt order of the subject is based on the peak concentration. Try to reorder it by number.
 ```{r}
-Theoph$Subject
+
 ```
 
+Re-create the ggplot and check the different with previous plot.
 ```{r}
-Theoph$Subject <- factor(Theoph$Subject, 
-                            level = c("1", "2", "3", "4", "5", "6", 
-                                      "7", "8", "9", "10", "11","12"))
+
 ```
 
+Try to seperate each individaul to different sub figures.
 ```{r}
-Theoph$Subject
+
 ```
 
+Find the Tmax
+- First, assign the peak concentration and named it `S1.Cmax`
 ```{r}
-Theoph %>% ggplot(aes(x = Time, y =conc, color = Subject)) + 
-  geom_point() + geom_line() + 
-  labs(x = "Time (hr)", y = "Concentration (mg/L)")
+
 ```
 
+- Second, use `which()` to find the corresponding row number and assigned the variable `Cmax.pt`
 ```{r}
-Theoph %>% ggplot(aes(x = Time, y =conc)) + 
-  geom_point() + geom_line() + 
-  facet_wrap(~Subject) + 
-  labs(x = "Time (hr)", y = "Concentration (mg/L)")
+
 ```
 
+- Third, use `Cmax.pt` to find the corresponding $T_{max}$
 ```{r}
-S1.Cmax <- max(S1$conc)
-S1.Cmax
+
 ```
 
+
+Use pipline `%>%`, `group_by()`, and `summarise()` to manipulate the data and find peak concentration for all subjects. Assigned the new variable `Cmax_pop`
 ```{r}
-which(S1$conc == S1.Cmax)
+
 ```
 
+Plot histogram and baplot
 ```{r}
-Cmax.pt <- which(S1$conc == S1.Cmax)
-T_max <- S1$Time[Cmax.pt]
-T_max
+
 ```
 
+Try to figure ou the relationship between body weight and peak concentration.
+- Summarize the average body weight for each individual
 ```{r}
-Cmax_pop <- Theoph %>% group_by(Subject) %>% summarise(C_max = max(conc))
-Cmax_pop
+
 ```
 
+- Visualize by ggplot
 ```{r}
-hist(Cmax_pop$C_max)
+
 ```
 
+- Add linear regression model
 ```{r}
-boxplot(Cmax_pop$C_max)
+
 ```
 
+Create the table that summarrize the $C_{max}$ and $T_{max}$ for each individual.
+- First, generate data frame `df` that include subject number, $C_{max}$ and $T_{max}$ 
 ```{r}
-Theoph %>% group_by(Subject) %>% summarise(C_max = max(conc), Wt=mean(Wt))
+
 ```
 
+- Second, add find the corresponding $T_{max}$ for subject 1
 ```{r}
-Theoph %>% group_by(Subject) %>% 
-  summarise(C_max = max(conc), Wt=mean(Wt)) %>% 
-  ggplot(aes(x=Wt, y=C_max)) + geom_point()
+
 ```
 
+- Third, use for loop add find the corresponding $T_{max}$ for other subjects
 ```{r}
-Theoph %>% group_by(Subject) %>% 
-  summarise(C_max = max(conc), Wt=mean(Wt)) %>% 
-  ggplot(aes(x=Wt, y=C_max)) + geom_point() + geom_smooth(method = "lm")
-```
 
-```{r}
-df <- Theoph %>% group_by(Subject) %>% summarize(C_max = max(conc))
-df$T_max <- NA
-df
-```
-
-```{r}
-dat <- subset(Theoph, Subject==1)
-C_max.pt <- which(dat$conc == df$C_max[1])
-df$T_max[1] <- dat$Time[C_max.pt]
-df
-```
-
-```{r}
-for(i in 2:12){
-  dat <- subset(Theoph, Subject==i)
-  C_max.pt <- which(dat$conc == df$C_max[i])
-  df$T_max[i] <- dat$Time[C_max.pt]
-}
-df
 ```
 
