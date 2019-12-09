@@ -263,7 +263,24 @@ Add experiment data
 **Input file**
 
 ```r
+MonteCarlo ("simmc.out", 
+            1000, 
+            10101010);
 
+# Constant
+IngDose    = ;     # ingested dose (mg)
+BW         = ;        # body weight (kg)
+
+# Distribution
+Distrib ();              # bioavailability (-) 
+Distrib ();      # absortion rate (/h)
+Distrib ();  # elimination rate constant (/h)
+Distrib ();  # volumes (L/kg BW)
+
+Simulation {
+  Print (Conc 0.0   0.25   0.57   1.12   2.02   3.82   5.10   7.03   9.05  12.12  24.37);
+}
+End.
 ```
 
 ```{r}
