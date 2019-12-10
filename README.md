@@ -21,4 +21,4 @@
 
 3. Create your own workspace through by clicking the “+copy” in Superfund Workshop Project
 
-4. If you download all files from this GutHub repo to your personal laptop. After download, open `Packages.R` file, select all script and click “Run” to install (or update) the essential packages and conduct the basic check. Be sure there is NO error occur.
+4. **NOTE:** If you download all files from this GitHub repo to your personal laptop. After download, open `Packages.R` file, select all script and click “Run” to install (or update) the essential packages and conduct the basic check. Be sure there is NO error occur.
