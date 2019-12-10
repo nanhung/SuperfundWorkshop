@@ -14,15 +14,11 @@
 
 
 ### Instruction
-After download all files in the repository, open `Packages.R` file, select all script and click “Run” to install (or update) the essential packages and conduct the basic check. Be sure there is NO error occur.
 
-```r
-pkgs <- c("devtools",
-          "httk",
-          "bayesplot", 
-          "tidyverse",
-          "rstan")
-install.packages(pkgs)
-devtools::install_github("nanhung/simuloR")
-devtools::install_github("nanhung/pksensi")
-```
+1. Sign up or login to RStudio Cloud (https://rstudio.cloud/) - To access Rstudio Cloud, you need to either register with RStudio or have a Google account or GitHub account in order to log in.
+
+2. Once logged into RStudio Cloud, access the RStudio Cloud projects: http://bit.ly/TamuSuperfundWorkshop2019
+
+3. Create your own workspace through by clicking the “+copy” in Superfund Workshop Project
+
+4. If you download all files from this GutHub repo to your personal laptop. After download, open `Packages.R` file, select all script and click “Run” to install (or update) the essential packages and conduct the basic check. Be sure there is NO error occur.
