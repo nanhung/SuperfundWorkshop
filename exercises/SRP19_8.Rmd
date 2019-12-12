@@ -157,16 +157,16 @@ Sample randonly some parameters
 start_time <- Sys.time()
 set.seed(1)
 for (iteration in 1:1000){
-  parameters["BDM"] <- rnorm()         # N(73, 7.3)
-  parameters["Flow_pul"] <- rnorm()    # N(5, 0.5)
-  parameters["PC_art"] <- rnorm()      # N(2, 0.2)
-  parameters["Kmetwp"] <- rnorm()      # N(0.25, 0.025)
+  parameters["BDM"] <- rnorm(1, 73, 7.3)         # N(73, 7.3)
+  parameters["Flow_pul"] <- rnorm(1, 5, 0.5)     # N(5, 0.5)
+  parameters["PC_art"] <- rnorm(1, 2, 0.2)       # N(2, 0.2)
+  parameters["Kmetwp"] <- rnorm(1, 0.25, 0.025)  # N(0.25, 0.025)
   
   # We focus on time at 24 hour
   times <- c(0, 1440)
 
   # Integrate
-  tmp <- ode(times = , func = , y=, parms=)
+  tmp <- ode(times = times, func = bd.model, y=y, parms=parameters)
 
   if (iteration == 1){ # initialize
       results <- tmp[2,-1]
@@ -203,12 +203,12 @@ head(results)
 ```
 
 ```{r}
-BDM <- 
+BDM <- sampled.parms[,1]
 hist(BDM)
 ```
 
 ```{r}
-Q_fat <- 
+Q_fat <- results[,1]
 hist(Q_fat)
 ```
 

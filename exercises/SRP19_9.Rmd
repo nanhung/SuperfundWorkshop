@@ -198,7 +198,6 @@ End.
 
 ```r
 # bd.mtc.in -------------------------
-
 Integrate (Lsodes, 1e-6, 1e-6, 1);
 
 MonteCarlo ("simmc.out", 
@@ -216,7 +215,6 @@ Simulation {
   Print(Q_fat, 1440);  
 }
 End.
-
 ```
 
 ## Modeling

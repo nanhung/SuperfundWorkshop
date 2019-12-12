@@ -1,0 +1,64 @@
+# ffpk.pop.mcmc.in ---------------------------------------------------------------
+
+MCMC ("MCMC.default.out","", # name of output file
+      "",         # name of data file
+      2000,0,     # iterations, print predictions flag
+      1,2000,     # printing frequency, iters to print
+      10101010);  # random seed (default)
+
+Level { # population
+  
+  # Constant
+  Fgutabs = 0.9;
+  
+  # Prior
+  Distrib (kgutabs, TruncLogNormal, 4.22, 3, 0.0422, 422);
+  Distrib (kelim, TruncLogNormal, 0.0544, 3, 0.000544, 5.44) ; 
+  Distrib (Vdist, TruncLogNormal, 0.3578, 3, 0.003578, 35.78); 
+  
+  # Likelihood
+  Likelihood(Conc, LogNormal, Prediction(Conc) , 1.1);
+  
+  Level { # individuals
+    
+    Distrib (kgutabs, LogNormal_v, kgutabs, 1.2);
+    Distrib (kelim, LogNormal_v, kelim, 1.2);
+    Distrib (Vdist, LogNormal_v, Vdist, 1.2);
+    
+    Level { # all subjects grouped
+      
+      Experiment { # 1: Subject
+        
+        IngDose    = 319.992;     # ingested dose (mg)
+        BW         = 79.6;        # body weight (kg)
+        
+        Print (Conc, 0.25  0.57  1.12  2.02  3.82  5.10  7.03  9.05 12.12 24.37 ); 
+        Data (Conc, 2.84  6.57 10.50  9.66  8.58  8.36  7.47  6.89  5.94  3.28 );
+      }
+    }  
+    Level { # all subjects grouped
+      
+      Experiment { # 2: Subject
+        
+        IngDose    = 318.56;     # ingested dose (mg)
+        BW         = 72.4;        # body weight (kg)
+        
+        Print (Conc, 0.27  0.52  1.00  1.92  3.50  5.02  7.03  9.00 12.00 24.30 ); 
+        Data (Conc, 1.72 7.91 8.31 8.33 6.85 6.08 5.40 4.55 3.01 0.90 );
+      }
+    }  
+    
+    Level { # all subjects grouped
+      
+      Experiment { # 3: Subject
+        
+        IngDose    = 318.66;      # ingested dose (mg)
+        BW         = 70.5;        # body weight (kg)
+        
+        Print (Conc, 0.27  0.58  1.02  2.02  3.62  5.08  7.07  9.00 12.15 24.17 ); 
+        Data (Conc, 4.40 6.90 8.20 7.80 7.50 6.20 5.30 4.90 3.70 1.05 );
+      }
+    }  
+  }
+}
+End.
