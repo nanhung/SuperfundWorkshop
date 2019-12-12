@@ -38,7 +38,7 @@ library(simuloR)
 ## Simulation by R
 
 ```{r}
-parms <- 
+parms <- parameterize_1comp(chem.name = "theophylline")
 ```
 
 ```{r}
@@ -50,10 +50,10 @@ ffpk <- function(IngDose, Fgutabs, kgutabs, kelim, Vdist, BW, t){
 ```
 
 ```{r}
-Fgutabs <- 
-kgutabs <- 
-kelim <- 
-Vdist <- 
+Fgutabs <- parms$Fgutabs * parms$hepatic.bioavailability
+kgutabs <- parms$kgutabs
+kelim <- parms$kelim
+Vdist <- parms$Vdist
 ```
 
 
@@ -70,16 +70,21 @@ IngDose
 
 
 ```{r}
-out1 <- ffpk()
-
+out1 <- ffpk(IngDose = IngDose, 
+             Fgutabs = Fgutabs,
+             kgutabs = kgutabs, kelim = kelim,
+             Vdist = Vdist, 
+             BW = 79.6,
+             t = S1$Time)
+out1
 ```
 
 
 ```{r}
 conc1 <- subset(Theoph, Subject == 1) %>% select(conc)
 
-plot()
-lines()
+plot(S1$Time, conc1$conc)
+lines(S1$Time, out1)
 ```
 
 ## Simulation by MCSim
@@ -115,22 +120,22 @@ models/mcsim.ffpk inputs/ffpk.in
 
 - Create exectuable program 
 ```{r}
-ffpk.model <- 
-makemcsim()
+ffpk.model <- "models/ffpk.model"
+makemcsim(model = ffpk.model)
 ```
 
 - Create exectuable program and conduct simulation
 ```{r}
-mcsim(model = , input = )
+mcsim(model = "models/ffpk.model", input = "inputs/ffpk.in")
 ```
 
 - Load file
 ```{r}
-read.delim(file = )
+read.delim(file = "sim.out")
 ```
 
 ```{r}
-read.delim(file = , skip = )
+read.delim(file = "sim.out", skip = 1)
 ```
 
 ### Compartment model
@@ -151,11 +156,11 @@ End.
 ```
 
 ```{r}
-out1 <- mcsim(model = , input = )
+out1 <- mcsim(model = "models/ffpk.model", input = "inputs/ffpk.in")
 out1
 ```
 
 ```{r}
-plot()
-lines()
+plot(x = S1$Time, y = conc1$conc)
+lines(x = out1$Time, y = out1$Conc)
 ```
