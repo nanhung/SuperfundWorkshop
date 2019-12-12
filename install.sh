@@ -1,3 +1,6 @@
+#!/bin/bash
+# A Simple Shell Script To Install MCSim v6.1.0
+
 wget http://ftp.gnu.org/gnu/mcsim/mcsim-6.1.0.tar.gz
 tar -xzvf mcsim-6.1.0.tar.gz
 rm mcsim-6.1.0.tar.gz
