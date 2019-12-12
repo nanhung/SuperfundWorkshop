@@ -26,7 +26,7 @@ knitr::opts_knit$set(root.dir =  wd)
 # Basic Monte Carlo practice
 
 ```{r}
-x <- rnorm(n = , mean = , sd = )
+x <- rnorm(n = 28, mean = 10, sd =  2)
 x
 ```
 
@@ -145,21 +145,21 @@ Vdist <- parms$Vdist
 
 Setting up the boundary that equal to factor of 5 from nominal value for uniform distribution
 ```{r}
-LL <- 
-Fgutabs_LL <- 
-kgutabs_LL <- 
-kelim_LL <- 
-Vdist_LL <- 
+LL <- 0.2
+Fgutabs_LL <- 0.8
+kgutabs_LL <- kgutabs * LL
+kelim_LL <- kelim * LL
+Vdist_LL <- Vdist * LL
 c(Fgutabs_LL, kgutabs_LL, kelim_LL, Vdist_LL)
 ```
 
 
 ```{r}
-UL <- 
-Fgutabs_UL <- 
-kgutabs_UL <- 
-kelim_UL <- 
-Vdist_UL <- 
+UL <- 5
+Fgutabs_UL <- 1
+kgutabs_UL <- kgutabs * UL
+kelim_UL <- kelim * UL
+Vdist_UL <- Vdist * UL
 c(Fgutabs_UL, kgutabs_UL, kelim_UL, Vdist_UL)
 ```
 
@@ -167,13 +167,13 @@ c(Fgutabs_UL, kgutabs_UL, kelim_UL, Vdist_UL)
 ```{r}
 n <- 1000
 set.seed(1)
-dist_Fgutabs <- runif()
+dist_Fgutabs <- runif(n, Fgutabs_LL, Fgutabs_UL)
 set.seed(1)
-dist_kgutabs <- runif()
+dist_kgutabs <- runif(n, kgutabs_LL, kgutabs_UL)
 set.seed(1)
-dist_kelim <- runif()
+dist_kelim <- runif(n, kelim_LL, kelim_UL)
 set.seed(1)
-dist_Vdist <- runif()
+dist_Vdist <- runif(n, Vdist_LL, Vdist_UL)
 ```
 
 
@@ -221,14 +221,24 @@ dim(m.Conc)
 
 - Initialized
 ```{r}
-m.Conc[1,] <- ffpk()
+m.Conc[1,] <- ffpk(IngDose = Dose1*BW1, 
+     Fgutabs = df$Fgutabs[1], kgutabs = df$kgutabs[1], 
+     kelim = df$kelim[1], 
+     Vdist =  df$Vdist[1],
+     BW = BW1,
+     t = t1)
 head(m.Conc)
 ```
 
 - Complete the simulation
 ```{r}
 for(i in 2:n){
-  m.Conc[i,] <- ffpk()
+  m.Conc[i,] <- ffpk(IngDose = Dose1*BW1, 
+                     Fgutabs = df$Fgutabs[i], kgutabs = df$kgutabs[i], 
+                     kelim = df$kelim[i], 
+                     Vdist =  df$Vdist[i],
+                     BW = BW1,
+                     t = t1)
 }
 tail(m.Conc)
 ```
@@ -237,23 +247,24 @@ tail(m.Conc)
 ### Visualization
 
 ```{r}
-plot(x = , y= )
+plot(t1, m.Conc[1,], type="l")
 ```
 
 
 ```{r}
 max.conc <- max(m.Conc)
 # Initialize
-plot(x = ,y =  , type="l", col="grey", ylim = c(0, max.conc))
+plot(x = t1, y = m.Conc[1,], type="l", col="grey", ylim = c(0, max.conc))
 # Accumulate
 for(i in 2:n){
-  lines()
+  lines(t1, m.Conc[i,], col="grey")
 }
 ```
 
 Add experiment data
 ```{r}
-
+Conc1 <- S1$conc
+plot(t1, Conc1)
 ```
 
 ## Uncertainty analysis of PK model in GNU MCSim
@@ -284,8 +295,8 @@ End.
 ```
 
 ```{r}
-set.seed()
-ffpk.mtc.out <- mcsim()
+set.seed(2222)
+ffpk.mtc.out <- mcsim("models/ffpk.model", "inputs/ffpk.mtc.in")
 ```
 
 ```{r}
@@ -307,17 +318,17 @@ hist(log(ffpk.mtc.out$kgutabs), main = "kgutabs", xlab = "", ylab = "")
 
 
 ```{r}
-Conc.str <- 
-Conc.end <- 
-df.Conc <- 
+Conc.str <- which(names(ffpk.mtc.out)=="Conc_1.1")
+Conc.end <- which(names(ffpk.mtc.out)=="Conc_1.10")
+df.Conc <- ffpk.mtc.out[,Conc.str:Conc.end]
 head(df.Conc)
 ```
 
 ```{r}
 max.Conc <- max(df.Conc)
-plot(x =  ,y =  , type="l", col="grey", ylim=c(0,max.Conc))
+plot(t1[-1], df.Conc[1,], type="l", col="grey", ylim=c(0,max.Conc))
 for(i in 2:1000){
-  lines(x = , y = , col="grey")
+  lines(t1[-1], df.Conc[i,], col="grey")
 }
 points(t1, Conc1)
 ```
@@ -348,7 +359,7 @@ conditions <- c("BW = 79.6", "Period = 48", "IngDose = 319.992")
 model <- "models/pbtk1cpt.model"
 ```
 
-```r
+```{r, eval=F}
 makemcsim(model)
 ```
 

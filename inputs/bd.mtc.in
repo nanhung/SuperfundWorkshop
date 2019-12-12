@@ -1,0 +1,18 @@
+# bd.mtc.in -------------------------
+Integrate (Lsodes, 1e-6, 1e-6, 1);
+
+MonteCarlo ("simmc.out", 
+            1000, 
+            10101010);
+
+# Distribution
+Distrib (BDM, Normal, 73, 7.3);
+Distrib (Flow_pul, Normal, 5, 0.5);
+Distrib (PC_art, Normal, 2, 0.2);
+Distrib (Kmetwp, Normal, 0.25, 0.025);
+
+Simulation {
+  C_inh = NDoses (2, 10, 0, 0, 120);
+  Print(Q_fat, 1440);  
+}
+End.

@@ -77,11 +77,15 @@ End.
 
 ```{r}
 set.seed(1)
-ffpk.mcmc.1 <- mcsim(model = , input = )
+ffpk.mcmc.1 <- mcsim(model = "models/ffpk.model", input = "inputs/ffpk.mcmc.in")
 ```
 
 ```{r}
-ffpk.mcmc.1
+head(ffpk.mcmc.1)
+```
+
+```{r}
+tail(ffpk.mcmc.1)
 ```
 
 
@@ -177,17 +181,18 @@ ffpk.mcmc.1[i,c("Fgutabs.1.","kgutabs.1.","kelim.1.","Vdist.1.")] %>% cor() %>% 
 **Single draws**
 
 ```{r}
-check.out <- read.delim(file = ) 
-Observed <- 
-Expected <- 
-plot(x=, y=, xlim=c(0,10), ylim=c(0,10))
+check.out <- read.delim("MCMC.check.out") 
+Observed <- check.out$Data
+Expected <- check.out$Prediction
+plot(x=Observed, y=Expected, xlim=c(0,10), ylim=c(0,10))
 abline(0,1)
 ```
 
 
 
 ```{r}
-plot(x = , y = , pch='x')
+plot(Expected, Observed/Expected, pch='x')
+abline(1,0)
 ```
 
 **Multiple draws**
@@ -217,9 +222,14 @@ BW1 <- mean(S1$Wt)
 ```
 
 ```{r}
-Conc.matrix <- matrix(nrow = , ncol = ))
+Conc.matrix <- matrix(nrow = length(Fgutabs), ncol = length(t1))
 for(i in 1:11){
-  Conc.matrix[,i] <- ffpk()
+  Conc.matrix[,i] <- ffpk(IngDose = Dose1*BW1, 
+                     Fgutabs = df$Fgutabs, kgutabs = df$kgutabs, 
+                     kelim = df$kelim, 
+                     Vdist =  df$Vdist,
+                     BW = BW1,
+                     t = t1[i])
 }
 ```
 
@@ -230,11 +240,11 @@ tail(Conc.matrix)
 
 
 ```{r}
-plot(x = , y = , pch = "")
+plot(t1, Observed, pch = "")
 for(i in 1001:2000){
-  lines(x = , y = , col="grey")
+  lines(t1, Conc.matrix[i,], col="grey")
 }
-points(x = , y=)
+points(t1, Observed)
 ```
 
 ### Use setpoints analysis
@@ -253,18 +263,18 @@ END.
 ```
 
 ```{r}
-ffpk.setpts.out <- mcsim(model = , input = )
+ffpk.setpts.out <- mcsim("models/ffpk.model", input = "inputs/ffpk.setpts.in")
 tail(ffpk.setpts.out)
 ```
 
 ```{r}
-str.pt <- 
-end.pt <- 
-plot(x = , y = , pch = "")
-for(i in ){
-  lines(x = , y = , col="grey")
+str.pt <- which(names(ffpk.setpts.out)=="Conc_1.1") 
+end.pt <- which(names(ffpk.setpts.out)=="Conc_1.11") 
+plot(t1, Observed, pch = "")
+for(i in 501:1000){
+  lines(t1, ffpk.setpts.out[i,str.pt:end.pt], col="grey")
 }
-points(x = , y =)
+points(t1, Observed)
 ```
 
 ## Multi-chains simulation
