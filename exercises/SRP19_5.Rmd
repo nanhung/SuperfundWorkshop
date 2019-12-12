@@ -149,8 +149,8 @@ bd.model = function(t, y, parameters) {
 ### Exposure setting
 
 ```{r}
-t_exposure <-  # 30 days
-C_inh <- approxfun(x = , y=, method = "constant", f = 0, rule = 2) 
+t_exposure <- 43200 # 30 days
+C_inh <- approxfun(x = c(0, t_exposure), y=c(10,0), method = "constant", f = 0, rule = 2) 
 ```
 
 ```{r}
@@ -160,14 +160,14 @@ plot(C_inh(1:t_exposure), type="l", xlab = "Time (min)", ylab = "Butadiene inhal
 ### Simulation
 
 ```{r}
-t <- seq(from=, to=, by=)
-out <- ode(times=, func=, y=y, parms=)
+t <- seq(from=0, to=t_exposure, by=100)
+out <- ode(times=t, func=bd.model, y=y, parms=parameters)
 ```
 
 ```{r}
-tail()
+tail(out, 10)
 ```
 
 ```{r}
-plot()
+plot(out)
 ```

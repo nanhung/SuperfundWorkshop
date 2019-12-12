@@ -240,7 +240,7 @@ bd.model = function(t, y, parameters) {
 ## Inputs
 
 ```{r}
-C_inh <- approxfun(x = , y= , method = "constant", f = 0, rule = 2) 
+C_inh <- approxfun(x = c(0, 120), y=c(10,0), method = "constant", f = 0, rule = 2) 
 ```
 
 ```{r}
@@ -280,19 +280,19 @@ y <- c("Q_fat" = 0, # Quantity of butadiene in fat (mg)
 ## Simulation
 ```{r}
 # Define the computation output times
-t <- seq(from=, to=, by=)
+t <- seq(from=0, to=1440, by=10)
 t
 ```
 
 
 ```{r}
 # Solve ODE
-out <- ode(times=, func=, y=, parms=)
-head()
+out <- ode(times=t, func=bd.model, y=y, parms=parameters)
+head(out)
 ```
 
 ## Plot
 ```{r}
-plot()
+plot(out)
 ```
 
