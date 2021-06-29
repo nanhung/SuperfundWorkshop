@@ -12,5 +12,6 @@ rm mcsim-6.1.0.tar.gz
   make install
 )
 export PATH=$PATH:/cloud/project/mcsim/bin
+# can use `echo "$PATH"` to check PATH
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cloud/project/mcsim/lib
 rm -rf mcsim-6.1.0
